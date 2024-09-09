@@ -1,4 +1,5 @@
 #include "shell.h"
+#include "dynamicList.h"
 
 void separator();
 
@@ -6,28 +7,37 @@ void testPrompt();
 
 void testStringCut();
 
-int main() {
+void printList(tList list);
 
+void testDynamicList();
+
+int main() 
+{
     separator();
     testPrompt();
     separator();
     testStringCut();
     separator();
-    
+    testDynamicList();
+    separator();
+
     return 0;
 }
 
-void separator() {
+void separator() 
+{
     puts("\n------------------------------------------------------\n");
 }
 
-void testPrompt() {
+void testPrompt() 
+{
     puts("Test prompt");
     printPrompt();
     puts("");
 }
 
-void testStringCut() {
+void testStringCut() 
+{
     puts("Test stringCut: \"esto es una string\"");
     char text[] = "esto es una string";
     char* parts[6]; 
@@ -41,3 +51,59 @@ void testStringCut() {
     printf("Número de partes %d\n", nParts);
 }
 
+void printList(tList list)
+{
+    tPosL pos;
+    tItemL item;
+
+    printf("(");
+    if (!isEmptyList(list)) {
+        pos = first(list);
+        while (pos != NULL) {
+            item = getItem(pos, list);
+            printf("Command: %s ", item.command);
+            pos = next(pos, list);
+        }
+    }
+    printf(")\n");
+}
+
+void testDynamicList() 
+{
+    tList list;
+    tItemL item;
+
+
+    /* create */
+    createEmptyList(&list);
+    printList(list);
+
+    /* insert */
+    strcpy(item.command, "Command 1");
+    
+    insertItem(item, NULL, &list);
+    printList(list);
+
+    strcpy(item.command, "Command 2");
+    insertItem(item, NULL, &list);
+    printList(list);
+
+    strcpy(item.command, "Command 3");
+    insertItem(item, NULL, &list);
+    printList(list);
+
+    strcpy(item.command, "Command 4");
+    insertItem(item, NULL, &list);
+    printList(list);
+
+    strcpy(item.command, "Command 5");
+    insertItem(item, NULL, &list);
+    printList(list);
+
+    /* remove */
+    while (first(list) != NULL)
+    {
+        deleteAtPosition(first(list), &list);
+            printList(list);
+    }
+}

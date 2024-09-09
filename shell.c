@@ -1,15 +1,22 @@
 #include "shell.h"
 
-void printPrompt() {
+void printPrompt() 
+{
     printf("$ -> ");
 }
 
-void readInput() {
+void readInput() 
+{
+
 }
 
-bool processInput();
+bool processInput() 
+{
 
-int stringCut(char* input, char* parts[]) {
+}
+
+int stringCut(char* input, char* parts[]) 
+{
     int i=1;
 
     if ((parts[0]=strtok(input," \n\t"))==NULL)

@@ -16,8 +16,8 @@ p0.o: p0.h p0.c
 dynamicList: dynamicList.h dynamicList.c
 	$(CC) $(CFLAGS) -c dynamicList.c
 
-test.out: test.c shell.h shell.o
-	$(CC) $(CFLAGS) -o test.out test.c shell.o
+test.out: test.c shell.h dynamicList.h shell.o dynamicList.o
+	$(CC) $(CFLAGS) -o test.out test.c shell.o dynamicList.o
 
 clean: 
 	rm main.out shell.o p0.o test.out

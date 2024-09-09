@@ -1,9 +1,10 @@
-#include<stdbool.h>
+#include "shell.h"
+#include "dynamicList.h"
 
-void shell();1
+void shell();
 
 int main() {
-
+    
     shell();
 
     return 0;
