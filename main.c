@@ -1,6 +1,6 @@
 #include<stdbool.h>
 
-void shell();
+void shell();1
 
 int main() {
 
@@ -15,7 +15,7 @@ void shell() {
     while (!finished) {
         printPrompt();
         readInput();
-        processInput();
+        finished = processInput();
     }
     
 }
