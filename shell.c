@@ -1,7 +1,7 @@
 #include"shell.h"
 
 void printPrompt() {
-    printf("$ ->");
+    printf("$ -> ");
 }
 
 void readInput() {

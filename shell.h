@@ -1,5 +1,6 @@
 #include<stdbool.h>
 #include<string.h>
+#include<stdio.h>
 
 void printPrompt();
 
