@@ -13,6 +13,9 @@ shell.o: shell.h shell.c
 p0.o: p0.h p0.c
 	$(CC) $(CFLAGS) -c p0.c
 
+dynamicList: dynamicList.h dynamicList.c
+	$(CC) $(CFLAGS) -c dynamicList.c
+
 test.out: test.c shell.h shell.o
 	$(CC) $(CFLAGS) -o test.out test.c shell.o
 

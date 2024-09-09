@@ -17,5 +17,4 @@ void shell() {
         readInput();
         finished = processInput();
     }
-    
 }

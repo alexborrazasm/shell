@@ -1,4 +1,4 @@
-#include"shell.h"
+#include "shell.h"
 
 void separator();
 
@@ -14,7 +14,6 @@ int main() {
     testStringCut();
     separator();
     
-
     return 0;
 }
 
