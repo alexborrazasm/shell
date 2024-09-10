@@ -1,27 +1,36 @@
 #include "shell.h"
-#include "historyList.h"
-
-#define MAX_BUFFER_INPUT 50
 
 void printPrompt() 
 {
-    printf("$ -> ");
+    printf("$ ");
 }
 
-void readInput(tListH *history) 
+void readInput(char* input, char* args[], int *nArgs, tListH *history)
 {
-    int numArgs = 0;
-    char input[MAX_BUFFER_INPUT];
+    tItemH item; int len;
 
-        printf("$ ");
-        fgets(input, MAX_BUFFER_INPUT, stdin);
+    // Get new console line
+    fgets(input, MAX_BUFFER_INPUT, stdin);
 
-        numArgs = stringCut(input, numArgs);
+    len = strlen(input);
+    
+    if (len > 0 && input[len - 1] == '\n') 
+    {
+    input[len - 1] = '\0';  // Remove '\n'
+    }
+
+    // Copy console input to history item
+    strcpy(item.command, input);
+    // Insert it
+    insertItem(item, LNULL, history);
+
+    // Get command arguments
+    *nArgs = stringCut(input, args);
 }
 
 bool processInput() 
 {
-    return true;
+    return false;
 }
 
 int stringCut(char* input, char* parts[]) 
@@ -31,7 +40,6 @@ int stringCut(char* input, char* parts[])
     if ((parts[0]=strtok(input," \n\t"))==NULL)
     return 0;
     
-    while ((parts[i]=strtok(NULL," \n\t"))!=NULL)
-    i++;
+    while ((parts[i]=strtok(NULL," \n\t"))!=NULL) i++;
     return i;
 }

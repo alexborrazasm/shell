@@ -1,5 +1,4 @@
 #include "shell.h"
-#include "historyList.h"
 
 void separator();
 
@@ -7,16 +6,16 @@ void testPrompt();
 
 void testStringCut();
 
-void printList(tList list);
+void printList(tListH list);
 
 void testDynamicList();
 
 int main() 
 {
-    separator();
-    testPrompt();
-    separator();
-    testStringCut();
+    //separator();
+    //testPrompt();
+    //separator();
+    //testStringCut();
     separator();
     testDynamicList();
     separator();
@@ -51,7 +50,7 @@ void testStringCut()
     printf("Número de partes %d\n", nParts);
 }
 
-void printList(tList list)
+void printList(tListH list)
 {
     tPosH pos;
     tItemH item;
@@ -70,7 +69,7 @@ void printList(tList list)
 
 void testDynamicList() 
 {
-    tList list;
+    tListH list;
     tItemH item;
 
 

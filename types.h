@@ -1,6 +1,7 @@
-#define COMMAND_LENGTH_LIMIT 25
+#define MAX_BUFFER_INPUT 50
+#define MAX_ARGS 10
 
-typedef char tCommand[COMMAND_LENGTH_LIMIT];
+typedef char tCommand[MAX_BUFFER_INPUT];
 
 typedef struct tItemH
 {

@@ -3,6 +3,8 @@
 #include <stdbool.h>
 #include "types.h"
 
+#define LNULL NULL
+
 typedef struct tNode *tPosH;
 
 struct tNode {

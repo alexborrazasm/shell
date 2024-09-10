@@ -6,12 +6,12 @@ bool createNode(tPosH* p);
 
 void createEmptyList(tListH* L) 
 {
-    *L = NULL;
+    *L = LNULL;
 }
 
 bool isEmptyList(tListH L) 
 {
-    return L == NULL;
+    return L == LNULL;
 }
 
 tPosH first(tListH L) 
@@ -21,10 +21,8 @@ tPosH first(tListH L)
 
 tPosH last(tListH L) 
 {
-    if (isEmptyList(L)) return NULL;
-    // Search last item
     tPosH q;
-    for (q = L; q->next != NULL; q = q->next);
+    for (q = L; q->next != LNULL; q = q->next);
     return q;
 }
 
@@ -48,18 +46,18 @@ bool insertItem(tItemH d, tPosH p, tListH* L)
         return false;
     
     q->data = d;
-    q->next = NULL;
-    q->prev = NULL;
+    q->next = LNULL;
+    q->prev = LNULL;
 
-    if (*L == NULL)//isEmptyList(*L)) // Empty list
+    if (isEmptyList(*L)) // Empty list
     {  
         *L = q;  // The first node its q
     } 
-    else if (p == NULL) // Insert at the end
+    else if (p == LNULL) // Insert at the end
     { 
         tPosH r;
         
-        for (r = *L; r->next != NULL; r = r->next);
+        for (r = *L; r->next != LNULL; r = r->next);
 
         r->next = q;
         q->prev = r;
@@ -89,10 +87,10 @@ void deleteAtPosition(tPosH p, tListH* L)
     { 
         *L = p->next;
     } 
-    else if (p->next == NULL) // p is the last node
+    else if (p->next == LNULL) // p is the last node
     { 
         r = previous(p, *L);
-        r->next = NULL;
+        r->next = LNULL;
     } 
     else // p is in the middle
     { 
@@ -113,6 +111,6 @@ tItemH getItem(tPosH p, tListH L) {
 bool createNode(tPosH *p) 
 {
     *p = malloc(sizeof(struct tNode));
-    if (*p==NULL) return false;
+    if (*p == LNULL) return false;
     else return true;           
 }
