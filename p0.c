@@ -4,13 +4,14 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/utsname.h>
+#include <stdbool.h>
 
 //Date [-t|-d]
 
 void dateCmd (int numParts, char* parts[]){
     if (numParts > 2)
     {
-        printf("Error: date [-t|-d]\n");
+        printf("\033[1;31mError: date [-t|-d]\033[0m\n"); //Esto en principio saca en rojo el texto
         return;
     } else {
         switch (numParts)
@@ -26,7 +27,7 @@ void dateCmd (int numParts, char* parts[]){
                 time();
             } else if (srtcmp(parts[1], "-d"))
             {
-                date()
+                date();
             }
             break;
         
@@ -42,6 +43,10 @@ void date(){
     int day, month, year;
     time_t now;
     time(&now);
+    if (now == -1){
+        perror("Error al obtener la hora:");
+        return;
+    }
 
     struct tm *local = localtime(&now);
 
@@ -58,6 +63,11 @@ void time(){
     time_t now;
     time(&now);
 
+    if (now == -1){
+        perror("Error al obtener la fecha:");
+        return;
+    }
+
     struct tm *local = localtime(&now);
 
     hours = local->tm_hour;
@@ -72,7 +82,7 @@ void time(){
 void authorsCmd (int numParts, char* parts[]){
     if (numParts > 2)
     {
-        printf("Error: authors [-l|-n]\n");
+        printf("\033[1;31mError: authors [-l|-n]\033[0m\n");
         return;
     } else {
         switch (numParts)
@@ -88,7 +98,7 @@ void authorsCmd (int numParts, char* parts[]){
                 autLogin();
             } else if (srtcmp(parts[1], "-n"))
             {
-                autName()
+                autName();
             }
             break;
         
@@ -100,13 +110,42 @@ void authorsCmd (int numParts, char* parts[]){
 }
 
 void autName(){
-    printf("José Manuel Villar \t Alex Borrazás")
+    printf("José Manuel Villar \t Alex Borrazás");
 }
 
 void autLogin(){
-    prntf("jose.villarg@udc.es \t") //Ponte el login aquí 
+    prntf("jose.villarg@udc.es \t alexandre.bmancebo"); //Ponte el login aquí 
+}
+//Separo exit de exitCmd por si necesitamos usar solo
+//exit en algún punto
+void exitCmd(int numParts, bool *finished){
+      if (numParts != 1){
+        printf("\033[1;31mError: pid\033[0m");
+      } else{
+        exit(finished);
+      }
+}
+void exit(bool *finished){
+    *finished = true;
 }
 
-void exitCmd(bool finished){
-    finished = true;
+void pidCmd(int numParts, char* parts[]){
+      if (numParts != 1){
+        printf("\033[1;31mError: pid\033[0m");
+    } else {
+        int pid;
+        pid = getpid();
+        printf("%d\n", pid);
+    }
+}
+
+
+void ppidCmd(int numParts, char* parts[]){
+    if (numParts != 1){
+        printf("\033[1;31mError: ppid\033[0m"); 
+    } else {
+        int ppid;
+        ppid = getppid();
+        printf("%d\n", ppid);
+    }
 }
