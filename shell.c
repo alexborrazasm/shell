@@ -12,7 +12,7 @@ void readInput()
 
 bool processInput() 
 {
-
+    return true;
 }
 
 int stringCut(char* input, char* parts[]) 

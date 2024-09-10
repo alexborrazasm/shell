@@ -1,5 +1,5 @@
 #include "shell.h"
-#include "dynamicList.h"
+#include "historyList.h"
 
 void separator();
 
@@ -53,8 +53,8 @@ void testStringCut()
 
 void printList(tList list)
 {
-    tPosL pos;
-    tItemL item;
+    tPosH pos;
+    tItemH item;
 
     printf("(");
     if (!isEmptyList(list)) {
@@ -71,7 +71,7 @@ void printList(tList list)
 void testDynamicList() 
 {
     tList list;
-    tItemL item;
+    tItemH item;
 
 
     /* create */

@@ -1,8 +1,8 @@
-#include "dynamicList.h"
+#include "historyList.h"
 
 #define UNUSED(expr) do { (void)(expr); } while (0)
 
-bool createNode(tPosL* p);
+bool createNode(tPosH* p);
 
 void createEmptyList(tList* L) 
 {
@@ -14,37 +14,35 @@ bool isEmptyList(tList L)
     return L == NULL;
 }
 
-tPosL first(tList L) 
+tPosH first(tList L) 
 {
     return L;
 }
 
-tPosL last(tList L) 
+tPosH last(tList L) 
 {
     if (isEmptyList(L)) return NULL;
     // Search last item
-    tPosL q;
+    tPosH q;
     for (q = L; q->next != NULL; q = q->next);
     return q;
 }
 
-tPosL previous(tPosL p, tList L) 
+tPosH previous(tPosH p, tList L) 
 {
     UNUSED(L);
-    if (p == NULL) return NULL;
     return p->prev;
 }
 
-tPosL next(tPosL p, tList L) 
+tPosH next(tPosH p, tList L) 
 {
     UNUSED(L);
-    if (p == NULL) return NULL;
     return p->next; // Devuelve NULL si es el último, y si no el siguiente
 }
 
-bool insertItem(tItemL d, tPosL p, tList* L) 
+bool insertItem(tItemH d, tPosH p, tList* L) 
 {
-    tPosL q;
+    tPosH q;
 
     if (!createNode(&q)) 
         return false;
@@ -59,7 +57,7 @@ bool insertItem(tItemL d, tPosL p, tList* L)
     } 
     else if (p == NULL) // Insert at the end
     { 
-        tPosL r;
+        tPosH r;
         
         for (r = *L; r->next != NULL; r = r->next);
 
@@ -83,9 +81,9 @@ bool insertItem(tItemL d, tPosL p, tList* L)
     return true;
 }
 
-void deleteAtPosition(tPosL p, tList* L) 
+void deleteAtPosition(tPosH p, tList* L) 
 {
-    tPosL r, q;
+    tPosH r, q;
 
     if (p == *L) // p is the first node
     { 
@@ -107,12 +105,12 @@ void deleteAtPosition(tPosL p, tList* L)
     free(p);
 }
 
-tItemL getItem(tPosL p, tList L) {
+tItemH getItem(tPosH p, tList L) {
     UNUSED(L);
     return(p->data);
 }
 
-bool createNode(tPosL *p) 
+bool createNode(tPosH *p) 
 {
     *p = malloc(sizeof(struct tNode));
     if (*p==NULL) return false;

@@ -1,5 +1,5 @@
 #include "shell.h"
-#include "dynamicList.h"
+#include "historyList.h"
 
 void shell();
 
@@ -12,10 +12,13 @@ int main() {
 
 void shell() {
     bool finished = false;
+    tList history;
+
+    createEmptyList(&history);
 
     while (!finished) {
         printPrompt();
-        readInput();
+        readInput(&history);
         finished = processInput();
     }
 }

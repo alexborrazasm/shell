@@ -1,6 +1,8 @@
 #define COMMAND_LENGTH_LIMIT 25
 
-typedef struct tItemL {
-    char command[COMMAND_LENGTH_LIMIT];
-    int arguments;
-} tItemL;
+typedef char tCommand[COMMAND_LENGTH_LIMIT];
+
+typedef struct tItemH
+{
+    tCommand command;
+} tItemH;
