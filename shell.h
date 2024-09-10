@@ -5,7 +5,7 @@
 
 void printPrompt();
 
-void readInput(int *nArgs, char* input, char* args[], tListH *history);
+void readInput(char* input, char* args[], int *nArgs, tListH *history);
 
 bool processInput();
 
