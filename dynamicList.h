@@ -1,11 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-
-typedef struct tItemL {
-    char command[20];
-    int arguments;
-} tItemL;
+#include "types.h"
 
 typedef struct tNode *tPosL;
 
