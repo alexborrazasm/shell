@@ -1,13 +1,22 @@
 #include "shell.h"
+#include "historyList.h"
+
+#define MAX_BUFFER_INPUT 50
 
 void printPrompt() 
 {
     printf("$ -> ");
 }
 
-void readInput() 
+void readInput(tListH *history) 
 {
+    int numArgs = 0;
+    char input[MAX_BUFFER_INPUT];
 
+        printf("$ ");
+        fgets(input, MAX_BUFFER_INPUT, stdin);
+
+        numArgs = stringCut(input, numArgs);
 }
 
 bool processInput() 

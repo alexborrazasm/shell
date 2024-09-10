@@ -12,7 +12,7 @@ int main() {
 
 void shell() {
     bool finished = false;
-    tList history;
+    tListH history;
 
     createEmptyList(&history);
 

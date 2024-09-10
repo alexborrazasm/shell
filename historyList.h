@@ -11,22 +11,22 @@ struct tNode {
     tPosH prev;
 };
 
-typedef tPosH tList;
+typedef tPosH tListH;
 
-void createEmptyList(tList* L);
+void createEmptyList(tListH* L);
 
-bool isEmptyList(tList L);
+bool isEmptyList(tListH L);
 
-tPosH first(tList L);
+tPosH first(tListH L);
 
-tPosH last(tList L);
+tPosH last(tListH L);
 
-tPosH next(tPosH p, tList L);
+tPosH next(tPosH p, tListH L);
 
-tPosH previous(tPosH p, tList L);
+tPosH previous(tPosH p, tListH L);
 
-bool insertItem(tItemH d, tPosH p, tList* L);
+bool insertItem(tItemH d, tPosH p, tListH* L);
 
-void deleteAtPosition(tPosH p, tList* L);
+void deleteAtPosition(tPosH p, tListH* L);
 
-tItemH getItem(tPosH p, tList L);
+tItemH getItem(tPosH p, tListH L);

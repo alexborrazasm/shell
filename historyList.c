@@ -4,22 +4,22 @@
 
 bool createNode(tPosH* p);
 
-void createEmptyList(tList* L) 
+void createEmptyList(tListH* L) 
 {
     *L = NULL;
 }
 
-bool isEmptyList(tList L) 
+bool isEmptyList(tListH L) 
 {
     return L == NULL;
 }
 
-tPosH first(tList L) 
+tPosH first(tListH L) 
 {
     return L;
 }
 
-tPosH last(tList L) 
+tPosH last(tListH L) 
 {
     if (isEmptyList(L)) return NULL;
     // Search last item
@@ -28,19 +28,19 @@ tPosH last(tList L)
     return q;
 }
 
-tPosH previous(tPosH p, tList L) 
+tPosH previous(tPosH p, tListH L) 
 {
     UNUSED(L);
     return p->prev;
 }
 
-tPosH next(tPosH p, tList L) 
+tPosH next(tPosH p, tListH L) 
 {
     UNUSED(L);
     return p->next; // Devuelve NULL si es el último, y si no el siguiente
 }
 
-bool insertItem(tItemH d, tPosH p, tList* L) 
+bool insertItem(tItemH d, tPosH p, tListH* L) 
 {
     tPosH q;
 
@@ -81,7 +81,7 @@ bool insertItem(tItemH d, tPosH p, tList* L)
     return true;
 }
 
-void deleteAtPosition(tPosH p, tList* L) 
+void deleteAtPosition(tPosH p, tListH* L) 
 {
     tPosH r, q;
 
@@ -105,7 +105,7 @@ void deleteAtPosition(tPosH p, tList* L)
     free(p);
 }
 
-tItemH getItem(tPosH p, tList L) {
+tItemH getItem(tPosH p, tListH L) {
     UNUSED(L);
     return(p->data);
 }
