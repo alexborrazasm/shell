@@ -21,9 +21,7 @@ tPosH first(tListH L)
 
 tPosH last(tListH L) 
 {
-    tPosH q;
-    for (q = L; q->next != LNULL; q = q->next);
-    return q;
+    return L->prev;
 }
 
 tPosH previous(tPosH p, tListH L) 
@@ -52,19 +50,21 @@ bool insertItem(tItemH d, tPosH p, tListH* L)
     if (isEmptyList(*L)) // Empty list
     {  
         *L = q;  // The first node its q
+        q->prev = q;
     } 
     else if (p == LNULL) // Insert at the end
     { 
         tPosH r;
         
-        for (r = *L; r->next != LNULL; r = r->next);
-
+        r = (*L)->prev; // (*L)->prev is the last node
         r->next = q;
         q->prev = r;
+        (*L)->prev = q;
     } 
     else if (p == *L) // Insert at first position
     { 
         q->next = *L;
+        q->prev = (*L)->prev; // (*L)->prev point to last node
         (*L)->prev = q;
         *L = q;
     }
@@ -81,17 +81,26 @@ bool insertItem(tItemH d, tPosH p, tListH* L)
 
 void deleteAtPosition(tPosH p, tListH* L) 
 {
-    tPosH r, q;
+    tPosH q;
 
     if (p == *L) // p is the first node
-    { 
-        *L = p->next;
+    {   
+        if (p->next == LNULL)
+        {
+            *L = LNULL;
+        }
+        else 
+        {
+            *L = p->next; // point the list to second node
+            (*L)->prev = p->prev; // p->prev point to last node
+        }
     } 
     else if (p->next == LNULL) // p is the last node
     { 
-        r = previous(p, *L);
-        r->next = LNULL;
-    } 
+        q = p->prev;
+        (*L)->prev = q;
+        q->next = LNULL;
+    }
     else // p is in the middle
     { 
         q = p->next;
