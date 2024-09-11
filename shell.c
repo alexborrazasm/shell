@@ -28,8 +28,26 @@ void readInput(char* input, char* args[], int *nArgs, tListH *history)
     *nArgs = stringCut(input, args);
 }
 
-bool processInput() 
+bool processInput(char* args[], int nArgs, tListH history) 
 {
+    // string name , void name
+    tCommand commands[] = {
+    {"Date", dateCmd}
+    };
+
+    const int nCommands = sizeof(commands) / sizeof(commands[0]);
+
+    for (int i = 0; i < nCommands; ++i) 
+    {
+        if (strcmp(commands[i].name, args[0]) == 0) 
+        {
+            commands[i].func(nArgs, args);
+            return false;
+        }
+    }
+
+    printf("Unknown command: %s\n", args[0]);
+
     return false;
 }
 

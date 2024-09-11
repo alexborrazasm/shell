@@ -1,9 +1,8 @@
 #include <stdbool.h>
 
 void dateCmd (int numParts, char* parts[]);//Date [-t|-d]
-void date();
-void time();
 
+/*
 void authorsCmd (int numParts, char* parts[]);//Authors [-l|-n]
 void autName();
 void autLogin();
@@ -14,3 +13,4 @@ void exit(bool *finished);
 void pidCmd(int numParts, char* parts[]);//Pid
 
 void ppidCmd(int numParts, char* parts[]);//Ppid
+*/

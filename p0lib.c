@@ -6,8 +6,13 @@
 #include <sys/utsname.h>
 #include <stdbool.h>
 
+void dateCmd (int numParts, char* parts[])
+{
+    puts("esta es la data");
+}
 //Date [-t|-d]
 
+/*
 void dateCmd (int numParts, char* parts[]){
     if (numParts > 2)
     {
@@ -76,6 +81,7 @@ void time(){
 
     printf("Son las: %d:%d:%d\n", hours, minutes, seconds);
 }
+
 
 //Authors [-l|-n]
 
@@ -149,3 +155,4 @@ void ppidCmd(int numParts, char* parts[]){
         printf("%d\n", ppid);
     }
 }
+*/

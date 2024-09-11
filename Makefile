@@ -4,11 +4,11 @@ CFLAGS = -Wall -Wextra -g
 LDFLAGS = 
 
 # Targets
-main.out: main.c types.h shell.h historyList.h shell.o historyList.o
-	$(CC) $(CFLAGS) -o main.out main.c shell.o historyList.o
+main.out: main.c types.h shell.h historyList.h p0lib.h shell.o historyList.o p0lib.o
+	$(CC) $(CFLAGS) -o main.out main.c shell.o historyList.o p0lib.o
 
-shell.o: shell.h shell.c 
-	$(CC) $(CFLAGS) -c shell.c
+shell.o: shell.h p0lib.h shell.c p0lib.c
+	$(CC) $(CFLAGS) -c shell.c p0lib.o
 
 p0lib.o: p0lib.h p0lib.c
 	$(CC) $(CFLAGS) -c p0lib.c
