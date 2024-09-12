@@ -5,16 +5,6 @@
 
 #define LNULL NULL
 
-typedef struct tNode *tPosH;
-
-struct tNode {
-    tItemH data;
-    tPosH next;
-    tPosH prev;
-};
-
-typedef tPosH tListH;
-
 void createEmptyList(tListH* L);
 
 bool isEmptyList(tListH L);

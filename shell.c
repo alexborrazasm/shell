@@ -5,7 +5,7 @@ void printPrompt()
     printf("$ ");
 }
 
-void readInput(char* input, char* args[], int *nArgs, tListH *history)
+void readInput(char* input, tArgs *args, tListH *history)
 {
     tItemH item; int len;
 
@@ -22,13 +22,13 @@ void readInput(char* input, char* args[], int *nArgs, tListH *history)
     // Copy console input to history item
     strcpy(item.command, input);
     // Insert it
-    insertItem(item, LNULL, history);
-
+    if (!insertItem(item, LNULL, history))
+        puts("Malloc error");
     // Get command arguments
-    *nArgs = stringCut(input, args);
+    args->len = stringCut(input, args->array);
 }
 
-bool processInput(char* args[], int nArgs, tListH history) 
+bool processInput(tArgs args, tListH history)
 {
     // string name , void name
     tCommand commands[] = {
@@ -36,17 +36,19 @@ bool processInput(char* args[], int nArgs, tListH history)
     };
 
     const int nCommands = sizeof(commands) / sizeof(commands[0]);
-
-    for (int i = 0; i < nCommands; ++i) 
+    
+    if (args.len > 0) 
     {
-        if (strcmp(commands[i].name, args[0]) == 0) 
+        for (int i = 0; i < nCommands; ++i) 
         {
-            commands[i].func(nArgs, args);
-            return false;
+            if (strcmp(commands[i].name, args.array[0]) == 0) 
+            {
+                commands[i].func(args, history);
+                return false;
+            }
         }
+        printf("Unknown command: %s\n", args.array[0]);
     }
-
-    printf("Unknown command: %s\n", args[0]);
 
     return false;
 }

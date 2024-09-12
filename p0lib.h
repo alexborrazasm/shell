@@ -1,6 +1,6 @@
 #include <stdbool.h>
 
-void dateCmd (int numParts, char* parts[]);//Date [-t|-d]
+void dateCmd (tArgs args, tListH history);  //Date [-t|-d]
 
 /*
 void authorsCmd (int numParts, char* parts[]);//Authors [-l|-n]

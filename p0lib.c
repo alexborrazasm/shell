@@ -6,7 +6,7 @@
 #include <sys/utsname.h>
 #include <stdbool.h>
 
-void dateCmd (int numParts, char* parts[])
+void dateCmd (tArgs args, tListH history)
 {
     puts("esta es la data");
 }

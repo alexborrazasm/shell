@@ -6,8 +6,8 @@
 
 void printPrompt();
 
-void readInput(char* input, char* args[], int *nArgs, tListH *history);
+void readInput(char* input, tArgs *args, tListH *history);
 
-bool processInput(char* args[], int nArgs, tListH history);
+bool processInput(tArgs args, tListH history);
 
 int stringCut(char* input, char* parts[]); // free me please!!!!!

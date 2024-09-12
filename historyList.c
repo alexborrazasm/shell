@@ -40,7 +40,7 @@ bool insertItem(tItemH d, tPosH p, tListH* L)
 {
     tPosH q;
 
-    if (!createNode(&q)) 
+    if (!createNode(&q))
         return false;
     
     q->data = d;
@@ -121,5 +121,5 @@ bool createNode(tPosH *p)
 {
     *p = malloc(sizeof(struct tNode));
     if (*p == LNULL) return false;
-    else return true;           
+    else return true;
 }

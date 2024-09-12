@@ -1,29 +1,29 @@
 #include "shell.h"
-#include "p0lib.h"
 
 void shell();
 
-tCommand getCommands();
-
-int main() {
-    
+int main() 
+{
     shell();
 
     return 0;
 }
 
-void shell() {
+void shell() 
+{
     bool finished = false;
-    tListH history; int nArgs = 0;
-    char input[MAX_BUFFER_INPUT]; char* args[MAX_ARGS];
+    tListH history;
+    char input[MAX_BUFFER_INPUT]; 
+    tArgs args; args.len = 0;
 
     // History list
     createEmptyList(&history);
 
-    while (!finished) {
+    while (!finished) 
+    {
         printPrompt();
-        readInput(input, args, &nArgs, &history);
-        finished = processInput(args, nArgs, history);
+        readInput(input, &args, &history);
+        finished = processInput(args, history);
     }
 }
 

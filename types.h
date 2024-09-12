@@ -1,12 +1,31 @@
 #define MAX_BUFFER_INPUT 50
 #define MAX_ARGS 10
 
+typedef struct tArgs 
+{
+    char* array[MAX_ARGS];
+    int len;
+} tArgs;
+
+// HistoryList types
 typedef struct tItemH
 {
     char command[MAX_BUFFER_INPUT];
 } tItemH;
 
-typedef struct tCommand {
+typedef struct tNode *tPosH;
+
+struct tNode {
+    tItemH data;
+    tPosH next;
+    tPosH prev;
+};
+
+typedef tPosH tListH;
+
+typedef struct tCommand 
+{
     const char* name;
-    void (*func)(int,  char **);
+    void (*func)(tArgs, tListH);
 } tCommand;
+
