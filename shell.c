@@ -60,7 +60,9 @@ void processInput(tArgs args, tListH history, bool *end)
             return;
         }
 
-        printf("\033[1;31mUnknown command: %s\033[0m\n", args.array[0]);
+        tItemH input = getItem(last(history), history);
+
+        printf("\033[1;31mUnknown command: %s\033[0m\n", input.command);
     }
 }
 

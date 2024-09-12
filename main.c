@@ -27,5 +27,3 @@ void shell()
     }
     freeHistoryList(&history);
 }
-
-// falta free del histórico

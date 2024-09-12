@@ -2,11 +2,13 @@
 #include <string.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <time.h>
+#include <unistd.h>
+#include <sys/utsname.h>
 
 #define MAX_BUFFER_INPUT 50
 #define MAX_ARGS 10
 #define UNUSED(expr) do { (void)(expr); } while (0)
-
 
 typedef struct tArgs 
 {
@@ -29,11 +31,10 @@ struct tNode {
 };
 
 typedef tPosH tListH;
+// End historyList types
 
-typedef struct tCommand 
+typedef const struct tCommand 
 {
     const char* name;
     void (*func)(tArgs, tListH);
 } tCommand;
-
-// End historyList types

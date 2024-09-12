@@ -1,15 +1,14 @@
-#include "historyList.h"
-#include <time.h>
 #include "p0lib.h"
 
-#include <stdio.h>
-#include <stdlib.h>
+// start internal functions
 
-#include <string.h>
-#include <unistd.h>
-#include <sys/utsname.h>
-#include <stdbool.h>
+void date();
+void timeC();
 
+void autName();
+void autLogin();
+
+//end internal functions
 
 //Date [-t|-d]
 
