@@ -59,7 +59,6 @@ void processInput(tArgs args, tListH history, bool *end)
             exitCmd(end);
             return;
         }
-                
 
         printf("Unknown command: %s\n", args.array[0]);
     }
@@ -74,4 +73,15 @@ int stringCut(char* input, char* parts[])
     
     while ((parts[i]=strtok(NULL," \n\t"))!=NULL) i++;
     return i;
+}
+
+void freeHistoryList(tListH* list) 
+{
+    tPosH node;
+
+    while (!isEmptyList(*list))
+    {
+        node = last(*list);
+        deleteAtPosition(node, list);
+    }
 }
