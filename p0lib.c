@@ -31,11 +31,9 @@ void dateCmd (tArgs args, tListH history){
         case 2:
             if (strcmp(args.array[1], "-t") == 0)
             {
-                printf("%s", args.array[1]);
                 timeC();
             } else if (strcmp(args.array[1], "-d") == 0)
             {
-                printf("%s", args.array[1]);
                 date();
             } else {
                 printf("\033[1;31mError: date [-t|-d]\033[0m\n");

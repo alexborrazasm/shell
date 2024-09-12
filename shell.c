@@ -2,7 +2,7 @@
 
 void printPrompt() 
 {
-    printf("$ ");
+    printf("\033[1;32m$ \033[0m");
 }
 
 void readInput(char* input, tArgs *args, tListH *history)
@@ -60,7 +60,7 @@ void processInput(tArgs args, tListH history, bool *end)
             return;
         }
 
-        printf("Unknown command: %s\n", args.array[0]);
+        printf("\033[1;31mUnknown command: %s\033[0m\n", args.array[0]);
     }
 }
 
