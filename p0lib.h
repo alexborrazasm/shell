@@ -1,14 +1,22 @@
 #include <stdbool.h>
 
-void quit(bool *end);
+void exitCmd(bool *end);
+
 
 void dateCmd (tArgs args, tListH history);  //Date [-t|-d]
+void date();
+void timeC();
 
-/*
-void authorsCmd (int numParts, char* parts[]);//Authors [-l|-n]
+void pidCmd(tArgs args, tListH history);
+void ppidCmd(tArgs args, tListH history);
+
+void exitCmd(bool *end);
+
+void authorsCmd (tArgs args, tListH history);
 void autName();
 void autLogin();
 
+/*
 void exitCmd(int numParts, bool *finished);//Exit/Quit/Bye
 void exit(bool *finished);
 

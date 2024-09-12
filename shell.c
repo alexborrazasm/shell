@@ -32,7 +32,11 @@ void processInput(tArgs args, tListH history, bool *end)
 {
     // string name , void name
     tCommand commands[] = {
-    {"Date", dateCmd}
+    {"date", dateCmd},
+    {"authors", authorsCmd},
+    {"pid", pidCmd},
+    {"ppid", ppidCmd},
+    
     };
 
     const int nCommands = sizeof(commands) / sizeof(commands[0]);
@@ -52,7 +56,7 @@ void processInput(tArgs args, tListH history, bool *end)
             strcmp("exit", args.array[0]) == 0 ||
             strcmp("quit", args.array[0]) == 0 ) 
         {
-            quit(end);
+            exitCmd(end);
             return;
         }
                 

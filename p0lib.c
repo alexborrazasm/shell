@@ -1,48 +1,46 @@
 #include "historyList.h"
-/*
+#include <time.h>
+#include "p0lib.h"
+
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
+
 #include <string.h>
 #include <unistd.h>
 #include <sys/utsname.h>
 #include <stdbool.h>
-*/
 
-void quit(bool *end) 
-{
-    *end = true;
-}
 
-void dateCmd (tArgs args, tListH history)
-{
-    UNUSED(args); UNUSED(history);
-    puts("esta es la data");
-}
 //Date [-t|-d]
 
-/*
-void dateCmd (int numParts, char* parts[]){
-    if (numParts > 2)
+void dateCmd (tArgs args, tListH history){
+    UNUSED(history);
+    if (args.len > 2)
     {
+        
         printf("\033[1;31mError: date [-t|-d]\033[0m\n"); //Esto en principio saca en rojo el texto
         return;
     } else {
-        switch (numParts)
+        switch (args.len)
         {
         case 1:
             date();
-            time();
+            timeC();
             break;
 
         case 2:
-            if (srtcmp(parts[1], "-t"))
+            if (strcmp(args.array[1], "-t") == 0)
             {
-                time();
-            } else if (srtcmp(parts[1], "-d"))
+                printf("%s", args.array[1]);
+                timeC();
+            } else if (strcmp(args.array[1], "-d") == 0)
             {
+                printf("%s", args.array[1]);
                 date();
+            } else {
+                printf("\033[1;31mError: date [-t|-d]\033[0m\n");
             }
+
             break;
         
         default:
@@ -59,7 +57,6 @@ void date(){
     time(&now);
     if (now == -1){
         perror("Error al obtener la hora:");
-        return;
     }
 
     struct tm *local = localtime(&now);
@@ -71,15 +68,14 @@ void date(){
     printf("Hoy es %d/%d/%d\n", day, month, year);
 }
 
-void time(){
-
+void timeC(){   //Lo nombro así para que no choque con
+                //la función time
     int hours, minutes, seconds;
     time_t now;
     time(&now);
 
     if (now == -1){
         perror("Error al obtener la fecha:");
-        return;
     }
 
     struct tm *local = localtime(&now);
@@ -94,13 +90,14 @@ void time(){
 
 //Authors [-l|-n]
 
-void authorsCmd (int numParts, char* parts[]){
-    if (numParts > 2)
+void authorsCmd (tArgs args, tListH history){
+    UNUSED(history);
+    if (args.len > 2)
     {
         printf("\033[1;31mError: authors [-l|-n]\033[0m\n");
         return;
     } else {
-        switch (numParts)
+        switch (args.len)
         {
         case 1:
             autName();
@@ -108,12 +105,14 @@ void authorsCmd (int numParts, char* parts[]){
             break;
 
         case 2:
-            if (srtcmp(parts[1], "-l"))
+            if (strcmp(args.array[1], "-l") == 0)
             {
                 autLogin();
-            } else if (srtcmp(parts[1], "-n"))
+            } else if (strcmp(args.array[1], "-n") == 0)
             {
                 autName();
+            } else {
+                printf("\033[1;31mError: authors [-l|-n]\033[0m\n");
             }
             break;
         
@@ -125,28 +124,19 @@ void authorsCmd (int numParts, char* parts[]){
 }
 
 void autName(){
-    printf("José Manuel Villar \t Alex Borrazás");
+    printf("José Manuel Villar \t Alex Borrazás\n");
 }
 
 void autLogin(){
-    prntf("jose.villarg@udc.es \t alexandre.bmancebo"); //Ponte el login aquí 
-}
-//Separo exit de exitCmd por si necesitamos usar solo
-//exit en algún punto
-void exitCmd(int numParts, bool *finished){
-      if (numParts != 1){
-        printf("\033[1;31mError: pid\033[0m");
-      } else{
-        exit(finished);
-      }
-}
-void exit(bool *finished){
-    *finished = true;
+    printf("jose.villarg@udc.es \t alexandre.bmancebo\n"); //Ponte el login aquí 
 }
 
-void pidCmd(int numParts, char* parts[]){
-      if (numParts != 1){
-        printf("\033[1;31mError: pid\033[0m");
+//Pid
+
+void pidCmd(tArgs args, tListH history){
+    UNUSED(history);
+    if (args.len != 1){
+        printf("\033[1;31mError: pid\033[0m\n");
     } else {
         int pid;
         pid = getpid();
@@ -154,14 +144,21 @@ void pidCmd(int numParts, char* parts[]){
     }
 }
 
+//Ppid
 
-void ppidCmd(int numParts, char* parts[]){
-    if (numParts != 1){
-        printf("\033[1;31mError: ppid\033[0m"); 
+void ppidCmd(tArgs args, tListH history){
+    UNUSED(history);
+    if (args.len != 1){
+        printf("\033[1;31mError: ppid\033[0m\n"); 
     } else {
         int ppid;
         ppid = getppid();
         printf("%d\n", ppid);
     }
 }
-*/
+
+//Quit, Bye, Exit
+
+void exitCmd(bool *end) {
+    *end = true;
+}
