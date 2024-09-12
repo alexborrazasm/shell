@@ -23,7 +23,7 @@ void shell()
     {
         printPrompt();
         readInput(input, &args, &history);
-        finished = processInput(args, history);
+        processInput(args, history, &finished);
     }
 }
 

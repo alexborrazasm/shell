@@ -28,7 +28,7 @@ void readInput(char* input, tArgs *args, tListH *history)
     args->len = stringCut(input, args->array);
 }
 
-bool processInput(tArgs args, tListH history)
+void processInput(tArgs args, tListH history, bool *end)
 {
     // string name , void name
     tCommand commands[] = {
@@ -44,13 +44,21 @@ bool processInput(tArgs args, tListH history)
             if (strcmp(commands[i].name, args.array[0]) == 0) 
             {
                 commands[i].func(args, history);
-                return false;
+                return;
             }
         }
+
+        if (strcmp("bye",  args.array[0]) == 0 ||
+            strcmp("exit", args.array[0]) == 0 ||
+            strcmp("quit", args.array[0]) == 0 ) 
+        {
+            quit(end);
+            return;
+        }
+                
+
         printf("Unknown command: %s\n", args.array[0]);
     }
-
-    return false;
 }
 
 int stringCut(char* input, char* parts[]) 

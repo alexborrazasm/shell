@@ -1,7 +1,5 @@
 #include "historyList.h"
 
-#define UNUSED(expr) do { (void)(expr); } while (0)
-
 bool createNode(tPosH* p);
 
 void createEmptyList(tListH* L) 

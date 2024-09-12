@@ -1,5 +1,7 @@
 #include <stdbool.h>
 
+void quit(bool *end);
+
 void dateCmd (tArgs args, tListH history);  //Date [-t|-d]
 
 /*

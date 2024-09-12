@@ -1,3 +1,5 @@
+#include "historyList.h"
+/*
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -5,9 +7,16 @@
 #include <unistd.h>
 #include <sys/utsname.h>
 #include <stdbool.h>
+*/
+
+void quit(bool *end) 
+{
+    *end = true;
+}
 
 void dateCmd (tArgs args, tListH history)
 {
+    UNUSED(args); UNUSED(history);
     puts("esta es la data");
 }
 //Date [-t|-d]

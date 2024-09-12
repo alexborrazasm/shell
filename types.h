@@ -1,5 +1,12 @@
+#include <stdlib.h>
+#include <string.h>
+#include <stdbool.h>
+#include <stdio.h>
+
 #define MAX_BUFFER_INPUT 50
 #define MAX_ARGS 10
+#define UNUSED(expr) do { (void)(expr); } while (0)
+
 
 typedef struct tArgs 
 {
@@ -7,7 +14,7 @@ typedef struct tArgs
     int len;
 } tArgs;
 
-// HistoryList types
+// Start historyList types
 typedef struct tItemH
 {
     char command[MAX_BUFFER_INPUT];
@@ -29,3 +36,4 @@ typedef struct tCommand
     void (*func)(tArgs, tListH);
 } tCommand;
 
+// End historyList types
