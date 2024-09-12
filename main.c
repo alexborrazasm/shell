@@ -25,6 +25,7 @@ void shell()
         readInput(input, &args, &history);
         processInput(args, history, &finished);
     }
+    freeHistoryList(&history);
 }
 
 // falta free del histórico
