@@ -28,15 +28,15 @@ void readInput(char* input, tArgs *args, tListH *history)
     args->len = stringCut(input, args->array);
 }
 
-void processInput(tArgs args, tListH history, bool *end)
+void processInput(tArgs args, tListH historic, bool *end)
 {
     // string name , void name
     tCommand commands[] = {
-    {"date", dateCmd},
-    {"authors", authorsCmd},
-    {"pid", pidCmd},
-    {"ppid", ppidCmd},
-    
+    {"date", cmdDate},
+    {"authors", cmdAuthors},
+    {"pid", cmdPid},
+    {"ppid", cmdPpid},
+    {"historic", cmdHistoric},
     };
 
     const int nCommands = sizeof(commands) / sizeof(commands[0]);
@@ -47,7 +47,7 @@ void processInput(tArgs args, tListH history, bool *end)
         {
             if (strcmp(commands[i].name, args.array[0]) == 0) 
             {
-                commands[i].func(args, history);
+                commands[i].func(args, historic);
                 return;
             }
         }
@@ -56,11 +56,11 @@ void processInput(tArgs args, tListH history, bool *end)
             strcmp("exit", args.array[0]) == 0 ||
             strcmp("quit", args.array[0]) == 0 ) 
         {
-            exitCmd(end);
+            cmdExit(end);
             return;
         }
 
-        tItemH input = getItem(last(history), history);
+        tItemH input = getItem(last(historic), historic);
 
         printf("\033[1;31mUnknown command: %s\033[0m\n", input.command);
     }
