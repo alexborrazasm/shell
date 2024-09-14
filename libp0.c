@@ -8,6 +8,9 @@ void timeC();
 void autName();
 void autLogin();
 
+void getcwdAux();
+void chdirAux(char *path);
+
 //end internal functions
 
 //Date [-t|-d]
@@ -53,8 +56,9 @@ void date(){
     time_t now;
     time(&now);
     if (now == -1){
-        perror("Error al obtener la hora:");
+        perror("\033[1;31mError al obtener la hora\033[0m");
     }
+    
 
     struct tm *local = localtime(&now);
 
@@ -72,7 +76,7 @@ void timeC(){   //Lo nombro así para que no choque con
     time(&now);
 
     if (now == -1){
-        perror("Error al obtener la fecha:");
+        perror("\033[1;31mError al obtener la fecha\033[0m");
     }
 
     struct tm *local = localtime(&now);
@@ -160,8 +164,58 @@ void cmdExit(bool *end) {
 }
 
 void cmdHistoric(tArgs args, tListH historic) {
+    UNUSED(historic);
+    UNUSED(args);
 
 }
+
+
+void cmdChdir (tArgs args, tListH historic){
+  UNUSED(historic);
+    if (args.len > 2)
+    {
+        printf("\033[1;31mError: chdir [path]\033[0m\n");
+        return;
+    } else {
+        switch (args.len)
+        {
+        case 1:
+            getcwdAux();
+            break;
+
+        case 2:
+            chdirAux(args.array[1]);
+            break;
+        
+        default:
+            break;
+        }
+    }
+}
+
+void getcwdAux(){
+    long max_path_length;
+
+    // Consultar el valor de _PC_PATH_MAX para el directorio actual (tamaño máximo
+    //de un path)
+    max_path_length = pathconf(".", _PC_PATH_MAX);
+
+    char directorio_actual[max_path_length];
+    if (getcwd(directorio_actual, sizeof(directorio_actual)) != NULL){
+        printf("Directorio actual \033[1;34m%s\033[0m\n", directorio_actual);
+    } else {
+        perror("\033[1;31mError al mostrar el directorio actual\033[0m");
+    }
+}
+
+void chdirAux(char *path){
+    if (chdir(path)==0){
+        printf("Directorio actual \033[1;34m%s\033[0m\n", path);
+    } else {
+        perror("\033[1;31mError al cambiar el directorio\033[0m");
+    }
+}
+
 
 /*
 
