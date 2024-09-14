@@ -39,7 +39,7 @@ void processInput(tArgs args, tListH historic, bool *end)
     {"ppid", cmdPpid},
     {"historic", cmdHistoric},
     {"chdir", cmdChdir},
-    {"infosys", cmdInfisys},
+    {"infosys", cmdInfosys},
     };
 
     const int nCommands = sizeof(commands) / sizeof(commands[0]);

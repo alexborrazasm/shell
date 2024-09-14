@@ -229,34 +229,40 @@ void printHistoric(tListH historic)
     }
 }
 
-void printHistoricN(tListH historic, int n) // mal
+void printHistoricN(tListH historic, int n)
 {
     tItemH item; tPosH p; int i = 1;
 
-    if (!isEmptyList(historic))
+    if (n > 0)  // atoi("letter") return 0 
     {
-        // Search -N command
-        p = last(historic);
-        
-        for (; i < n; i++)
-        {   
-            if (p != LNULL)
-                p = previous(p, historic);
-            else // Loop list
+        if (!isEmptyList(historic))
+        {
+            // Search -N command
+            p = last(historic);
+            
+            for (; i < n; i++)
+            {   
+                if (p != LNULL)
+                    p = previous(p, historic);
+                else // Loop list
+                {
+                    p = first(historic);
+                    break;
+                }
+            }
+            // Print
+            for(; p != LNULL; p = next(p, historic)) 
             {
-                p = first(historic);
-                break;
+                item = getItem(p, historic);
+
+                puts(item.command);
             }
         }
-        // Print
-        for(; p != LNULL; p = next(p, historic)) 
-        {
-            item = getItem(p, historic);
-
-            puts(item.command);
-        }
-    
-    }    
+    }
+    else
+    {
+        puts("\033[1;31mError: historic: Invalid argument\033[0m");
+    }
 }
 
 void callHistoric(tListH historic, int n) // cooking ;)
@@ -317,11 +323,11 @@ void chdirAux(char *path){
     }
 }
 
-/********************************************************************************************/
+/******************************************************************************/
 // infosys
 void infosysAux();
 
-void cmdInfisys (tArgs args, tListH historic){
+void cmdInfosys (tArgs args, tListH historic){
     UNUSED(historic);
     if (args.len != 1)
     {
