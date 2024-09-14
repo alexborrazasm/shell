@@ -24,8 +24,12 @@ tPosH last(tListH L)
 
 tPosH previous(tPosH p, tListH L) 
 {
-    UNUSED(L);
-    return p->prev;
+    if (p->prev == last(L))
+    {
+        return LNULL;
+    }
+    else
+        return p->prev;
 }
 
 tPosH next(tPosH p, tListH L) 

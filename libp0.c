@@ -178,14 +178,14 @@ void printHistoric(tListH historic);
 void printHistoricN(tListH historic, int n);
 void callHistoric(tListH historic, int n);
 
-void cmdHistoric(tArgs args, tListH historic)  // revisar
+void cmdHistoric(tArgs args, tListH historic)
 {
     if (args.len == 1) // Do not have argument
     {
         printHistoric(historic);
         return;
     }
-    else if (args.len == 2) // Have argument
+    else if (args.len == 2) // Have 1 argument
     {
         if (args.array[1][0] != '-') // historic N
         {
@@ -194,7 +194,7 @@ void cmdHistoric(tArgs args, tListH historic)  // revisar
         }
         else // historic -N
         {
-            if (strlen(args.array[1]) == 2) 
+            if (strlen(args.array[1]) > 1) 
             {
                 printHistoricN(historic, atoi(&args.array[1][1]));
                 return;
@@ -231,8 +231,32 @@ void printHistoric(tListH historic)
 
 void printHistoricN(tListH historic, int n) // mal
 {
-    UNUSED(historic);
-    UNUSED(n);
+    tItemH item; tPosH p; int i = 1;
+
+    if (!isEmptyList(historic))
+    {
+        // Search -N command
+        p = last(historic);
+        
+        for (; i < n; i++)
+        {   
+            if (p != LNULL)
+                p = previous(p, historic);
+            else // Loop list
+            {
+                p = first(historic);
+                break;
+            }
+        }
+        // Print
+        for(; p != LNULL; p = next(p, historic)) 
+        {
+            item = getItem(p, historic);
+
+            puts(item.command);
+        }
+    
+    }    
 }
 
 void callHistoric(tListH historic, int n) // cooking
