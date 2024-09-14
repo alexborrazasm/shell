@@ -12,3 +12,6 @@ void cmdPid(tArgs args, tListH historic);
 void cmdPpid(tArgs args, tListH historic);
 
 void cmdAuthors (tArgs args, tListH historic);
+
+void cmdChdir (tArgs args, tListH historic);
+

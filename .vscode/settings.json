@@ -3,6 +3,9 @@
         "stdio.h": "c",
         "utsname.h": "c",
         "unistd.h": "c",
-        "historiclist.h": "c"
+        "historiclist.h": "c",
+        "libp0.h": "c",
+        "limits.h": "c",
+        "syslimits.h": "c"
     }
 }

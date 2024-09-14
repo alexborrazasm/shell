@@ -33,11 +33,12 @@ void processInput(tArgs args, tListH historic, bool *end)
     // string name , void name
     tCommand commands[] = 
     {
-        {"date", cmdDate},
-        {"authors", cmdAuthors},
-        {"pid", cmdPid},
-        {"ppid", cmdPpid},
-        {"historic", cmdHistoric},
+    {"date", cmdDate},
+    {"authors", cmdAuthors},
+    {"pid", cmdPid},
+    {"ppid", cmdPpid},
+    {"historic", cmdHistoric},
+    {"chdir", cmdChdir},
     };
 
     const int nCommands = sizeof(commands) / sizeof(commands[0]);
