@@ -16,3 +16,5 @@ void cmdAuthors (tArgs args, tListH historic);
 
 void cmdChdir (tArgs args, tListH historic);
 
+void cmdInfisys (tArgs args, tListH historic);
+
