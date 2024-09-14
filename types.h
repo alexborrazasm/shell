@@ -10,7 +10,7 @@
 #define MAX_ARGS 10
 #define UNUSED(expr) do { (void)(expr); } while (0)
 
-typedef struct tArgs 
+typedef struct tArg
 {
     char* array[MAX_ARGS];
     int len;

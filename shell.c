@@ -5,7 +5,7 @@ void printPrompt()
     printf("\033[1;32m$ \033[0m");
 }
 
-void readInput(char* input, tArgs *args, tListH *history)
+void readInput(char* input, tArgs *args, tListH *history) 
 {
     tItemH item; int len;
 
@@ -16,7 +16,7 @@ void readInput(char* input, tArgs *args, tListH *history)
     
     if (len > 0 && input[len - 1] == '\n') 
     {
-    input[len - 1] = '\0';  // Remove '\n'
+        input[len - 1] = '\0';  // Remove '\n'
     }
 
     // Copy console input to history item
@@ -31,12 +31,13 @@ void readInput(char* input, tArgs *args, tListH *history)
 void processInput(tArgs args, tListH historic, bool *end)
 {
     // string name , void name
-    tCommand commands[] = {
-    {"date", cmdDate},
-    {"authors", cmdAuthors},
-    {"pid", cmdPid},
-    {"ppid", cmdPpid},
-    {"historic", cmdHistoric},
+    tCommand commands[] = 
+    {
+        {"date", cmdDate},
+        {"authors", cmdAuthors},
+        {"pid", cmdPid},
+        {"ppid", cmdPpid},
+        {"historic", cmdHistoric},
     };
 
     const int nCommands = sizeof(commands) / sizeof(commands[0]);
@@ -56,25 +57,15 @@ void processInput(tArgs args, tListH historic, bool *end)
             strcmp("exit", args.array[0]) == 0 ||
             strcmp("quit", args.array[0]) == 0 ) 
         {
-            cmdExit(end);
+            cmdExit(args, end);
             return;
         }
 
         tItemH input = getItem(last(historic), historic);
 
-        printf("\033[1;31mUnknown command: %s\033[0m\n", input.command);
+        printf("\033[1;31mshell: %s: command not found...\033[0m\n", 
+                input.command);
     }
-}
-
-int stringCut(char* input, char* parts[]) 
-{
-    int i=1;
-
-    if ((parts[0]=strtok(input," \n\t"))==NULL)
-    return 0;
-    
-    while ((parts[i]=strtok(NULL," \n\t"))!=NULL) i++;
-    return i;
 }
 
 void freeHistoryList(tListH* list) 

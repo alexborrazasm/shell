@@ -1,6 +1,8 @@
 #include "historicList.h"
 
-void cmdExit(bool *end);//Exit/Quit/Bye
+int stringCut(char* input, char* parts[]);
+
+void cmdExit(tArgs args, bool *end);//Exit/Quit/Bye
 
 void cmdHistoric(tArgs args, tListH historic);
 

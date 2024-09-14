@@ -1,25 +1,32 @@
 #include "libp0.h"
 
-// start internal functions
+int stringCut(char* input, char* parts[]) 
+{
+    int i=1;
+
+    if ((parts[0]=strtok(input," \n\t"))==NULL)
+    return 0;
+    
+    while ((parts[i]=strtok(NULL," \n\t"))!=NULL) i++;
+    return i;
+}
+
+/******************************************************************************/
+// date [-t|-d]
 
 void date();
+
 void timeC();
-
-void autName();
-void autLogin();
-
-//end internal functions
-
-//Date [-t|-d]
 
 void cmdDate (tArgs args, tListH historic){
     UNUSED(historic);
     if (args.len > 2)
     {
-        
-        printf("\033[1;31mError: date [-t|-d]\033[0m\n"); //Esto en principio saca en rojo el texto
+        printf("\033[1;31mError: date [-t|-d]\033[0m\n"); 
         return;
-    } else {
+    } 
+    else 
+    {
         switch (args.len)
         {
         case 1:
@@ -43,8 +50,7 @@ void cmdDate (tArgs args, tListH historic){
         default:
             break;
         }
-    }
-      
+    }  
 }
 
 void date(){
@@ -84,8 +90,12 @@ void timeC(){   //Lo nombro así para que no choque con
     printf("Son las: %d:%d:%d\n", hours, minutes, seconds);
 }
 
+/******************************************************************************/
+// authors [-l|-n]
 
-//Authors [-l|-n]
+void autName();
+
+void autLogin();
 
 void cmdAuthors (tArgs args, tListH historic){
     UNUSED(historic);
@@ -125,10 +135,11 @@ void autName(){
 }
 
 void autLogin(){
-    printf("jose.villarg@udc.es \t alexandre.bmancebo\n"); //Ponte el login aquí 
+    printf("jose.villarg@udc.es \t alexandre.bmancebo\n");
 }
 
-//Pid
+/******************************************************************************/
+// pid
 
 void cmdPid(tArgs args, tListH historic){
     UNUSED(historic);
@@ -141,7 +152,8 @@ void cmdPid(tArgs args, tListH historic){
     }
 }
 
-//Ppid
+/******************************************************************************/
+// ppid
 
 void cmdPpid(tArgs args, tListH historic){
     UNUSED(historic);
@@ -154,13 +166,86 @@ void cmdPpid(tArgs args, tListH historic){
     }
 }
 
-//Quit, Bye, Exit
-void cmdExit(bool *end) {
-    *end = true;
+/******************************************************************************/
+// Quit Bye Exit
+
+void cmdExit(tArgs args, bool *end) 
+{   
+    if (args.len != 1)
+        printf("\033[1;31mError: %s\033[0m\n", args.array[0]);
+    else
+        *end = true;
 }
 
-void cmdHistoric(tArgs args, tListH historic) {
+/******************************************************************************/
+// historic [N|-N]
+void printHistoric(tListH historic);
 
+void printHistoricN(tListH historic, int n);
+
+void callHistoric(tListH historic, int n);
+
+void cmdHistoric(tArgs args, tListH historic)  // revisar
+{
+    if (args.len == 1) // Do not have argument
+    {
+        printHistoric(historic);
+        return;
+    }
+    else if (args.len == 2) // Have argument
+    {
+        if (args.array[1][0] != '-') // historic N
+        {
+            callHistoric(historic, atoi(&args.array[1][0]));
+            return;
+        }
+        else // historic -N
+        {
+            if (strlen(args.array[1]) == 2) 
+            {
+                printHistoricN(historic, atoi(&args.array[1][1]));
+                return;
+            }
+        }
+    }
+    // Remaining cases
+    printf("\033[1;31mError: %s: Invalid arguments\033[0m\n", 
+                args.array[0]);
+}
+
+void printHistoric(tListH historic)
+{
+    tItemH item; int acc = 1;
+
+    if (!isEmptyList(historic))
+    {
+        tPosH p = first(historic);
+
+        while (p != last(historic))
+        {   
+            item = getItem(p, historic);
+            printf("%d  %s\n", acc, item.command);
+
+            acc++;
+            p = next(p, historic);
+        }
+    }
+    else
+    {
+        puts("\033[1;31mError: historic: empty list\033[0m");
+    }
+}
+
+void printHistoricN(tListH historic, int n) // mal
+{
+    UNUSED(historic);
+    UNUSED(n);
+}
+
+void callHistoric(tListH historic, int n) // cooking
+{
+    UNUSED(historic);
+    UNUSED(n);
 }
 
 /*

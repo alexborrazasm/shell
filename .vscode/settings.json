@@ -2,6 +2,7 @@
     "files.associations": {
         "stdio.h": "c",
         "utsname.h": "c",
-        "unistd.h": "c"
+        "unistd.h": "c",
+        "historiclist.h": "c"
     }
 }
