@@ -13,10 +13,9 @@ int stringCut(char* input, char* parts[])
 
 /******************************************************************************/
 // date [-t|-d]
-
 void date();
-
 void timeC();
+
 void cmdDate (tArgs args, tListH historic){
     UNUSED(historic);
     if (args.len > 2)
@@ -92,9 +91,7 @@ void timeC(){   //Lo nombro así para que no choque con
 
 /******************************************************************************/
 // authors [-l|-n]
-
 void autName();
-
 void autLogin();
 
 void cmdAuthors (tArgs args, tListH historic){
@@ -140,7 +137,6 @@ void autLogin(){
 
 /******************************************************************************/
 // pid
-
 void cmdPid(tArgs args, tListH historic){
     UNUSED(historic);
     if (args.len != 1){
@@ -154,7 +150,6 @@ void cmdPid(tArgs args, tListH historic){
 
 /******************************************************************************/
 // ppid
-
 void cmdPpid(tArgs args, tListH historic){
     UNUSED(historic);
     if (args.len != 1){
@@ -180,9 +175,7 @@ void cmdExit(tArgs args, bool *end)
 /******************************************************************************/
 // historic [N|-N]
 void printHistoric(tListH historic);
-
 void printHistoricN(tListH historic, int n);
-
 void callHistoric(tListH historic, int n);
 
 void cmdHistoric(tArgs args, tListH historic)  // revisar
@@ -248,14 +241,12 @@ void callHistoric(tListH historic, int n) // cooking
     UNUSED(n);
 }
 
-
-
-}
+/******************************************************************************/
 
 void getcwdAux();
 void chdirAux(char *path);
 
-oid cmdChdir (tArgs args, tListH historic){
+void cmdChdir (tArgs args, tListH historic){
   UNUSED(historic);
     if (args.len > 2)
     {

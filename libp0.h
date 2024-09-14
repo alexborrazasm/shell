@@ -9,6 +9,7 @@ void cmdHistoric(tArgs args, tListH historic);
 void cmdDate (tArgs args, tListH historic);  //Date [-t|-d]
 
 void cmdPid(tArgs args, tListH historic);
+
 void cmdPpid(tArgs args, tListH historic);
 
 void cmdAuthors (tArgs args, tListH historic);
