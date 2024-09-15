@@ -22,7 +22,6 @@ typedef struct tArgs {
 typedef struct tNode *tPosH;
 typedef tPosH tListH;
 
-
 typedef struct tLists {
     tListH historic;
 } tLists;

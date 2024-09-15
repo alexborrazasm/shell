@@ -59,6 +59,18 @@ int getInput(char* input)
 
 void processInput(tLists L, bool *end)
 {
+    if (!isEmptyList(L.historic)) 
+    {
+        tItemH item = getItem(last(L.historic), L.historic);
+        tArgs args;
+        args.len = stringCut(item.command, args.array);
+
+        selectCommand(args, item.command, L, end);
+    }
+}
+
+void selectCommand(tArgs args, char* input, tLists L, bool *end) 
+{
     // string name , void name
     tCommand commands[] = 
     {
@@ -70,38 +82,29 @@ void processInput(tLists L, bool *end)
         {"chdir", cmdChdir},
         {"infosys", cmdInfosys},
     };
+    const int nCommands = sizeof(commands) / sizeof(commands[0]);
 
-    if (!isEmptyList(L.historic)) 
+    if (args.len > 0) 
     {
-        tArgs args;
-        tItemH input = getItem(last(L.historic), L.historic);
-        
-        args.len = stringCut(input.command, args.array);
-
-        const int nCommands = sizeof(commands) / sizeof(commands[0]);
-        
-        if (args.len > 0) 
+        for (int i = 0; i < nCommands; ++i) 
         {
-            for (int i = 0; i < nCommands; ++i) 
+            if (strcmp(commands[i].name, args.array[0]) == 0) 
             {
-                if (strcmp(commands[i].name, args.array[0]) == 0) 
-                {
-                    commands[i].func(args, L);
-                    return;
-                }
-            }
-
-            if (strcmp("bye",  args.array[0]) == 0 ||
-                strcmp("exit", args.array[0]) == 0 ||
-                strcmp("quit", args.array[0]) == 0 ) 
-            {
-                cmdExit(args, end);
+                commands[i].func(args, L);
                 return;
             }
-
-            printf("\033[1;31mshell: %s: command not found...\033[0m\n", 
-                    input.command);
         }
+
+        if (strcmp("bye",  args.array[0]) == 0 ||
+            strcmp("exit", args.array[0]) == 0 ||
+            strcmp("quit", args.array[0]) == 0 ) 
+        {
+            cmdExit(args, end);
+            return;
+        }
+
+        printf("\033[1;31mshell: %s: command not found...\033[0m\n", 
+                input);
     }
 }
 

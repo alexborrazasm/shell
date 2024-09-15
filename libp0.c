@@ -174,7 +174,7 @@ void cmdExit(tArgs args, bool *end)
 // historic [N|-N]
 void printHistoric(tListH historic);
 void printHistoricN(tListH historic, int n);
-void callHistoric(tListH historic, int n);
+void callHistoric(tLists L, int n);
 
 void cmdHistoric(tArgs args, tLists L)
 {
@@ -187,7 +187,7 @@ void cmdHistoric(tArgs args, tLists L)
     {
         if (args.array[1][0] != '-') // historic N
         {
-            callHistoric(L.historic, atoi(&args.array[1][0]));
+            callHistoric(L, atoi(&args.array[1][0]));
             return;
         }
         else // historic -N
@@ -262,10 +262,39 @@ void printHistoricN(tListH historic, int n)
     }
 }
 
-void callHistoric(tListH historic, int n) // cooking ;)
+void callHistoric(tLists L, int n)
 {
-    UNUSED(historic);
-    UNUSED(n);
+    if (!isEmptyList(L.historic))
+    {
+        tPosH p = first(L.historic);
+        tItemH item = getItem(p, L.historic);
+
+        // Search command by historic number
+        for (; p != LNULL; p = next(p, L.historic))
+        {
+            if (item.n == n)
+                break;
+
+            item = getItem(p, L.historic);
+        }
+
+        if (p == LNULL) // Not found command
+        {
+            printf("Not found %d command", n);
+            return;
+        }
+        
+        // Call command
+        tArgs args;
+
+        args.len = stringCut(item.command, args.array);
+
+        // Avoid looping reclusion
+        if (strcmp(args.array[0], "historic") != 0)
+            selectCommand(args, item.command, L, false);
+        else
+            puts("You can't call the historical with the historical");
+    }
 }
 
 /******************************************************************************/
