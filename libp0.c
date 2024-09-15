@@ -16,8 +16,10 @@ int stringCut(char* input, char* parts[])
 void date();
 void timeC();
 
-void cmdDate (tArgs args, tListH historic){
-    UNUSED(historic);
+void cmdDate (tArgs args, tLists L)
+{
+    UNUSED(L);
+
     if (args.len > 2)
     {
         printf("\033[1;31mError: date [-t|-d]\033[0m\n"); 
@@ -51,8 +53,8 @@ void cmdDate (tArgs args, tListH historic){
     }  
 }
 
-void date(){
-
+void date()
+{
     int day, month, year;
     time_t now;
     time(&now);
@@ -70,8 +72,8 @@ void date(){
     printf("Hoy es %d/%d/%d\n", day, month, year);
 }
 
-void timeC(){   //Lo nombro así para que no choque con
-                //la función time
+void timeC()
+{   //Lo nombro así para que no choque con la función time
     int hours, minutes, seconds;
     time_t now;
     time(&now);
@@ -94,8 +96,10 @@ void timeC(){   //Lo nombro así para que no choque con
 void autName();
 void autLogin();
 
-void cmdAuthors (tArgs args, tListH historic){
-    UNUSED(historic);
+void cmdAuthors (tArgs args, tLists L)
+{
+    UNUSED(L);
+
     if (args.len > 2)
     {
         printf("\033[1;31mError: authors [-l|-n]\033[0m\n");
@@ -137,8 +141,10 @@ void autLogin(){
 
 /******************************************************************************/
 // pid
-void cmdPid(tArgs args, tListH historic){
-    UNUSED(historic);
+void cmdPid(tArgs args, tLists L)
+{
+    UNUSED(L);
+
     if (args.len != 1){
         printf("\033[1;31mError: pid\033[0m\n");
     } else {
@@ -150,8 +156,10 @@ void cmdPid(tArgs args, tListH historic){
 
 /******************************************************************************/
 // ppid
-void cmdPpid(tArgs args, tListH historic){
-    UNUSED(historic);
+void cmdPpid(tArgs args, tLists L)
+{
+    UNUSED(L);
+
     if (args.len != 1){
         printf("\033[1;31mError: ppid\033[0m\n"); 
     } else {
@@ -178,25 +186,25 @@ void printHistoric(tListH historic);
 void printHistoricN(tListH historic, int n);
 void callHistoric(tListH historic, int n);
 
-void cmdHistoric(tArgs args, tListH historic)
+void cmdHistoric(tArgs args, tLists L)
 {
     if (args.len == 1) // Do not have argument
     {
-        printHistoric(historic);
+        printHistoric(L.historic);
         return;
     }
     else if (args.len == 2) // Have 1 argument
     {
         if (args.array[1][0] != '-') // historic N
         {
-            callHistoric(historic, atoi(&args.array[1][0]));
+            callHistoric(L.historic, atoi(&args.array[1][0]));
             return;
         }
         else // historic -N
         {
             if (strlen(args.array[1]) > 1) 
             {
-                printHistoricN(historic, atoi(&args.array[1][1]));
+                printHistoricN(L.historic, atoi(&args.array[1][1]));
                 return;
             }
         }
@@ -277,8 +285,10 @@ void callHistoric(tListH historic, int n) // cooking ;)
 void getcwdAux();
 void chdirAux(char *path);
 
-void cmdChdir (tArgs args, tListH historic){
-  UNUSED(historic);
+void cmdChdir (tArgs args, tLists L)
+{
+  UNUSED(L);
+
     if (args.len > 2)
     {
         printf("\033[1;31mError: chdir [path]\033[0m\n");
@@ -300,7 +310,8 @@ void cmdChdir (tArgs args, tListH historic){
     }
 }
 
-void getcwdAux(){
+void getcwdAux()
+{
     long max_path_length;
 
     // Consultar el valor de _PC_PATH_MAX para el directorio actual (tamaño máximo
@@ -315,7 +326,8 @@ void getcwdAux(){
     }
 }
 
-void chdirAux(char *path){
+void chdirAux(char *path)
+{
     if (chdir(path)==0){
         printf("Directorio actual \033[1;34m%s\033[0m\n", path);
     } else {
@@ -327,8 +339,10 @@ void chdirAux(char *path){
 // infosys
 void infosysAux();
 
-void cmdInfosys (tArgs args, tListH historic){
-    UNUSED(historic);
+void cmdInfosys (tArgs args, tLists L)
+{
+    UNUSED(L);
+
     if (args.len != 1)
     {
         printf("\033[1;31mError: infosys\033[0m\n");
@@ -337,7 +351,8 @@ void cmdInfosys (tArgs args, tListH historic){
     }
 }
 
-void infosysAux(){
+void infosysAux()
+{
     struct utsname info_sistema;    //Estructura que guarda info del sistema ;)
     if (uname(&info_sistema) == 0)
     {

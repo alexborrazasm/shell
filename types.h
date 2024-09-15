@@ -9,7 +9,7 @@ typedef struct tArgs
 typedef const struct tCommand 
 {
     const char* name;
-    void (*func)(tArgs, tListH);
+    void (*func)(tArgs, tLists);
 } tCommand;
 
 typedef struct tLists

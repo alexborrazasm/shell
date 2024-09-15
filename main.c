@@ -12,18 +12,16 @@ int main()
 void shell() 
 {
     bool finished = false;
-    tListH history;
-    char input[MAX_BUFFER_INPUT]; 
-    tArgs args; args.len = 0;
+    tLists L;
 
     // History list
-    createEmptyList(&history);
+    createEmptyList(&L.historic);
 
     while (!finished) 
     {
         printPrompt();
-        readInput(input, &args, &history);
-        processInput(args, history, &finished);
+        if (readInput(&L))
+            processInput(L, &finished);
     }
-    freeHistoryList(&history);
+    freeHistoryList(&L.historic);
 }

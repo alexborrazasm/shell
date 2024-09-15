@@ -2,8 +2,8 @@
 
 void printPrompt();
 
-void readInput(char* input, tArgs *args, tListH *history);
+bool readInput(tLists *L);
 
-void processInput(tArgs args, tListH history, bool *end);
+void processInput(tLists L, bool *end);
 
 void freeHistoryList(tListH* list);

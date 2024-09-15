@@ -1,16 +1,52 @@
 #include "shell.h"
 
+int getInput(char* input);
+
 void printPrompt() 
 {
     printf("\033[1;32m$ \033[0m");
 }
 
-void readInput(char* input, tArgs *args, tListH *history) 
+bool readInput(tLists *L) 
 {
-    tItemH item; int len;
+    char input[MAX_BUFFER_INPUT]; int len; tItemH item;
+
+    len = getInput(input);
+
+    if (len > 1)
+    {
+        // Copy console input to history item
+        strcpy(item.command, input);
+
+        if (isEmptyList(L->historic)) // The first element on historic
+        {
+            item.n = 1;
+        }
+        else
+        {
+            tPosH p = last(L->historic);
+            tItemH last = getItem(p, L->historic);
+
+            item.n = last.n + 1;
+        }
+
+        if (!insertItem(item, LNULL, &L->historic)) 
+        {
+            puts("Error: historic inset");
+            return false;
+        }
+            return true;
+    }       
+    return false;
+}
+
+int getInput(char* input)
+{
+    int len;
 
     // Get new console line
-    fgets(input, MAX_BUFFER_INPUT, stdin);
+    if (fgets(input, MAX_BUFFER_INPUT, stdin) == NULL)
+        perror("Error reading buffer\n");
 
     len = strlen(input);
     
@@ -18,55 +54,54 @@ void readInput(char* input, tArgs *args, tListH *history)
     {
         input[len - 1] = '\0';  // Remove '\n'
     }
-
-    // Copy console input to history item
-    strcpy(item.command, input);
-    // Insert it
-    if (!insertItem(item, LNULL, history))
-        puts("Malloc error");
-    // Get command arguments
-    args->len = stringCut(input, args->array);
+    return len;
 }
 
-void processInput(tArgs args, tListH historic, bool *end)
+void processInput(tLists L, bool *end)
 {
     // string name , void name
     tCommand commands[] = 
     {
-    {"date", cmdDate},
-    {"authors", cmdAuthors},
-    {"pid", cmdPid},
-    {"ppid", cmdPpid},
-    {"historic", cmdHistoric},
-    {"chdir", cmdChdir},
-    {"infosys", cmdInfosys},
+        {"date", cmdDate},
+        {"authors", cmdAuthors},
+        {"pid", cmdPid},
+        {"ppid", cmdPpid},
+        {"historic", cmdHistoric},
+        {"chdir", cmdChdir},
+        {"infosys", cmdInfosys},
     };
 
-    const int nCommands = sizeof(commands) / sizeof(commands[0]);
-    
-    if (args.len > 0) 
+    if (!isEmptyList(L.historic)) 
     {
-        for (int i = 0; i < nCommands; ++i) 
+        tArgs args;
+        tItemH input = getItem(last(L.historic), L.historic);
+        
+        args.len = stringCut(input.command, args.array);
+
+        const int nCommands = sizeof(commands) / sizeof(commands[0]);
+        
+        if (args.len > 0) 
         {
-            if (strcmp(commands[i].name, args.array[0]) == 0) 
+            for (int i = 0; i < nCommands; ++i) 
             {
-                commands[i].func(args, historic);
+                if (strcmp(commands[i].name, args.array[0]) == 0) 
+                {
+                    commands[i].func(args, L.historic);
+                    return;
+                }
+            }
+
+            if (strcmp("bye",  args.array[0]) == 0 ||
+                strcmp("exit", args.array[0]) == 0 ||
+                strcmp("quit", args.array[0]) == 0 ) 
+            {
+                cmdExit(args, end);
                 return;
             }
+
+            printf("\033[1;31mshell: %s: command not found...\033[0m\n", 
+                    input.command);
         }
-
-        if (strcmp("bye",  args.array[0]) == 0 ||
-            strcmp("exit", args.array[0]) == 0 ||
-            strcmp("quit", args.array[0]) == 0 ) 
-        {
-            cmdExit(args, end);
-            return;
-        }
-
-        tItemH input = getItem(last(historic), historic);
-
-        printf("\033[1;31mshell: %s: command not found...\033[0m\n", 
-                input.command);
     }
 }
 
