@@ -1,6 +1,8 @@
-#include "types.h"
+#ifndef LIBP0_H
+#define LIBP0_H
 
-int stringCut(char* input, char* parts[]);
+#include "types.h"  // For tLists and tArgs
+#include "historicList.h"
 
 void cmdExit(tArgs args, bool *end);//Exit/Quit/Bye
 
@@ -17,4 +19,4 @@ void cmdAuthors (tArgs args, tLists L);
 void cmdChdir (tArgs args, tLists L);
 
 void cmdInfosys (tArgs args, tLists L);
-
+#endif
