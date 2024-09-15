@@ -86,7 +86,7 @@ void processInput(tLists L, bool *end)
             {
                 if (strcmp(commands[i].name, args.array[0]) == 0) 
                 {
-                    commands[i].func(args, L.historic);
+                    commands[i].func(args, L);
                     return;
                 }
             }

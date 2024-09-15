@@ -222,10 +222,10 @@ void printHistoric(tListH historic)
     {
         tPosH p = first(historic);
 
-        while (p != last(historic))
+        while (p != LNULL)
         {   
             item = getItem(p, historic);
-            printf("%d  %s\n", acc, item.command);
+            printf("%d  %s\n", item.n, item.command);
 
             acc++;
             p = next(p, historic);
@@ -262,8 +262,7 @@ void printHistoricN(tListH historic, int n)
             for(; p != LNULL; p = next(p, historic)) 
             {
                 item = getItem(p, historic);
-
-                puts(item.command);
+                printf("%d  %s\n", item.n, item.command);
             }
         }
     }

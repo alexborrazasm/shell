@@ -6,13 +6,14 @@ typedef struct tArgs
     int len;
 } tArgs;
 
+typedef struct tLists
+{
+    tListH historic;
+} tLists;
+
 typedef const struct tCommand 
 {
     const char* name;
     void (*func)(tArgs, tLists);
 } tCommand;
 
-typedef struct tLists
-{
-    tListH historic;
-} tLists;
