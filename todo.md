@@ -17,9 +17,7 @@
 
 # to do
 
-    - [] historic [N|-N]
     - [] open [file] mode
     - [] close [df]
     - [] dup [df]
-    - [] infosys
     - [] help [cmd]

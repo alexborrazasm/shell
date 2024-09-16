@@ -349,7 +349,8 @@ void chdirAux(char *path)
     if (chdir(path)==0){
         printf("Directorio actual \033[1;34m%s\033[0m\n", path);
     } else {
-        perror("\033[1;31mError al cambiar el directorio\033[0m");
+        fprintf(stderr,"\033[1;31mError al cambiar el directorio: %s\033[0m\n",
+                strerror(errno));
     }
 }
 
@@ -374,11 +375,14 @@ void infosysAux()
     struct utsname info_sistema;    //Estructura que guarda info del sistema ;)
     if (uname(&info_sistema) == 0)
     {
-        printf("Nombre del sistema operativo:\t\033[1;34m%s\033[0m\n", info_sistema.sysname);
-        printf("Nombre del nodo (host):\t\t\033[1;34m%s\033[0m\n", info_sistema.nodename);
-        printf("Versión del sistema operativo:\t\033[1;34m%s\033[0m\n", info_sistema.release);
-        printf("Información de la versión:\t\033[1;34m%s\033[0m\n", info_sistema.version);
-        printf("Tipo de hardware (arquitectura):\033[1;34m%s\033[0m\n", info_sistema.machine);
+        printf("Nombre del sistema operativo:\t\033[1;34m%s\033[0m\n"
+               "Nombre del nodo (host):\t\t\033[1;34m%s\033[0m\n"
+               "Versión del sistema operativo:\t\033[1;34m%s\033[0m\n"
+               "Información de la versión:\t\033[1;34m%s\033[0m\n"
+               "Tipo de hardware (arquitectura):\033[1;34m%s\033[0m\n",
+                info_sistema.sysname, info_sistema.nodename,
+                info_sistema.release, info_sistema.version,
+                info_sistema.machine);
     } else {
         perror("\033[1;31mError al obtener información del sistema\033[0m\n");
     }

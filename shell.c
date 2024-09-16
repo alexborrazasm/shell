@@ -1,5 +1,18 @@
 #include "shell.h"
 
+// string name , void name
+tCommand commands[] = 
+{
+    {"date", cmdDate, "help"},
+    {"authors", cmdAuthors, "help"},
+    {"pid", cmdPid, "help"},
+    {"ppid", cmdPpid, "help"},
+    {"historic", cmdHistoric, "help"},
+    {"cd", cmdChdir, "help"},
+    {"infosys", cmdInfosys, "help"},
+};
+
+
 int getInput(char* input);
 
 void printPrompt() 
@@ -71,17 +84,6 @@ void processInput(tLists L, bool *end)
 
 void selectCommand(tArgs args, char* input, tLists L, bool *end) 
 {
-    // string name , void name
-    tCommand commands[] = 
-    {
-        {"date", cmdDate},
-        {"authors", cmdAuthors},
-        {"pid", cmdPid},
-        {"ppid", cmdPpid},
-        {"historic", cmdHistoric},
-        {"chdir", cmdChdir},
-        {"infosys", cmdInfosys},
-    };
     const int nCommands = sizeof(commands) / sizeof(commands[0]);
 
     if (args.len > 0) 

@@ -8,6 +8,7 @@
 #include <time.h>
 #include <unistd.h>
 #include <sys/utsname.h>
+#include <errno.h>
 
 #define MAX_BUFFER_INPUT 50
 #define MAX_ARGS 10
@@ -25,11 +26,13 @@ typedef tPosH tListH;
 typedef struct tLists {
     tListH historic;
 } tLists;
+// End forward declaration for tListH
 
 typedef const struct tCommand 
 {
     const char* name;
     void (*func)(tArgs, tLists);
+    const char* help;
 } tCommand;
 
 #endif
