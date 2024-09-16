@@ -55,11 +55,19 @@ bool readInput(tLists *L)
 
 int getInput(char* input)
 {
-    int len;
+    int len, tabs;
 
     // Get new console line
     if (fgets(input, MAX_BUFFER_INPUT, stdin) == NULL)
         perror("Error reading buffer\n");
+
+    // Remove initial tabs
+    tabs = strspn(input, " \t");
+    if (tabs > 0) 
+    {
+        // Shift the remaining characters to the left to overwrite the tabs
+        memmove(input, input + tabs, strlen(input) - tabs + 1);
+    }
 
     len = strlen(input);
     

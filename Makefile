@@ -4,8 +4,8 @@ CFLAGS = -Wall -Wextra -g
 LDFLAGS = 
 
 # Targets
-main.out: main.c types.h shell.h historicList.h libp0.h shell.o historicList.o libp0.o
-	$(CC) $(CFLAGS) -o main.out main.c shell.o historicList.o libp0.o
+p0.out: p0.c types.h shell.h historicList.h libp0.h shell.o historicList.o libp0.o
+	$(CC) $(CFLAGS) -o p0.out p0.c shell.o historicList.o libp0.o
 
 shell.o: types.h shell.h libp0.h shell.c
 	$(CC) $(CFLAGS) -c shell.c

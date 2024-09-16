@@ -200,7 +200,7 @@ void cmdHistoric(tArgs args, tLists L)
         }
     }
     // Remaining cases
-    printf("\033[1;31mError: %s: Invalid arguments\033[0m\n", 
+    printf("\033[1;31mError: %s: Invalid arguments\033[0m/n", 
                 args.array[0]);
 }
 
@@ -271,7 +271,7 @@ void callHistoric(tLists L, int n)
 
         // Search command by historic number
         for (; p != LNULL; p = next(p, L.historic))
-        {
+        {   // can't call actual cmd command
             if (item.n == n)
                 break;
 
@@ -280,7 +280,7 @@ void callHistoric(tLists L, int n)
 
         if (p == LNULL) // Not found command
         {
-            printf("Not found %d command", n);
+            printf("Not found command number %d in historic\n", n);
             return;
         }
         
@@ -290,10 +290,19 @@ void callHistoric(tLists L, int n)
         args.len = stringCut(item.command, args.array);
 
         // Avoid looping reclusion
-        if (strcmp(args.array[0], "historic") != 0)
-            selectCommand(args, item.command, L, false);
-        else
-            puts("You can't call the historical with the historical");
+        if (strcmp(args.array[0], "historic") == 0) 
+        {
+            if (args.len == 2)  // have 1 argument
+            {
+                if (args.array[0][0] != '-') // not historic -N is historic N
+                {
+                    puts("You can't call the historical with the historical");
+                    return;
+                }
+            } 
+        }
+        // All right
+        selectCommand(args, item.command, L, false);
     }
 }
 
@@ -305,7 +314,7 @@ void chdirAux(char *path);
 
 void cmdChdir (tArgs args, tLists L)
 {
-  UNUSED(L);
+    UNUSED(L);
 
     if (args.len > 2)
     {
