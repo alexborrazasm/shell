@@ -139,3 +139,8 @@ int stringCut(char* input, char* parts[])
     while ((parts[i]=strtok(NULL," \n\t"))!=NULL) i++;
     return i;
 }
+
+void printError(char* name,  char* msg)
+{
+    printf("\033[1;31mError: %s: %s\033[0m\n", name, msg);
+}

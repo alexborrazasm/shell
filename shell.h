@@ -17,4 +17,6 @@ void freeHistoryList(tListH* list);
 
 int stringCut(char* input, char* parts[]);
 
+void printError(char* name,  char* msg);
+
 #endif // SHELL_H

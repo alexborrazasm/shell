@@ -10,36 +10,31 @@ void cmdDate (tArgs args, tLists L)
 {
     UNUSED(L);
 
-    if (args.len > 2)
+    switch (args.len)
     {
-        printf("\033[1;31mError: date [-t|-d]\033[0m\n"); 
-        return;
-    } 
-    else 
-    {
-        switch (args.len)
+    case 1:
+        date();
+        timeC();
+        break;
+
+    case 2:
+        if (strcmp(args.array[1], "-t") == 0)
         {
-        case 1:
-            date();
             timeC();
-            break;
-
-        case 2:
-            if (strcmp(args.array[1], "-t") == 0)
-            {
-                timeC();
-            } else if (strcmp(args.array[1], "-d") == 0)
-            {
-                date();
-            } else {
-                printf("\033[1;31mError: date [-t|-d]\033[0m\n");
-            }
-
-            break;
-        
-        default:
-            break;
         }
+        else if (strcmp(args.array[1], "-d") == 0)
+        {
+            date();
+        }
+        else
+        {
+            printError("date", "Invalid argument");
+        }
+        break;
+        
+    default: // args,len < 2
+        printError("date", "Invalid num of arguments");
+        break;
     }  
 }
 
@@ -52,7 +47,6 @@ void date()
         perror("\033[1;31mError al obtener la hora\033[0m");
     }
     
-
     struct tm *local = localtime(&now);
 
     day = local->tm_mday;
@@ -90,35 +84,29 @@ void cmdAuthors (tArgs args, tLists L)
 {
     UNUSED(L);
 
-    if (args.len > 2)
+    switch (args.len)
     {
-        printf("\033[1;31mError: authors [-l|-n]\033[0m\n");
-        return;
-    } else {
-        switch (args.len)
-        {
-        case 1:
-            autName();
-            autLogin();
-            break;
+    case 1:
+        autName();
+        autLogin();
+        break;
 
-        case 2:
-            if (strcmp(args.array[1], "-l") == 0)
-            {
-                autLogin();
-            } else if (strcmp(args.array[1], "-n") == 0)
-            {
-                autName();
-            } else {
-                printf("\033[1;31mError: authors [-l|-n]\033[0m\n");
-            }
-            break;
-        
-        default:
-            break;
+    case 2:
+        if (strcmp(args.array[1], "-l") == 0)
+        {
+            autLogin();
+        } else if (strcmp(args.array[1], "-n") == 0)
+        {
+            autName();
+        } else {
+            printError("authors", "Invalid argument");
         }
+        break;
+    
+    default: // args.len > 2
+        printError("authors", "Invalid num of arguments");
+        break;
     }
-      
 }
 
 void autName(){
@@ -135,8 +123,9 @@ void cmdPid(tArgs args, tLists L)
 {
     UNUSED(L);
 
-    if (args.len != 1){
-        printf("\033[1;31mError: pid\033[0m\n");
+    if (args.len != 1)
+    {
+        printError("pid", "Invalid argument");
     } else {
         int pid;
         pid = getpid();
@@ -151,7 +140,7 @@ void cmdPpid(tArgs args, tLists L)
     UNUSED(L);
 
     if (args.len != 1){
-        printf("\033[1;31mError: ppid\033[0m\n"); 
+        printError("ppid", "Invalid argument");
     } else {
         int ppid;
         ppid = getppid();
