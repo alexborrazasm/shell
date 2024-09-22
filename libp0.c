@@ -3,8 +3,8 @@
 
 /******************************************************************************/
 // date [-t|-d]
-void date();
-void timeC();
+void date(tArgs args);
+void timeC(tArgs args);
 
 void cmdDate (tArgs args, tLists L)
 {
@@ -13,38 +13,38 @@ void cmdDate (tArgs args, tLists L)
     switch (args.len)
     {
     case 1:
-        date();
-        timeC();
+        date(args);
+        timeC(args);
         break;
 
     case 2:
         if (strcmp(args.array[1], "-t") == 0)
         {
-            timeC();
+            timeC(args);
         }
         else if (strcmp(args.array[1], "-d") == 0)
         {
-            date();
+            date(args);
         }
         else
         {
-            printError("date", "Invalid argument");
+            printError(args.array[0], "Invalid argument");
         }
         break;
         
     default: // args,len < 2
-        printError("date", "Invalid num of arguments");
+        printError(args.array[0], "Invalid num of argument");
         break;
     }  
 }
 
-void date()
+void date(tArgs args)
 {
     int day, month, year;
     time_t now;
     time(&now);
     if (now == -1){
-        perror("\033[1;31mError al obtener la hora\033[0m");
+        pPrintError(args.array[0]);
     }
     
     struct tm *local = localtime(&now);
@@ -53,17 +53,17 @@ void date()
     month = local->tm_mon + 1;
     year = local->tm_year + 1900;
 
-    printf("Hoy es %d/%d/%d\n", day, month, year);
+    printf("Date: \033[1;34m%d:%d:%d\033[0m\n", day, month, year);
 }
 
-void timeC()
+void timeC(tArgs args)
 {   //Lo nombro así para que no choque con la función time
     int hours, minutes, seconds;
     time_t now;
     time(&now);
 
     if (now == -1){
-        perror("\033[1;31mError al obtener la fecha\033[0m");
+        pPrintError(args.array[0]);
     }
 
     struct tm *local = localtime(&now);
@@ -72,7 +72,7 @@ void timeC()
     minutes = local->tm_min;
     seconds = local->tm_sec;
 
-    printf("Son las: %d:%d:%d\n", hours, minutes, seconds);
+    printf("Clock: \033[1;34m%d:%d:%d\033[0m\n", hours, minutes, seconds);
 }
 
 /******************************************************************************/
@@ -99,12 +99,12 @@ void cmdAuthors (tArgs args, tLists L)
         {
             autName();
         } else {
-            printError("authors", "Invalid argument");
+            printError(args.array[0], "Invalid argument");
         }
         break;
     
     default: // args.len > 2
-        printError("authors", "Invalid num of arguments");
+        printError(args.array[0], "Invalid num of arguments");
         break;
     }
 }
@@ -125,7 +125,7 @@ void cmdPid(tArgs args, tLists L)
 
     if (args.len != 1)
     {
-        printError("pid", "Invalid argument");
+        printError(args.array[0], "Invalid argument");
     } else {
         int pid;
         pid = getpid();
@@ -140,7 +140,7 @@ void cmdPpid(tArgs args, tLists L)
     UNUSED(L);
 
     if (args.len != 1){
-        printError("ppid", "Invalid argument");
+        printError(args.array[0], "Invalid argument");
     } else {
         int ppid;
         ppid = getppid();
@@ -154,46 +154,45 @@ void cmdPpid(tArgs args, tLists L)
 void cmdExit(tArgs args, bool *end) 
 {   
     if (args.len != 1)
-        printf("\033[1;31mError: %s\033[0m\n", args.array[0]);
+        printError(args.array[0], "Invalid argument");
     else
         *end = true;
 }
 
 /******************************************************************************/
 // historic [N|-N]
-void printHistoric(tListH historic);
-void printHistoricN(tListH historic, int n);
-void callHistoric(tLists L, int n);
+void printHistoric(tArgs args, tListH historic);
+void printHistoricN(tArgs args, tListH historic, int n);
+void callHistoric(tArgs args, tLists L, int n);
 
 void cmdHistoric(tArgs args, tLists L)
 {
     if (args.len == 1) // Do not have argument
     {
-        printHistoric(L.historic);
+        printHistoric(args, L.historic);
         return;
     }
     else if (args.len == 2) // Have 1 argument
     {
         if (args.array[1][0] != '-') // historic N
         {
-            callHistoric(L, atoi(&args.array[1][0]));
+            callHistoric(args, L, atoi(&args.array[1][0]));
             return;
         }
         else // historic -N
         {
             if (strlen(args.array[1]) > 1) 
             {
-                printHistoricN(L.historic, atoi(&args.array[1][1]));
+                printHistoricN(args, L.historic, atoi(&args.array[1][1]));
                 return;
             }
         }
     }
     // Remaining cases
-    printf("\033[1;31mError: %s: Invalid arguments\033[0m/n", 
-                args.array[0]);
+    printError(args.array[0], "Invalid argument");
 }
 
-void printHistoric(tListH historic)
+void printHistoric(tArgs args, tListH historic)
 {
     tItemH item; int acc = 1;
 
@@ -212,11 +211,11 @@ void printHistoric(tListH historic)
     }
     else
     {
-        puts("\033[1;31mError: historic: empty list\033[0m");
+        printError(args.array[0], "empty list");
     }
 }
 
-void printHistoricN(tListH historic, int n)
+void printHistoricN(tArgs args, tListH historic, int n)
 {
     tItemH item; tPosH p; int i = 1;
 
@@ -244,14 +243,18 @@ void printHistoricN(tListH historic, int n)
                 printf("%d  %s\n", item.n, item.command);
             }
         }
+        else
+        {
+            printError(args.array[0], "empty list");
+        }
     }
     else
     {
-        puts("\033[1;31mError: historic: Invalid argument\033[0m");
+        printError(args.array[0], "Invalid argument");
     }
 }
 
-void callHistoric(tLists L, int n)
+void callHistoric(tArgs args, tLists L, int n)
 {
     if (!isEmptyList(L.historic))
     {
@@ -269,7 +272,7 @@ void callHistoric(tLists L, int n)
 
         if (p == LNULL) // Not found command
         {
-            printf("Not found command number %d in historic\n", n);
+            printError(args.array[0], "Command number not found");
             return;
         }
         
@@ -283,9 +286,9 @@ void callHistoric(tLists L, int n)
         {
             if (args.len == 2)  // have 1 argument
             {
-                if (args.array[0][0] != '-') // not historic -N is historic N
+                if (args.array[1][0] != '-') // not historic -N is historic N
                 {
-                    puts("You can't call the historical with the historical");
+                    printError(args.array[0], "Avoid infinite looping");
                     return;
                 }
             } 
@@ -296,37 +299,32 @@ void callHistoric(tLists L, int n)
 }
 
 /******************************************************************************/
-// chdir [path]
+// cd [path]
 
-void getcwdAux();
-void chdirAux(char *path);
+void getcwdAux(tArgs args);
+void chdirAux(tArgs args);
 
 void cmdChdir (tArgs args, tLists L)
 {
     UNUSED(L);
 
-    if (args.len > 2)
+    switch (args.len)
     {
-        printf("\033[1;31mError: chdir [path]\033[0m\n");
-        return;
-    } else {
-        switch (args.len)
-        {
-        case 1:
-            getcwdAux();
-            break;
+    case 1:
+        getcwdAux(args);
+        break;
 
-        case 2:
-            chdirAux(args.array[1]);
-            break;
-        
-        default:
-            break;
-        }
+    case 2:
+        chdirAux(args);
+        break;
+    
+    default: //args.len > 2
+        printError(args.array[0], "Invalid arguments");
+        break;
     }
 }
 
-void getcwdAux()
+void getcwdAux(tArgs args)
 {
     long max_path_length;
 
@@ -336,19 +334,18 @@ void getcwdAux()
 
     char directorio_actual[max_path_length];
     if (getcwd(directorio_actual, sizeof(directorio_actual)) != NULL){
-        printf("Directorio actual \033[1;34m%s\033[0m\n", directorio_actual);
+        printf("Path: \033[1;34m%s\033[0m\n", directorio_actual);
     } else {
-        perror("\033[1;31mError al mostrar el directorio actual\033[0m");
+        pPrintError(args.array[0]);
     }
 }
 
-void chdirAux(char *path)
+void chdirAux(tArgs args)
 {
-    if (chdir(path)==0){
-        printf("Directorio actual \033[1;34m%s\033[0m\n", path);
+    if (chdir(args.array[1])==0){
+        printf("Path: \033[1;34m%s\033[0m\n", args.array[1]);
     } else {
-        fprintf(stderr,"\033[1;31mError al cambiar el directorio: %s\033[0m\n",
-                strerror(errno));
+        pPrintError(args.array[0]);
     }
 }
 
@@ -362,13 +359,13 @@ void cmdInfosys (tArgs args, tLists L)
 
     if (args.len != 1)
     {
-        printf("\033[1;31mError: infosys\033[0m\n");
+        printError(args.array[0], "Invalid argument");
     } else {
-        infosysAux();
+        infosysAux(args);
     }
 }
 
-void infosysAux()
+void infosysAux(tArgs args)
 {
     struct utsname info_sistema;    //Estructura que guarda info del sistema ;)
     if (uname(&info_sistema) == 0)
@@ -382,7 +379,7 @@ void infosysAux()
                 info_sistema.release, info_sistema.version,
                 info_sistema.machine);
     } else {
-        perror("\033[1;31mError al obtener información del sistema\033[0m\n");
+        pPrintError(args.array[0]);
     }
 }
 

@@ -19,4 +19,6 @@ int stringCut(char* input, char* parts[]);
 
 void printError(char* name,  char* msg);
 
+void pPrintError(char* name);
+
 #endif // SHELL_H
