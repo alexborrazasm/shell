@@ -1,15 +1,19 @@
 #include "shell.h"
 
-// string name , void name
+// string name , void name, string help
 tCommand commands[] = 
 {
-    {"date", cmdDate, "help"},
-    {"authors", cmdAuthors, "help"},
-    {"pid", cmdPid, "help"},
-    {"ppid", cmdPpid, "help"},
-    {"historic", cmdHistoric, "help"},
-    {"cd", cmdChdir, "help"},
-    {"infosys", cmdInfosys, "help"},
+    {"authors", cmdAuthors, "authors [-l|-n]"},
+    {"pid", cmdPid, "pid"},
+    {"ppid", cmdPpid, "ppid"},
+    {"cd", cmdChdir, "cd [dir]"},    
+    {"date", cmdDate, "date [-t|-d]"},
+    {"historic", cmdHistoric, "historic [N|-N]"},
+    {"open", cmdHistoric, "open [file] mode"}, // change me
+    {"close", cmdHistoric, "close [df]"},      // change me
+    {"dup", cmdHistoric, "dup [df]"},          // change me
+    {"infosys", cmdInfosys, "infosys"},
+    {"help", cmdHistoric, "help [cmd]"},       // change me
 };
 
 

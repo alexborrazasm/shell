@@ -2,80 +2,6 @@
 #include "shell.h"
 
 /******************************************************************************/
-// date [-t|-d]
-void date(tArgs args);
-void timeC(tArgs args);
-
-void cmdDate (tArgs args, tLists L)
-{
-    UNUSED(L);
-
-    switch (args.len)
-    {
-    case 1:
-        date(args);
-        timeC(args);
-        break;
-
-    case 2:
-        if (strcmp(args.array[1], "-t") == 0)
-        {
-            timeC(args);
-        }
-        else if (strcmp(args.array[1], "-d") == 0)
-        {
-            date(args);
-        }
-        else
-        {
-            printError(args.array[0], "Invalid argument");
-        }
-        break;
-        
-    default: // args,len < 2
-        printError(args.array[0], "Invalid num of argument");
-        break;
-    }  
-}
-
-void date(tArgs args)
-{
-    int day, month, year;
-    time_t now;
-    time(&now);
-    if (now == -1){
-        pPrintError(args.array[0]);
-    }
-    
-    struct tm *local = localtime(&now);
-
-    day = local->tm_mday;
-    month = local->tm_mon + 1;
-    year = local->tm_year + 1900;
-
-    printf("Date: \033[1;34m%d:%d:%d\033[0m\n", day, month, year);
-}
-
-void timeC(tArgs args)
-{   //Lo nombro así para que no choque con la función time
-    int hours, minutes, seconds;
-    time_t now;
-    time(&now);
-
-    if (now == -1){
-        pPrintError(args.array[0]);
-    }
-
-    struct tm *local = localtime(&now);
-
-    hours = local->tm_hour;
-    minutes = local->tm_min;
-    seconds = local->tm_sec;
-
-    printf("Clock: \033[1;34m%d:%d:%d\033[0m\n", hours, minutes, seconds);
-}
-
-/******************************************************************************/
 // authors [-l|-n]
 void autName();
 void autLogin();
@@ -149,14 +75,127 @@ void cmdPpid(tArgs args, tLists L)
 }
 
 /******************************************************************************/
-// Quit Bye Exit
+// cd [path]
+void getcwdAux(tArgs args);
+void chdirAux(tArgs args);
 
-void cmdExit(tArgs args, bool *end) 
-{   
-    if (args.len != 1)
-        printError(args.array[0], "Invalid argument");
-    else
-        *end = true;
+void cmdChdir (tArgs args, tLists L)
+{
+    UNUSED(L);
+
+    switch (args.len)
+    {
+    case 1:
+        getcwdAux(args);
+        break;
+
+    case 2:
+        chdirAux(args);
+        break;
+    
+    default: //args.len > 2
+        printError(args.array[0], "Invalid arguments");
+        break;
+    }
+}
+
+void getcwdAux(tArgs args)
+{
+    long max_path_length;
+
+    // Consultar el valor de _PC_PATH_MAX para el directorio actual (tamaño máximo
+    //de un path)
+    max_path_length = pathconf(".", _PC_PATH_MAX);
+
+    char directorio_actual[max_path_length];
+    if (getcwd(directorio_actual, sizeof(directorio_actual)) != NULL){
+        printf("Path: \033[1;34m%s\033[0m\n", directorio_actual);
+    } else {
+        pPrintError(args.array[0]);
+    }
+}
+
+void chdirAux(tArgs args)
+{
+    if (chdir(args.array[1])==0){
+        printf("Path: \033[1;34m%s\033[0m\n", args.array[1]);
+    } else {
+        pPrintError(args.array[0]);
+    }
+}
+
+/******************************************************************************/
+// date [-t|-d]
+void date(tArgs args);
+void timeC(tArgs args);
+
+void cmdDate (tArgs args, tLists L)
+{
+    UNUSED(L);
+
+    switch (args.len)
+    {
+    case 1:
+        date(args);
+        timeC(args);
+        break;
+
+    case 2:
+        if (strcmp(args.array[1], "-t") == 0)
+        {
+            timeC(args);
+        }
+        else if (strcmp(args.array[1], "-d") == 0)
+        {
+            date(args);
+        }
+        else
+        {
+            printError(args.array[0], "Invalid argument");
+        }
+        break;
+        
+    default: // args,len < 2
+        printError(args.array[0], "Invalid num of argument");
+        break;
+    }  
+}
+
+void date(tArgs args)
+{
+    int day, month, year;
+    time_t now;
+    time(&now);
+    if (now == -1){
+        pPrintError(args.array[0]);
+    }
+    
+    struct tm *local = localtime(&now);
+
+    day = local->tm_mday;
+    month = local->tm_mon + 1;
+    year = local->tm_year + 1900;
+
+    printf("Date: \033[1;34m%d:%d:%d\033[0m\n", day, month, year);
+}
+
+void timeC(tArgs args)
+{   //Lo nombro así para que no choque con la función time
+    int hours, minutes, seconds;
+    time_t now;
+    time(&now);
+
+    if (now == -1){
+        pPrintError(args.array[0]);
+    }
+
+    struct tm *local = localtime(&now);
+
+    hours = local->tm_hour;
+    minutes = local->tm_min;
+    seconds = local->tm_sec;
+
+    printf("Clock: \033[1;34m%d:%d:%d\033[0m\n", hours, minutes, seconds);
 }
 
 /******************************************************************************/
@@ -299,55 +338,13 @@ void callHistoric(tArgs args, tLists L, int n)
 }
 
 /******************************************************************************/
-// cd [path]
+// open [file] mode
 
-void getcwdAux(tArgs args);
-void chdirAux(tArgs args);
+/******************************************************************************/
+// close [df]
 
-void cmdChdir (tArgs args, tLists L)
-{
-    UNUSED(L);
-
-    switch (args.len)
-    {
-    case 1:
-        getcwdAux(args);
-        break;
-
-    case 2:
-        chdirAux(args);
-        break;
-    
-    default: //args.len > 2
-        printError(args.array[0], "Invalid arguments");
-        break;
-    }
-}
-
-void getcwdAux(tArgs args)
-{
-    long max_path_length;
-
-    // Consultar el valor de _PC_PATH_MAX para el directorio actual (tamaño máximo
-    //de un path)
-    max_path_length = pathconf(".", _PC_PATH_MAX);
-
-    char directorio_actual[max_path_length];
-    if (getcwd(directorio_actual, sizeof(directorio_actual)) != NULL){
-        printf("Path: \033[1;34m%s\033[0m\n", directorio_actual);
-    } else {
-        pPrintError(args.array[0]);
-    }
-}
-
-void chdirAux(tArgs args)
-{
-    if (chdir(args.array[1])==0){
-        printf("Path: \033[1;34m%s\033[0m\n", args.array[1]);
-    } else {
-        pPrintError(args.array[0]);
-    }
-}
+/******************************************************************************/
+// dup [df]
 
 /******************************************************************************/
 // infosys
@@ -383,8 +380,22 @@ void infosysAux(tArgs args)
     }
 }
 
+/******************************************************************************/
+// help [cmd]
 
-/*
+/******************************************************************************/
+// Quit 
+// Exit
+// Bye 
+void cmdExit(tArgs args, bool *end) 
+{   
+    if (args.len != 1)
+        printError(args.array[0], "Invalid argument");
+    else
+        *end = true;
+}
+
+/* examples
 
 void Cmd_open (char * tr[])
 {
