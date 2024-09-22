@@ -1,19 +1,28 @@
 #include "shell.h"
 
-// string name , void name, string help
+// string name , void name, string help, string help plus
 tCommand commands[] = 
 {
-    {"authors", cmdAuthors, "authors [-l|-n]"},
-    {"pid", cmdPid, "pid"},
-    {"ppid", cmdPpid, "ppid"},
-    {"cd", cmdChdir, "cd [dir]"},    
-    {"date", cmdDate, "date [-t|-d]"},
-    {"historic", cmdHistoric, "historic [N|-N]"},
+    {"authors", cmdAuthors, "authors [-l|-n]", 
+     "Prints the names and/or logins of the program authors"},
+    {"pid", cmdPid, "pid", 
+     "Prints the pid of the process executing the shell"},
+    {"ppid", cmdPpid, "ppid", 
+     "Prints the pid of the shell´s parent process"},
+    {"cd", cmdChdir, "cd [dir]",
+     "Changes or print the current working directory of the shell"},    
+    {"date", cmdDate, "date [-t|-d]", 
+     "Prints the current date and/or the time."},
+    {"historic", cmdHistoric, "historic [N|-N]", 
+    "Shows the historic of commands executed by this shell.\n\t\t"
+    "-NPrints only the lastN commands\n\t\t N: Repeats command number N"},
     {"open", cmdHistoric, "open [file] mode"}, // change me
     {"close", cmdHistoric, "close [df]"},      // change me
     {"dup", cmdHistoric, "dup [df]"},          // change me
-    {"infosys", cmdInfosys, "infosys"},
-    {"help", cmdHistoric, "help [cmd]"},       // change me
+    {"infosys", cmdInfosys, "infosys",
+     "Prints information on the machine running the shell"},
+    {"help", cmdHistoric, "help [cmd]",        // change me
+     "Gives a brief help on the usage of command"}, 
 };
 
 

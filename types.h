@@ -32,7 +32,8 @@ typedef const struct tCommand
 {
     const char* name;
     void (*func)(tArgs, tLists);
-    const char* help;
+    const char* help0;
+    const char* help1;
 } tCommand;
 
 #endif

@@ -136,8 +136,8 @@ void cmdDate (tArgs args, tLists L)
     switch (args.len)
     {
     case 1:
-        date(args);
         timeC(args);
+        date(args);
         break;
 
     case 2:
@@ -176,7 +176,7 @@ void date(tArgs args)
     month = local->tm_mon + 1;
     year = local->tm_year + 1900;
 
-    printf("Date: \033[1;34m%d:%d:%d\033[0m\n", day, month, year);
+    printf("\033[1;34m%d/%d/%d\033[0m\n", day, month, year);
 }
 
 void timeC(tArgs args)
@@ -195,7 +195,7 @@ void timeC(tArgs args)
     minutes = local->tm_min;
     seconds = local->tm_sec;
 
-    printf("Clock: \033[1;34m%d:%d:%d\033[0m\n", hours, minutes, seconds);
+    printf("\033[1;34m%d:%d:%d\033[0m\n", hours, minutes, seconds);
 }
 
 /******************************************************************************/
