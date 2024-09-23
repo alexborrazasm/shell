@@ -2,35 +2,36 @@
 
 // string name , void name, string help, string help plus
 tCommand commands[] =
-    {
-        {"authors", cmdAuthors, "authors [-l|-n]",
-         "Prints the names and/or logins of the program authors"},
-        {"pid", cmdPid, "pid",
-         "Prints the pid of the process executing the shell"},
-        {"ppid", cmdPpid, "ppid",
-         "Prints the pid of the shell´s parent process"},
-        {"cd", cmdChdir, "cd [dir]",
-         "Changes or print the current working directory of the shell"},
-        {"date", cmdDate, "date [-t|-d]",
-         "Prints the current date and/or the time."},
-        {"historic", cmdHistoric, "historic [N|-N]",
-         "Shows the historic of commands executed by this shell.\n\t\t   "
-         "-N: Prints only the lastN commands\n\t\t    N: Repeats command number N"},
-        {"open", cmdHistoric, "open [file] mode", // change me
-         "Opens a file and adds it the to the list of shell open files\n\t\t    "
-         "Open without arguments lists the shell open files\nmodes:\n"
-         "cr: O_CREAT\tap: O_APPEND\tex: O_EXCL\tro: O_RDONLY\n"
-         "rw: O_RDWR\two O_WRONLY\ttr: O_TRUNC"},
-        {"close", cmdHistoric, "close [df]", // change me
-         "Closes the df file descriptor and eliminates the corresponding item from "
-         "the list"},
-        {"dup", cmdHistoric, "dup [df]", // change me
-         "Duplicates the df file descriptor creating the corresponding new entry on "
-         "the file list"},
-        {"infosys", cmdInfosys, "infosys",
-         "Prints information on the machine running the shell"},
-        {"help", cmdHelp, "help [cmd]",
-         "Gives a brief help on the usage of command"},
+{
+    {"authors", cmdAuthors, "authors [-l|-n]",
+     "Prints the names and/or logins of the program authors"},
+    {"pid", cmdPid, "pid",
+     "Prints the pid of the process executing the shell"},
+    {"ppid", cmdPpid, "ppid",
+     "Prints the pid of the shell´s parent process"},
+    {"cd", cmdChdir, "cd [dir]",
+     "Changes or print the current working directory of the shell"},
+    {"date", cmdDate, "date [-t|-d]",
+     "Prints the current date and/or the time."},
+    {"historic", cmdHistoric, "historic [N|-N]",
+     "Shows the historic of commands executed by this shell.\n\t\t   "
+     "-N: Prints only the lastN commands\n\t\t    "
+     "N: Repeats command number N"},
+    {"open", cmdHistoric, "open [file] mode", // change me
+     "Opens a file and adds it the to the list of shell open files\n\t\t    "
+     "Open without arguments lists the shell open files\nmodes:\n"
+     "cr: O_CREAT\tap: O_APPEND\tex: O_EXCL\tro: O_RDONLY\n"
+     "rw: O_RDWR\two O_WRONLY\ttr: O_TRUNC"},
+    {"close", cmdHistoric, "close [df]", // change me
+     "Closes the df file descriptor and eliminates the corresponding item "
+     "from the list"},
+    {"dup", cmdHistoric, "dup [df]", // change me
+     "Duplicates the df file descriptor creating the corresponding new "
+     "entry on the file list"},
+    {"infosys", cmdInfosys, "infosys",
+     "Prints information on the machine running the shell"},
+    {"help", cmdHelp, "help [cmd]",
+     "Gives a brief help on the usage of command"},
 };
 
 int getInput(char *input);
