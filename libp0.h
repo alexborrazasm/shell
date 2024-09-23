@@ -3,6 +3,7 @@
 
 #include "types.h"  // For tLists and tArgs
 #include "historicList.h"
+
 // authors [-l|-n]
 void cmdAuthors (tArgs args, tLists L);
 /* Prints the names and logins of the program authors. authors -l prints
@@ -74,7 +75,7 @@ void cmdInfosys (tArgs args, tLists L);
 */
 
 // help [cmd]
-//void
+void cmdHelp(tArgs args, tLists L);
 /* help: Displays a list of available commands. 
    help cmd: Gives a brief help on the usage of command cmd.
 */

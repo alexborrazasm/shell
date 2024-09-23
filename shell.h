@@ -21,4 +21,8 @@ void printError(char* name,  char* msg);
 
 void pPrintError(char* name);
 
+int getCommandsLen();
+
+void getCommands(tCommand *pointer);
+
 #endif // SHELL_H

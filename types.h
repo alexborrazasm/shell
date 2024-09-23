@@ -28,7 +28,7 @@ typedef struct tLists {
 } tLists;
 // End forward declaration for tListH
 
-typedef const struct tCommand 
+typedef struct tCommand 
 {
     const char* name;
     void (*func)(tArgs, tLists);

@@ -382,6 +382,71 @@ void infosysAux(tArgs args)
 
 /******************************************************************************/
 // help [cmd]
+void help();
+
+void helpCommand(tArgs args);
+
+void cmdHelp(tArgs args, tLists L) 
+{
+    UNUSED(L);
+
+    switch (args.len)
+    {
+    case 1:
+        help();
+        break;
+    case 2:
+        helpCommand(args);
+        break;
+    default:
+        printError(args.array[0], "Invalid argument");
+        break;
+    }
+}
+
+void help()
+{   
+    const int n = getCommandsLen(); tCommand commands[n];
+
+    getCommands(commands);
+
+    for (int i = 0; i < n; i++)
+    {
+        printf("%15s" ,commands[i].name);
+        if ((i + 1) % 5 == 0)
+            puts("");
+    }
+    if (n % 5 != 0)
+    puts("");
+}
+
+void helpCommand(tArgs args)
+{
+    const int n = getCommandsLen(); tCommand commands[n];
+
+    getCommands(commands);
+
+    for (int i = 0; i < n; i++)
+    {
+        for (int i = 0; i < n; ++i) 
+        {
+            if (strcmp(commands[i].name, args.array[1]) == 0) 
+            {
+                printf("%s    %s\n", commands[i].help0, commands[i].help1);
+                return;
+            }
+        }
+    }
+
+    if (strcmp("bye",  args.array[1]) == 0 ||
+        strcmp("exit", args.array[1]) == 0 ||
+        strcmp("quit", args.array[1]) == 0 ) 
+    {
+        printf("%s    %s\n", args.array[1], "End the shell");
+        return;
+    }
+    printError(args.array[0], "Invalid argument");
+}
 
 /******************************************************************************/
 // Quit 
