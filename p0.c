@@ -15,7 +15,7 @@ void shell()
     tLists L;
 
     // History list
-    createEmptyList(&L.historic);
+    createEmptyListH(&L.historic);
 
     while (!finished)
     {

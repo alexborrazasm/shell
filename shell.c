@@ -54,19 +54,19 @@ bool readInput(tLists *L)
         // Copy console input to history item
         strcpy(item.command, input);
 
-        if (isEmptyList(L->historic)) // The first element on historic
+        if (isEmptyListH(L->historic)) // The first element on historic
         {
             item.n = 1;
         }
         else
         {
-            tPosH p = last(L->historic);
-            tItemH last = getItem(p, L->historic);
+            tPosH p = lastH(L->historic);
+            tItemH last = getItemH(p, L->historic);
 
             item.n = last.n + 1;
         }
 
-        if (!insertItem(item, LNULL, &L->historic))
+        if (!insertItemH(item, LNULL, &L->historic))
         {
             puts("Error: historic inset");
             return false;
@@ -103,9 +103,9 @@ int getInput(char *input)
 
 void processInput(tLists L, bool *end)
 {
-    if (!isEmptyList(L.historic))
+    if (!isEmptyListH(L.historic))
     {
-        tItemH item = getItem(last(L.historic), L.historic);
+        tItemH item = getItemH(lastH(L.historic), L.historic);
         tArgs args;
         args.len = stringCut(item.command, args.array);
 
@@ -145,10 +145,10 @@ void freeHistoryList(tListH *list)
 {
     tPosH node;
 
-    while (!isEmptyList(*list))
+    while (!isEmptyListH(*list))
     {
-        node = last(*list);
-        deleteAtPosition(node, list);
+        node = lastH(*list);
+        deleteAtPositionH(node, list);
     }
 }
 

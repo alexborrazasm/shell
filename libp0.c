@@ -254,17 +254,17 @@ void printHistoric(tArgs args, tListH historic)
     tItemH item;
     int acc = 1;
 
-    if (!isEmptyList(historic))
+    if (!isEmptyListH(historic))
     {
-        tPosH p = first(historic);
+        tPosH p = firstH(historic);
 
         while (p != LNULL)
         {
-            item = getItem(p, historic);
+            item = getItemH(p, historic);
             printf("%d  %s\n", item.n, item.command);
 
             acc++;
-            p = next(p, historic);
+            p = nextH(p, historic);
         }
     }
     else
@@ -281,25 +281,25 @@ void printHistoricN(tArgs args, tListH historic, int n)
 
     if (n > 0) // atoi("letter") return 0
     {
-        if (!isEmptyList(historic))
+        if (!isEmptyListH(historic))
         {
             // Search -N command
-            p = last(historic);
+            p = lastH(historic);
 
             for (; i < n; i++)
             {
                 if (p != LNULL)
-                    p = previous(p, historic);
+                    p = previousH(p, historic);
                 else // Loop list
                 {
-                    p = first(historic);
+                    p = firstH(historic);
                     break;
                 }
             }
             // Print
-            for (; p != LNULL; p = next(p, historic))
+            for (; p != LNULL; p = nextH(p, historic))
             {
-                item = getItem(p, historic);
+                item = getItemH(p, historic);
                 printf("%d  %s\n", item.n, item.command);
             }
         }
@@ -316,18 +316,18 @@ void printHistoricN(tArgs args, tListH historic, int n)
 
 void callHistoric(tArgs args, tLists L, int n)
 {
-    if (!isEmptyList(L.historic))
+    if (!isEmptyListH(L.historic))
     {
-        tPosH p = first(L.historic);
-        tItemH item = getItem(p, L.historic);
+        tPosH p = firstH(L.historic);
+        tItemH item = getItemH(p, L.historic);
 
         // Search command by historic number
-        for (; p != LNULL; p = next(p, L.historic))
+        for (; p != LNULL; p = nextH(p, L.historic))
         { // can't call actual cmd command
             if (item.n == n)
                 break;
 
-            item = getItem(p, L.historic);
+            item = getItemH(p, L.historic);
         }
 
         if (p == LNULL) // Not found command

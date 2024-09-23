@@ -20,22 +20,22 @@ struct tNode
 
 typedef tPosH tListH;
 
-void createEmptyList(tListH *L);
+void createEmptyListH(tListH *L);
 
-bool isEmptyList(tListH L);
+bool isEmptyListH(tListH L);
 
-tPosH first(tListH L);
+tPosH firstH(tListH L);
 
-tPosH last(tListH L);
+tPosH lastH(tListH L);
 
-tPosH next(tPosH p, tListH L);
+tPosH nextH(tPosH p, tListH L);
 
-tPosH previous(tPosH p, tListH L);
+tPosH previousH(tPosH p, tListH L);
 
-bool insertItem(tItemH d, tPosH p, tListH *L);
+bool insertItemH(tItemH d, tPosH p, tListH *L);
 
-void deleteAtPosition(tPosH p, tListH *L);
+void deleteAtPositionH(tPosH p, tListH *L);
 
-tItemH getItem(tPosH p, tListH L);
+tItemH getItemH(tPosH p, tListH L);
 
 #endif
