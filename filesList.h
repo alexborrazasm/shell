@@ -1,5 +1,5 @@
-#ifndef HISTORIC_LIST_H
-#define HISTORIC_LIST_H
+#ifndef FILES_LIST_H
+#define FILES_LIST_H
 
 #include "types.h"
 
@@ -7,8 +7,8 @@
 
 typedef struct tItemH
 {
-    char command[MAX_BUFFER_INPUT];
-    int n;
+    char name[MAX_BUFFER_INPUT];
+    // en proceso de fumar
 } tItemH;
 
 struct tNode

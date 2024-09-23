@@ -24,9 +24,14 @@ typedef struct tArgs
 typedef struct tNode *tPosH;
 typedef tPosH tListH;
 
+// Forward declaration for tListH
+typedef struct tNode *tPosF;
+typedef tPosF tListF;
+
 typedef struct tLists
 {
     tListH historic;
+    tListF files;
 } tLists;
 // End forward declaration for tListH
 
