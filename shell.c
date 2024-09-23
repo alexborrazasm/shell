@@ -16,12 +16,20 @@ tCommand commands[] =
     {"historic", cmdHistoric, "historic [N|-N]", 
     "Shows the historic of commands executed by this shell.\n\t\t   "
     "-N: Prints only the lastN commands\n\t\t    N: Repeats command number N"},
-    {"open", cmdHistoric, "open [file] mode","a"}, // change me
-    {"close", cmdHistoric, "close [df]","a"},      // change me
-    {"dup", cmdHistoric, "dup [df]","a"},          // change me
+    {"open", cmdHistoric, "open [file] mode",      // change me
+    "Opens a file and adds it the to the list of shell open files\n\t\t    "
+    "Open without arguments lists the shell open files\nmodes:\n"
+    "cr: O_CREAT\tap: O_APPEND\tex: O_EXCL\tro: O_RDONLY\n"
+    "rw: O_RDWR\two O_WRONLY\ttr: O_TRUNC"}, 
+    {"close", cmdHistoric, "close [df]",           // change me
+    "Closes the df file descriptor and eliminates the corresponding item from " 
+    "the list"},      
+    {"dup", cmdHistoric, "dup [df]",               // change me
+    "Duplicates the df file descriptor creating the corresponding new entry on "
+    "the file list"},          
     {"infosys", cmdInfosys, "infosys",
     "Prints information on the machine running the shell"},
-    {"help", cmdHelp, "help [cmd]",        // change me
+    {"help", cmdHelp, "help [cmd]",
     "Gives a brief help on the usage of command"}, 
 };
 

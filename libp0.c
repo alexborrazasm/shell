@@ -410,6 +410,9 @@ void help()
 
     getCommands(commands);
 
+    puts("help [cmd]     Gives a brief help on the usage of command\n\n"
+         "List of commands:");
+
     for (int i = 0; i < n; i++)
     {
         printf("%15s" ,commands[i].name);
