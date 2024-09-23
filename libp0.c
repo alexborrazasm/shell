@@ -6,7 +6,7 @@
 void autName();
 void autLogin();
 
-void cmdAuthors (tArgs args, tLists L)
+void cmdAuthors(tArgs args, tLists L)
 {
     UNUSED(L);
 
@@ -21,25 +21,30 @@ void cmdAuthors (tArgs args, tLists L)
         if (strcmp(args.array[1], "-l") == 0)
         {
             autLogin();
-        } else if (strcmp(args.array[1], "-n") == 0)
+        }
+        else if (strcmp(args.array[1], "-n") == 0)
         {
             autName();
-        } else {
+        }
+        else
+        {
             printError(args.array[0], "Invalid argument");
         }
         break;
-    
+
     default: // args.len > 2
         printError(args.array[0], "Invalid num of arguments");
         break;
     }
 }
 
-void autName(){
+void autName()
+{
     printf("José Manuel Villar \t Alex Borrazás\n");
 }
 
-void autLogin(){
+void autLogin()
+{
     printf("jose.villarg@udc.es \t alexandre.bmancebo\n");
 }
 
@@ -52,7 +57,9 @@ void cmdPid(tArgs args, tLists L)
     if (args.len != 1)
     {
         printError(args.array[0], "Invalid argument");
-    } else {
+    }
+    else
+    {
         int pid;
         pid = getpid();
         printf("%d\n", pid);
@@ -65,9 +72,12 @@ void cmdPpid(tArgs args, tLists L)
 {
     UNUSED(L);
 
-    if (args.len != 1){
+    if (args.len != 1)
+    {
         printError(args.array[0], "Invalid argument");
-    } else {
+    }
+    else
+    {
         int ppid;
         ppid = getppid();
         printf("%d\n", ppid);
@@ -79,7 +89,7 @@ void cmdPpid(tArgs args, tLists L)
 void getcwdAux(tArgs args);
 void chdirAux(tArgs args);
 
-void cmdChdir (tArgs args, tLists L)
+void cmdChdir(tArgs args, tLists L)
 {
     UNUSED(L);
 
@@ -92,8 +102,8 @@ void cmdChdir (tArgs args, tLists L)
     case 2:
         chdirAux(args);
         break;
-    
-    default: //args.len > 2
+
+    default: // args.len > 2
         printError(args.array[0], "Invalid arguments");
         break;
     }
@@ -104,22 +114,28 @@ void getcwdAux(tArgs args)
     long max_path_length;
 
     // Consultar el valor de _PC_PATH_MAX para el directorio actual (tamaño máximo
-    //de un path)
+    // de un path)
     max_path_length = pathconf(".", _PC_PATH_MAX);
 
     char directorio_actual[max_path_length];
-    if (getcwd(directorio_actual, sizeof(directorio_actual)) != NULL){
+    if (getcwd(directorio_actual, sizeof(directorio_actual)) != NULL)
+    {
         printf("Path: \033[1;34m%s\033[0m\n", directorio_actual);
-    } else {
+    }
+    else
+    {
         pPrintError(args.array[0]);
     }
 }
 
 void chdirAux(tArgs args)
 {
-    if (chdir(args.array[1])==0){
+    if (chdir(args.array[1]) == 0)
+    {
         printf("Path: \033[1;34m%s\033[0m\n", args.array[1]);
-    } else {
+    }
+    else
+    {
         pPrintError(args.array[0]);
     }
 }
@@ -129,7 +145,7 @@ void chdirAux(tArgs args)
 void date(tArgs args);
 void timeC(tArgs args);
 
-void cmdDate (tArgs args, tLists L)
+void cmdDate(tArgs args, tLists L)
 {
     UNUSED(L);
 
@@ -154,11 +170,11 @@ void cmdDate (tArgs args, tLists L)
             printError(args.array[0], "Invalid argument");
         }
         break;
-        
+
     default: // args,len < 2
         printError(args.array[0], "Invalid num of argument");
         break;
-    }  
+    }
 }
 
 void date(tArgs args)
@@ -166,10 +182,11 @@ void date(tArgs args)
     int day, month, year;
     time_t now;
     time(&now);
-    if (now == -1){
+    if (now == -1)
+    {
         pPrintError(args.array[0]);
     }
-    
+
     struct tm *local = localtime(&now);
 
     day = local->tm_mday;
@@ -180,12 +197,13 @@ void date(tArgs args)
 }
 
 void timeC(tArgs args)
-{   //Lo nombro así para que no choque con la función time
+{ // Lo nombro así para que no choque con la función time
     int hours, minutes, seconds;
     time_t now;
     time(&now);
 
-    if (now == -1){
+    if (now == -1)
+    {
         pPrintError(args.array[0]);
     }
 
@@ -220,7 +238,7 @@ void cmdHistoric(tArgs args, tLists L)
         }
         else // historic -N
         {
-            if (strlen(args.array[1]) > 1) 
+            if (strlen(args.array[1]) > 1)
             {
                 printHistoricN(args, L.historic, atoi(&args.array[1][1]));
                 return;
@@ -233,14 +251,15 @@ void cmdHistoric(tArgs args, tLists L)
 
 void printHistoric(tArgs args, tListH historic)
 {
-    tItemH item; int acc = 1;
+    tItemH item;
+    int acc = 1;
 
     if (!isEmptyList(historic))
     {
         tPosH p = first(historic);
 
         while (p != LNULL)
-        {   
+        {
             item = getItem(p, historic);
             printf("%d  %s\n", item.n, item.command);
 
@@ -256,17 +275,19 @@ void printHistoric(tArgs args, tListH historic)
 
 void printHistoricN(tArgs args, tListH historic, int n)
 {
-    tItemH item; tPosH p; int i = 1;
+    tItemH item;
+    tPosH p;
+    int i = 1;
 
-    if (n > 0)  // atoi("letter") return 0 
+    if (n > 0) // atoi("letter") return 0
     {
         if (!isEmptyList(historic))
         {
             // Search -N command
             p = last(historic);
-            
+
             for (; i < n; i++)
-            {   
+            {
                 if (p != LNULL)
                     p = previous(p, historic);
                 else // Loop list
@@ -276,7 +297,7 @@ void printHistoricN(tArgs args, tListH historic, int n)
                 }
             }
             // Print
-            for(; p != LNULL; p = next(p, historic)) 
+            for (; p != LNULL; p = next(p, historic))
             {
                 item = getItem(p, historic);
                 printf("%d  %s\n", item.n, item.command);
@@ -302,7 +323,7 @@ void callHistoric(tArgs args, tLists L, int n)
 
         // Search command by historic number
         for (; p != LNULL; p = next(p, L.historic))
-        {   // can't call actual cmd command
+        { // can't call actual cmd command
             if (item.n == n)
                 break;
 
@@ -314,23 +335,23 @@ void callHistoric(tArgs args, tLists L, int n)
             printError(args.array[0], "Command number not found");
             return;
         }
-        
+
         // Call command
         tArgs args;
 
         args.len = stringCut(item.command, args.array);
 
         // Avoid looping reclusion
-        if (strcmp(args.array[0], "historic") == 0) 
+        if (strcmp(args.array[0], "historic") == 0)
         {
-            if (args.len == 2)  // have 1 argument
+            if (args.len == 2) // have 1 argument
             {
                 if (args.array[1][0] != '-') // not historic -N is historic N
                 {
                     printError(args.array[0], "Avoid infinite looping");
                     return;
                 }
-            } 
+            }
         }
         // All right
         selectCommand(args, item.command, L, false);
@@ -350,21 +371,23 @@ void callHistoric(tArgs args, tLists L, int n)
 // infosys
 void infosysAux();
 
-void cmdInfosys (tArgs args, tLists L)
+void cmdInfosys(tArgs args, tLists L)
 {
     UNUSED(L);
 
     if (args.len != 1)
     {
         printError(args.array[0], "Invalid argument");
-    } else {
+    }
+    else
+    {
         infosysAux(args);
     }
 }
 
 void infosysAux(tArgs args)
 {
-    struct utsname info_sistema;    //Estructura que guarda info del sistema ;)
+    struct utsname info_sistema; // Estructura que guarda info del sistema ;)
     if (uname(&info_sistema) == 0)
     {
         printf("Nombre del sistema operativo:\t\033[1;34m%s\033[0m\n"
@@ -372,10 +395,12 @@ void infosysAux(tArgs args)
                "Versión del sistema operativo:\t\033[1;34m%s\033[0m\n"
                "Información de la versión:\t\033[1;34m%s\033[0m\n"
                "Tipo de hardware (arquitectura):\033[1;34m%s\033[0m\n",
-                info_sistema.sysname, info_sistema.nodename,
-                info_sistema.release, info_sistema.version,
-                info_sistema.machine);
-    } else {
+               info_sistema.sysname, info_sistema.nodename,
+               info_sistema.release, info_sistema.version,
+               info_sistema.machine);
+    }
+    else
+    {
         pPrintError(args.array[0]);
     }
 }
@@ -386,7 +411,7 @@ void help();
 
 void helpCommand(tArgs args);
 
-void cmdHelp(tArgs args, tLists L) 
+void cmdHelp(tArgs args, tLists L)
 {
     UNUSED(L);
 
@@ -405,8 +430,9 @@ void cmdHelp(tArgs args, tLists L)
 }
 
 void help()
-{   
-    const int n = getCommandsLen(); tCommand commands[n];
+{
+    const int n = getCommandsLen();
+    tCommand commands[n];
 
     getCommands(commands);
 
@@ -415,25 +441,26 @@ void help()
 
     for (int i = 0; i < n; i++)
     {
-        printf("%15s" ,commands[i].name);
+        printf("%15s", commands[i].name);
         if ((i + 1) % 5 == 0)
             puts("");
     }
     if (n % 5 != 0)
-    puts("");
+        puts("");
 }
 
 void helpCommand(tArgs args)
 {
-    const int n = getCommandsLen(); tCommand commands[n];
+    const int n = getCommandsLen();
+    tCommand commands[n];
 
     getCommands(commands);
 
     for (int i = 0; i < n; i++)
     {
-        for (int i = 0; i < n; ++i) 
+        for (int i = 0; i < n; ++i)
         {
-            if (strcmp(commands[i].name, args.array[1]) == 0) 
+            if (strcmp(commands[i].name, args.array[1]) == 0)
             {
                 printf("%s    %s\n", commands[i].help0, commands[i].help1);
                 return;
@@ -441,9 +468,9 @@ void helpCommand(tArgs args)
         }
     }
 
-    if (strcmp("bye",  args.array[1]) == 0 ||
+    if (strcmp("bye", args.array[1]) == 0 ||
         strcmp("exit", args.array[1]) == 0 ||
-        strcmp("quit", args.array[1]) == 0 ) 
+        strcmp("quit", args.array[1]) == 0)
     {
         printf("%s    %s\n", args.array[1], "End the shell");
         return;
@@ -452,11 +479,11 @@ void helpCommand(tArgs args)
 }
 
 /******************************************************************************/
-// Quit 
+// Quit
 // Exit
-// Bye 
-void cmdExit(tArgs args, bool *end) 
-{   
+// Bye
+void cmdExit(tArgs args, bool *end)
+{
     if (args.len != 1)
         printError(args.array[0], "Invalid argument");
     else
@@ -468,7 +495,7 @@ void cmdExit(tArgs args, bool *end)
 void Cmd_open (char * tr[])
 {
     int i,df, mode=0;
-    
+
     if (tr[0]==NULL) { //no hay parametro
        ..............ListarFicherosAbiertos...............
         return;
@@ -476,13 +503,13 @@ void Cmd_open (char * tr[])
     for (i=1; tr[i]!=NULL; i++)
       if (!strcmp(tr[i],"cr")) mode|=O_CREAT;
       else if (!strcmp(tr[i],"ex")) mode|=O_EXCL;
-      else if (!strcmp(tr[i],"ro")) mode|=O_RDONLY; 
+      else if (!strcmp(tr[i],"ro")) mode|=O_RDONLY;
       else if (!strcmp(tr[i],"wo")) mode|=O_WRONLY;
       else if (!strcmp(tr[i],"rw")) mode|=O_RDWR;
       else if (!strcmp(tr[i],"ap")) mode|=O_APPEND;
-      else if (!strcmp(tr[i],"tr")) mode|=O_TRUNC; 
+      else if (!strcmp(tr[i],"tr")) mode|=O_TRUNC;
       else break;
-      
+
     if ((df=open(tr[0],mode,0777))==-1)
         perror ("Imposible abrir fichero");
     else{
@@ -491,15 +518,15 @@ void Cmd_open (char * tr[])
 }
 
 void Cmd_close (char *tr[])
-{ 
+{
     int df;
-    
+
     if (tr[0]==NULL || (df=atoi(tr[0]))<0) { //no hay parametro
       ..............ListarFicherosAbiertos............... //o el descriptor es menor que 0
         return;
     }
 
-    
+
     if (close(df)==-1)
         perror("Inposible cerrar descriptor");
     else
@@ -507,19 +534,19 @@ void Cmd_close (char *tr[])
 }
 
 void Cmd_dup (char * tr[])
-{ 
+{
     int df, duplicado;
     char aux[MAXNAME],*p;
-    
+
     if (tr[0]==NULL || (df=atoi(tr[0]))<0) { //no hay parametro
         ListOpenFiles(-1);                 //o el descriptor es menor que 0
         return;
     }
-    
+
     duplicado=dup(df);
     p=.....NombreFicheroDescriptor(df).......;
     sprintf (aux,"dup %d (%s)",df, p);
     .......AnadirAFicherosAbiertos......duplicado......aux.....fcntl(duplicado,F_GETFL).....;
 }
- 
+
 */

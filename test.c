@@ -10,12 +10,12 @@ void printList(tListH list);
 
 void testDynamicList();
 
-int main() 
+int main()
 {
-    //separator();
-    //testPrompt();
-    //separator();
-    //testStringCut();
+    // separator();
+    // testPrompt();
+    // separator();
+    // testStringCut();
     separator();
     testDynamicList();
     separator();
@@ -23,28 +23,29 @@ int main()
     return 0;
 }
 
-void separator() 
+void separator()
 {
     puts("\n------------------------------------------------------\n");
 }
 
-void testPrompt() 
+void testPrompt()
 {
     puts("Test prompt");
     printPrompt();
     puts("");
 }
 
-void testStringCut() 
+void testStringCut()
 {
     puts("Test stringCut: \"esto es una string\"");
     char text[] = "esto es una string";
-    char* parts[6]; 
+    char *parts[6];
     int nParts;
-    
+
     nParts = stringCut(text, parts);
 
-    for (int i = 0; i < nParts; i++) {
+    for (int i = 0; i < nParts; i++)
+    {
         puts(parts[i]);
     }
     printf("Número de partes %d\n", nParts);
@@ -56,9 +57,11 @@ void printList(tListH list)
     tItemH item;
 
     printf("(");
-    if (!isEmptyList(list)) {
+    if (!isEmptyList(list))
+    {
         pos = first(list);
-        while (pos != NULL) {
+        while (pos != NULL)
+        {
             item = getItem(pos, list);
             printf("Command: %s ", item.command);
             pos = next(pos, list);
@@ -67,11 +70,10 @@ void printList(tListH list)
     printf(")\n");
 }
 
-void testDynamicList() 
+void testDynamicList()
 {
     tListH list;
     tItemH item;
-
 
     /* create */
     createEmptyList(&list);
@@ -79,7 +81,7 @@ void testDynamicList()
 
     /* insert */
     strcpy(item.command, "Command 1");
-    
+
     insertItem(item, NULL, &list);
     printList(list);
 
@@ -103,6 +105,6 @@ void testDynamicList()
     while (first(list) != NULL)
     {
         deleteAtPosition(first(list), &list);
-            printList(list);
+        printList(list);
     }
 }

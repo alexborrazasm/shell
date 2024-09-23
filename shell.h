@@ -11,15 +11,15 @@ bool readInput(tLists *L);
 
 void processInput(tLists L, bool *end);
 
-void selectCommand(tArgs args, char* input, tLists L, bool *end);
+void selectCommand(tArgs args, char *input, tLists L, bool *end);
 
-void freeHistoryList(tListH* list);
+void freeHistoryList(tListH *list);
 
-int stringCut(char* input, char* parts[]);
+int stringCut(char *input, char *parts[]);
 
-void printError(char* name,  char* msg);
+void printError(char *name, char *msg);
 
-void pPrintError(char* name);
+void pPrintError(char *name);
 
 int getCommandsLen();
 

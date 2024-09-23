@@ -5,12 +5,14 @@
 
 #define LNULL NULL
 
-typedef struct tItemH {
+typedef struct tItemH
+{
     char command[MAX_BUFFER_INPUT];
     int n;
 } tItemH;
 
-struct tNode {
+struct tNode
+{
     tItemH data;
     struct tNode *next;
     struct tNode *prev;
@@ -18,7 +20,7 @@ struct tNode {
 
 typedef tPosH tListH;
 
-void createEmptyList(tListH* L);
+void createEmptyList(tListH *L);
 
 bool isEmptyList(tListH L);
 
@@ -30,9 +32,9 @@ tPosH next(tPosH p, tListH L);
 
 tPosH previous(tPosH p, tListH L);
 
-bool insertItem(tItemH d, tPosH p, tListH* L);
+bool insertItem(tItemH d, tPosH p, tListH *L);
 
-void deleteAtPosition(tPosH p, tListH* L);
+void deleteAtPosition(tPosH p, tListH *L);
 
 tItemH getItem(tPosH p, tListH L);
 

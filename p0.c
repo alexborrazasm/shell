@@ -2,14 +2,14 @@
 
 void shell();
 
-int main() 
+int main()
 {
     shell();
 
     return 0;
 }
 
-void shell() 
+void shell()
 {
     bool finished = false;
     tLists L;
@@ -17,7 +17,7 @@ void shell()
     // History list
     createEmptyList(&L.historic);
 
-    while (!finished) 
+    while (!finished)
     {
         printPrompt();
         if (readInput(&L))

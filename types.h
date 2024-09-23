@@ -14,8 +14,9 @@
 #define MAX_ARGS 10
 #define UNUSED(expr) do { (void)(expr); } while (0)
 
-typedef struct tArgs {
-    char* array[MAX_ARGS];
+typedef struct tArgs
+{
+    char *array[MAX_ARGS];
     int len;
 } tArgs;
 
@@ -23,17 +24,18 @@ typedef struct tArgs {
 typedef struct tNode *tPosH;
 typedef tPosH tListH;
 
-typedef struct tLists {
+typedef struct tLists
+{
     tListH historic;
 } tLists;
 // End forward declaration for tListH
 
-typedef struct tCommand 
+typedef struct tCommand
 {
-    const char* name;
+    const char *name;
     void (*func)(tArgs, tLists);
-    const char* help0;
-    const char* help1;
+    const char *help0;
+    const char *help1;
 } tCommand;
 
 #endif

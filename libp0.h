@@ -1,34 +1,34 @@
 #ifndef LIBP0_H
 #define LIBP0_H
 
-#include "types.h"  // For tLists and tArgs
+#include "types.h" // For tLists and tArgs
 #include "historicList.h"
 
 // authors [-l|-n]
-void cmdAuthors (tArgs args, tLists L);
+void cmdAuthors(tArgs args, tLists L);
 /* Prints the names and logins of the program authors. authors -l prints
-   only the logins and authors -n prints only the names. 
+   only the logins and authors -n prints only the names.
 */
 
 // pid
 void cmdPid(tArgs args, tLists L);
-/* Prints the pid of the process executing the shell. 
-*/
+/* Prints the pid of the process executing the shell.
+ */
 
 // ppid
 void cmdPpid(tArgs args, tLists L);
-/* Prints the pid of the shell’s parent process. 
-*/
+/* Prints the pid of the shell’s parent process.
+ */
 
 // cd [dir]
-void cmdChdir (tArgs args, tLists L);
+void cmdChdir(tArgs args, tLists L);
 /* Changes the current working directory of the shell to dir (using the
-   chdir system call). When invoked without arguments it prints the current 
+   chdir system call). When invoked without arguments it prints the current
    working directory (using the getcwd system call.
 */
 
 // date [-t|-d]
-void cmdDate (tArgs args, tLists L);
+void cmdDate(tArgs args, tLists L);
 /* Prints the current date in the format DD/MM/YYYY and the current
    time in the format hh:mm:ss.
      -date -d: Prints the current date in the format DD/MM/YYYY.
@@ -45,10 +45,10 @@ void cmdHistoric(tArgs args, tLists L);
 */
 
 // open [file] mode
-//void
-/* Opens a file and adds it (together with the file descriptor and the opening 
+// void
+/* Opens a file and adds it (together with the file descriptor and the opening
    mode to the list of shell open files. For the mode we’ll use cr for O CREAT,
-   ap for O APPEND, ex for O EXCL, ro for O RDONLY, rw for O RDWR, wo for O 
+   ap for O APPEND, ex for O EXCL, ro for O RDONLY, rw for O RDWR, wo for O
    WRONLY and tr for O TRUNC.
    Open without arguments lists the shell open files. For each file it lists its
    descriptor, the file name and the opening mode. The shell will inherit
@@ -57,34 +57,34 @@ void cmdHistoric(tArgs args, tLists L);
 */
 
 // close [df]
-//void
+// void
 /* Closes the df file descriptor and eliminates the corresponding item from
    the list.
 */
 
 // dup [df]
-//void
+// void
 /* Duplicates the df file descriptor (using the dup system call, creating the
    corresponding new entry on the file list.
 */
 
 // infosys
-void cmdInfosys (tArgs args, tLists L);
+void cmdInfosys(tArgs args, tLists L);
 /* Prints information on the machine running the shell (as obtained via
    the uname system call/library function).
 */
 
 // help [cmd]
 void cmdHelp(tArgs args, tLists L);
-/* help: Displays a list of available commands. 
+/* help: Displays a list of available commands.
    help cmd: Gives a brief help on the usage of command cmd.
 */
 
-// quit 
-// exit 
+// quit
+// exit
 // bye
 void cmdExit(tArgs args, bool *end);
 /* Ends the shell.
-*/
+ */
 
 #endif
