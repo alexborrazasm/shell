@@ -471,8 +471,13 @@ void Cmd_open(tArgs args, tListF LF)
 
 void printItemF(tItemF item) {
     printf("Descriptor de archivo: %d\n", item.df);
-    printf("Info: %s\n", item.info);
-    printf("Modo: %s\n", item.mode);
+    if (strcmp("empty", item.info) != 0)
+    {
+        printf("Info: %s\n", item.info);
+        printf("Modo: %s\n", item.mode);
+    }
+    else
+        puts("unused");
     printf("----------------------------\n");
 }
 
