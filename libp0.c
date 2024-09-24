@@ -361,7 +361,8 @@ void callHistoric(tArgs args, tLists L, int n)
 /******************************************************************************/
 // open [file] mode
 void openL(tListF LF);
-void Cmd_open(tArgs args);
+
+void Cmd_open(tArgs args, tListF LF);
 
 void cmdOpen(tArgs args, tLists L)
 {
@@ -371,10 +372,10 @@ void cmdOpen(tArgs args, tLists L)
         openL(L.files);
         break;
     case 2:
-        Cmd_open(args);
+        Cmd_open(args, L.files);
         break;
     case 3:
-        Cmd_open(args);
+        Cmd_open(args, L.files);
         break;
     default:
         printError(args.array[0], "Invalid argument");
@@ -382,50 +383,90 @@ void cmdOpen(tArgs args, tLists L)
     }
 }
 
-void openL(tListF LF)
-{
-    tPosF p;
-
-    if (!isEmptyListF(LF))
-    {
-        p = firstF(LF);
-
-        for (; nextF(p, LF) != LNULL; nextF(p, LF))
-        {
-            printf("Descriptor: %d ->%s %s", p->data.df, p->data.info, p->data.mode);
-        }
+void openL(tListF LF) {
+    tPosF pos = firstF(LF);  // Comenzamos desde el primer elemento
+    
+    // Recorremos la lista mientras la posición no sea NULL
+    while (pos != LNULL) {
+        // Obtenemos el ítem en la posición actual y lo imprimimos
+        tItemF item = getItemF(pos, LF);
+        printItemF(item);
+        
+        // Avanzamos al siguiente elemento
+        pos = nextF(pos, LF);
     }
 }
 
-void Cmd_open(tArgs args)
+
+void Cmd_open(tArgs args, tListF LF)
 {
     int i, df, mode = 0;
+    char *modeStr;
+    tItemF I;
+    tPosF p;
 
     for (i = 2; args.array[i] != NULL; i++)
+    {
         if (!strcmp(args.array[i], "cr"))
+        {
             mode |= O_CREAT;
+            modeStr = "O_CREATE";
+        }
+
         else if (!strcmp(args.array[i], "ex"))
+        {
             mode |= O_EXCL;
+            modeStr = "O_EXCL";
+        }
+
         else if (!strcmp(args.array[i], "ro"))
+        {
             mode |= O_RDONLY;
+            modeStr = "O_RDONLY";
+        }
+
         else if (!strcmp(args.array[i], "wo"))
+        {
             mode |= O_WRONLY;
+            modeStr = "O_WRONLY";
+        }
+
         else if (!strcmp(args.array[i], "rw"))
+        {
             mode |= O_RDWR;
+            modeStr = "O_RDWR";
+        }
+
         else if (!strcmp(args.array[i], "ap"))
+        {
             mode |= O_APPEND;
+            modeStr = "O_APPEND";
+        }
+
         else if (!strcmp(args.array[i], "tr"))
+        {
             mode |= O_TRUNC;
+            modeStr = "O_TRUNC";
+        }
         else
             break;
+    }
 
     if ((df = open(args.array[1], mode, 0777)) == -1)
         perror("Imposible abrir fichero"); // cambiar este perror
     else
     {
+        I.df = df;
+        strcpy(I.info, args.array[1]);
+        strcpy(I.mode, modeStr);
 
-        // Añadir datos a la lista
-        // printf ("Anadida entrada a la tabla ficheros abiertos..................",......);
+        p = firstF(LF);
+        for (int j=0; j<df;j++ ){
+            p=nextF(p, LF);
+        }
+
+        insertItemF(I, p, &LF);
+        printf ("Anadida entrada %d a la tabla ficheros abiertos\n",df);
     }
 }
 

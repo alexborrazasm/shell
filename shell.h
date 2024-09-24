@@ -16,6 +16,8 @@ void selectCommand(tArgs args, char *input, tLists L, bool *end);
 
 void freeHistoryList(tListH *list);
 
+void freeFileList(tListF *list);
+
 int stringCut(char *input, char *parts[]);
 
 void printError(char *name, char *msg);

@@ -7,26 +7,44 @@ void createEmptyListF(tListF *L)
     *L = LNULL;
 }
 
-void initFList(tListF L){
-    tItemF imput;
+
+
+void printItemF(tItemF item) {
+    printf("Descriptor de archivo: %d\n", item.df);
+    printf("Info: %s\n", item.info);
+    printf("Modo: %s\n", item.mode);
+    printf("----------------------------\n");
+}
+
+void initFList(tListF *L) {
+    tItemF input;
     tItemF output;
     tItemF error;
 
-    imput.df=0;
-    strcpy(imput.info, "entrada estandar");
-    strcpy(imput.info, "O_RDWR");
 
-    output.df=1;
-    strcpy(output.info, "entrada estandar");
-    strcpy(output.info, "O_RDWR");
+    // Inicializando los valores para 'input'
+    input.df = 0;
+    strcpy(input.info, "entrada estandar");
+    strcpy(input.mode, "O_RDWR");
 
-    error.df=2;
-    strcpy(error.info, "entrada estandar");
-    strcpy(error.info, "O_RDWR");
+    // Inicializando los valores para 'output'
+    output.df = 1;
+    strcpy(output.info, "salida estandar");
+    strcpy(output.mode, "O_RDWR");
 
-    insertItemF(imput, lastF(L), &L);
-    insertItemF(output, lastF(L), &L);
-    insertItemF(error, lastF(L), &L);
+    // Inicializando los valores para 'error'
+    error.df = 2;
+    strcpy(error.info, "error estandar");
+    strcpy(error.mode, "O_RDWR");
+
+
+    // Insertando los ítems en la lista
+    insertItemF(input, LNULL, L); 
+
+    insertItemF(output, LNULL, L);   
+
+    insertItemF(error, LNULL, L);   
+
 }
 
 bool isEmptyListF(tListF L)
@@ -117,7 +135,7 @@ void deleteAtPositionF(tPosF p, tListF *L)
         {
             *L = p->next;         // point the list to second node
             (*L)->prev = p->prev; // p->prev point to lastF node
-        }
+        }    createEmptyListF(L);
     }
     else if (p->next == LNULL) // p is the lastF node
     {

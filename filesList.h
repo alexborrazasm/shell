@@ -39,7 +39,9 @@ void deleteAtPositionF(tPosF p, tListF *L);
 
 tItemF getItemF(tPosF p, tListF L);
 
-void initFList(tListF L);
+void initFList(tListF *L);
+
+void printItemF(tItemF item);
 
 bool updateItemF(tPosF p,tItemF I);
 #endif

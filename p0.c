@@ -16,6 +16,8 @@ void shell()
 
     // History list
     createEmptyListH(&L.historic);
+    createEmptyListF(&L.files);
+    initFList(&L.files);
 
     while (!finished)
     {
@@ -24,4 +26,6 @@ void shell()
             processInput(L, &finished);
     }
     freeHistoryList(&L.historic);
+    freeFileList(&L.files);
+
 }

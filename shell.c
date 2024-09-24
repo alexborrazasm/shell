@@ -17,7 +17,7 @@ tCommand commands[] =
      "Shows the historic of commands executed by this shell.\n\t\t   "
      "-N: Prints only the lastN commands\n\t\t    "
      "N: Repeats command number N"},
-    {"open", cmdHistoric, "open [file] mode", // change me
+    {"open", cmdOpen, "open [file] mode", // change me
      "Opens a file and adds it the to the list of shell open files\n\t\t    "
      "Open without arguments lists the shell open files\nmodes:\n"
      "cr: O_CREAT\tap: O_APPEND\tex: O_EXCL\tro: O_RDONLY\n"
@@ -149,6 +149,18 @@ void freeHistoryList(tListH *list)
     {
         node = lastH(*list);
         deleteAtPositionH(node, list);
+    }
+}
+
+void freeFileList(tListF *list)
+{
+   tPosF p;
+
+   
+    while (!isEmptyListF(*list)) {
+        p = lastF(*list); 
+        deleteAtPositionF(p, list);
+        printf("a\n"); 
     }
 }
 
