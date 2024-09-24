@@ -3,6 +3,7 @@
 
 #include "types.h"
 #include "historicList.h"
+#include "filesList.h"
 #include "libp0.h"
 
 void printPrompt();

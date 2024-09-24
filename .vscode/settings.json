@@ -6,6 +6,7 @@
         "historiclist.h": "c",
         "libp0.h": "c",
         "limits.h": "c",
-        "syslimits.h": "c"
+        "syslimits.h": "c",
+        "shell.h": "c"
     }
 }
