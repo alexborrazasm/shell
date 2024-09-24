@@ -21,12 +21,14 @@ typedef struct tArgs
     int len;
 } tArgs;
 
+
+
 // Forward declaration for tListH
 typedef struct tNode *tPosH;
 typedef tPosH tListH;
 
-// Forward declaration for tListH
-typedef struct tNode *tPosF;
+// Forward declaration for tListF
+typedef struct tNodeF *tPosF;
 typedef tPosF tListF;
 
 typedef struct tLists

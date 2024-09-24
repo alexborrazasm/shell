@@ -5,37 +5,40 @@
 
 #define LNULL NULL
 
-typedef struct tItemH
+typedef struct tItemF
 {
-    char name[MAX_BUFFER_INPUT];
-    // en proceso de fumar
-} tItemH;
+    char info[MAX_BUFFER_INPUT];
+    int df;
+    char mode[MAX_BUFFER_INPUT];
+} tItemF;
 
-struct tNode
+struct tNodeF
 {
-    tItemH data;
-    struct tNode *next;
-    struct tNode *prev;
+    tItemF data;
+    struct tNodeF *next;
+    struct tNodeF *prev;
 };
 
-typedef tPosH tListH;
+typedef tPosF tListF;
 
-void createEmptyListF(tListH *L);
+void createEmptyListF(tListF *L);
 
-bool isEmptyListF(tListH L);
+bool isEmptyListF(tListF L);
 
-tPosH firstF(tListH L);
+tPosF firstF(tListF L);
 
-tPosH lastF(tListH L);
+tPosF lastF(tListF L);
 
-tPosH nextF(tPosH p, tListH L);
+tPosF nextF(tPosF p, tListF L);
 
-tPosH previousF(tPosH p, tListH L);
+tPosF previousF(tPosF p, tListF L);
 
-bool insertItemF(tItemH d, tPosH p, tListH *L);
+bool insertItemF(tItemF d, tPosF p, tListF *L);
 
-void deleteAtPositionF(tPosH p, tListH *L);
+void deleteAtPositionF(tPosF p, tListF *L);
 
-tItemH getItemF(tPosH p, tListH L);
+tItemF getItemF(tPosF p, tListF L);
 
+
+bool updateItemF(tPosF p,tItemF I);
 #endif

@@ -1,30 +1,30 @@
 #include "filesList.h"
 
-bool createNode(tPosH *p);
+bool createNodeF(tPosF *p);
 
-void createEmptyListF(tListH *L)
+void createEmptyListF(tListF *L)
 {
     *L = LNULL;
 }
 
-bool isEmptyListF(tListH L)
+bool isEmptyListF(tListF L)
 {
     return L == LNULL;
 }
 
-tPosH firstF(tListH L)
+tPosF firstF(tListF L)
 {
     return L;
 }
 
-tPosH lastF(tListH L)
+tPosF lastF(tListF L)
 {
     return L->prev;
 }
 
-tPosH previousF(tPosH p, tListH L)
+tPosF previousF(tPosF p, tListF L)
 {
-    if (p->prev == last(L))
+    if (p->prev == lastF(L))
     {
         return LNULL;
     }
@@ -32,33 +32,33 @@ tPosH previousF(tPosH p, tListH L)
         return p->prev;
 }
 
-tPosH nextF(tPosH p, tListH L)
+tPosF nextF(tPosF p, tListF L)
 {
     UNUSED(L);
     return p->next; // Devuelve NULL si es el último, y si no el siguiente
 }
 
-bool insertItemF(tItemH d, tPosH p, tListH *L)
+bool insertItemF(tItemF d, tPosF p, tListF *L)
 {
-    tPosH q;
+    tPosF q;
 
-    if (!createNode(&q))
+    if (!createNodeF(&q))
         return false;
 
     q->data = d;
     q->next = LNULL;
     q->prev = LNULL;
 
-    if (isEmptyList(*L)) // Empty list
+    if (isEmptyListF(*L)) // Empty list
     {
         *L = q; // The first node its q
         q->prev = q;
     }
     else if (p == LNULL) // Insert at the end
     {
-        tPosH r;
+        tPosF r;
 
-        r = (*L)->prev; // (*L)->prev is the last node
+        r = (*L)->prev; // (*L)->prev is the lastF node
         r->next = q;
         q->prev = r;
         (*L)->prev = q;
@@ -66,7 +66,7 @@ bool insertItemF(tItemH d, tPosH p, tListH *L)
     else if (p == *L) // Insert at first position
     {
         q->next = *L;
-        q->prev = (*L)->prev; // (*L)->prev point to last node
+        q->prev = (*L)->prev; // (*L)->prev point to lastF node
         (*L)->prev = q;
         *L = q;
     }
@@ -81,9 +81,9 @@ bool insertItemF(tItemH d, tPosH p, tListH *L)
     return true;
 }
 
-void deleteAtPositionF(tPosH p, tListH *L)
+void deleteAtPositionF(tPosF p, tListF *L)
 {
-    tPosH q;
+    tPosF q;
 
     if (p == *L) // p is the first node
     {
@@ -94,10 +94,10 @@ void deleteAtPositionF(tPosH p, tListH *L)
         else
         {
             *L = p->next;         // point the list to second node
-            (*L)->prev = p->prev; // p->prev point to last node
+            (*L)->prev = p->prev; // p->prev point to lastF node
         }
     }
-    else if (p->next == LNULL) // p is the last node
+    else if (p->next == LNULL) // p is the lastF node
     {
         q = p->prev;
         (*L)->prev = q;
@@ -114,17 +114,28 @@ void deleteAtPositionF(tPosH p, tListH *L)
     free(p);
 }
 
-tItemH getItemF(tPosH p, tListH L)
+tItemF getItemF(tPosF p, tListF L)
 {
     UNUSED(L);
     return (p->data);
 }
 
-bool createNode(tPosH *p)
+bool createNodeF(tPosF *p)
 {
-    *p = malloc(sizeof(struct tNode));
+    *p = malloc(sizeof(struct tNodeF));
     if (*p == LNULL)
         return false;
     else
         return true;
+}
+
+
+bool updateItemF(tPosF p,tItemF I) {
+    if (p == NULL) {
+        return false;
+    }
+    
+    p->data = I;
+    
+    return true;
 }
