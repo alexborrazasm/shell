@@ -66,7 +66,7 @@ bool readInput(tLists *L)
             item.n = last.n + 1;
         }
 
-        if (!insertItemH(item, LNULL, &L->historic))
+        if (!insertItemH(item, HNULL, &L->historic))
         {
             puts("Error: historic inset");
             return false;
@@ -101,11 +101,11 @@ int getInput(char *input)
     return len;
 }
 
-void processInput(tLists L, bool *end)
+void processInput(tLists *L, bool *end)
 {
-    if (!isEmptyListH(L.historic))
+    if (!isEmptyListH(L->historic))
     {
-        tItemH item = getItemH(lastH(L.historic), L.historic);
+        tItemH item = getItemH(lastH(L->historic), L->historic);
         tArgs args;
         args.len = stringCut(item.command, args.array);
 
@@ -113,7 +113,7 @@ void processInput(tLists L, bool *end)
     }
 }
 
-void selectCommand(tArgs args, char *input, tLists L, bool *end)
+void selectCommand(tArgs args, char *input, tLists *L, bool *end)
 {
     const int nCommands = getCommandsLen();
 
@@ -136,8 +136,7 @@ void selectCommand(tArgs args, char *input, tLists L, bool *end)
             return;
         }
 
-        printf("\033[1;31mshell: %s: command not found...\033[0m\n",
-               input);
+        printError(input, "command not found...");
     }
 }
 
@@ -156,11 +155,9 @@ void freeFileList(tListF *list)
 {
    tPosF p;
 
-   
     while (!isEmptyListF(*list)) {
         p = lastF(*list); 
         deleteAtPositionF(p, list);
-        printf("a\n"); 
     }
 }
 
@@ -221,16 +218,31 @@ void initFList(tListF *L)
     strcpy(error.info, "standard error");
     strcpy(error.mode, "O_RDWR");
 
-    insertItemF(input, LNULL, L);
-    insertItemF(output, LNULL, L);
-    insertItemF(error, LNULL, L);
+    insertItemF(input, FNULL, L);
+    insertItemF(output, FNULL, L);
+    insertItemF(error, FNULL, L);
 
     strcpy(empty.info, "empty");
     strcpy(empty.mode, "empty");
 
-    for (int i = 4; i <= 9; i++)
+    for (int i = 3; i <= 9; i++)
     {
         empty.df = i;
-        insertItemF(empty, LNULL, L);
+        insertItemF(empty, FNULL, L);
     }
 }
+
+bool stringToInt(char *str, int *n)
+{
+    char *endptr = NULL;
+    // Convert
+    *n = strtol(str, &endptr, 10);
+
+    // Error check
+    if (*endptr != '\0') {
+        return false;
+    }
+
+    return true;
+}
+

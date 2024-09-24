@@ -10,9 +10,9 @@ void printPrompt();
 
 bool readInput(tLists *L);
 
-void processInput(tLists L, bool *end);
+void processInput(tLists *L, bool *end);
 
-void selectCommand(tArgs args, char *input, tLists L, bool *end);
+void selectCommand(tArgs args, char *input, tLists *L, bool *end);
 
 void freeHistoryList(tListH *list);
 
@@ -29,5 +29,7 @@ int getCommandsLen();
 void getCommands(tCommand *pointer);
 
 void initFList(tListF *L);
+
+bool stringToInt(char *str, int *n);
 
 #endif // SHELL_H

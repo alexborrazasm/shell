@@ -17,14 +17,14 @@ void shell()
     // History list
     createEmptyListH(&L.historic);
     createEmptyListF(&L.files);
-    
+
     initFList(&L.files);
 
     while (!finished)
     {
         printPrompt();
         if (readInput(&L))
-            processInput(L, &finished);
+            processInput(&L, &finished);
     }
     freeHistoryList(&L.historic);
     freeFileList(&L.files);

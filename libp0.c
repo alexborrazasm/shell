@@ -6,7 +6,7 @@
 void autName();
 void autLogin();
 
-void cmdAuthors(tArgs args, tLists L)
+void cmdAuthors(tArgs args, tLists *L)
 {
     UNUSED(L);
 
@@ -50,7 +50,7 @@ void autLogin()
 
 /******************************************************************************/
 // pid
-void cmdPid(tArgs args, tLists L)
+void cmdPid(tArgs args, tLists *L)
 {
     UNUSED(L);
 
@@ -68,7 +68,7 @@ void cmdPid(tArgs args, tLists L)
 
 /******************************************************************************/
 // ppid
-void cmdPpid(tArgs args, tLists L)
+void cmdPpid(tArgs args, tLists *L)
 {
     UNUSED(L);
 
@@ -89,7 +89,7 @@ void cmdPpid(tArgs args, tLists L)
 void getcwdAux(tArgs args);
 void chdirAux(tArgs args);
 
-void cmdChdir(tArgs args, tLists L)
+void cmdChdir(tArgs args, tLists *L)
 {
     UNUSED(L);
 
@@ -145,7 +145,7 @@ void chdirAux(tArgs args)
 void date(tArgs args);
 void timeC(tArgs args);
 
-void cmdDate(tArgs args, tLists L)
+void cmdDate(tArgs args, tLists *L)
 {
     UNUSED(L);
 
@@ -220,27 +220,35 @@ void timeC(tArgs args)
 // historic [N|-N]
 void printHistoric(tArgs args, tListH historic);
 void printHistoricN(tArgs args, tListH historic, int n);
-void callHistoric(tArgs args, tLists L, int n);
+void callHistoric(tArgs args, tLists *L, int n);
 
-void cmdHistoric(tArgs args, tLists L)
+void cmdHistoric(tArgs args, tLists *L)
 {
     if (args.len == 1) // Do not have argument
     {
-        printHistoric(args, L.historic);
+        printHistoric(args, L->historic);
         return;
     }
     else if (args.len == 2) // Have 1 argument
     {
         if (args.array[1][0] != '-') // historic N
         {
-            callHistoric(args, L, atoi(&args.array[1][0]));
+            int n;
+            if(stringToInt(args.array[1], &n))
+                callHistoric(args, L, n);
+            else 
+                printError(args.array[0], "Invalid argument");
             return;
         }
         else // historic -N
         {
             if (strlen(args.array[1]) > 1)
             {
-                printHistoricN(args, L.historic, atoi(&args.array[1][1]));
+                int n;
+                if(stringToInt(&args.array[1][1], &n))
+                    printHistoricN(args, L->historic, n);
+                else
+                    printError(args.array[0], "Invalid argument");
                 return;
             }
         }
@@ -258,7 +266,7 @@ void printHistoric(tArgs args, tListH historic)
     {
         tPosH p = firstH(historic);
 
-        while (p != LNULL)
+        while (p != HNULL)
         {
             item = getItemH(p, historic);
             printf("%d  %s\n", item.n, item.command);
@@ -279,7 +287,7 @@ void printHistoricN(tArgs args, tListH historic, int n)
     tPosH p;
     int i = 1;
 
-    if (n > 0) // atoi("letter") return 0
+    if (n > 0)
     {
         if (!isEmptyListH(historic))
         {
@@ -288,7 +296,7 @@ void printHistoricN(tArgs args, tListH historic, int n)
 
             for (; i < n; i++)
             {
-                if (p != LNULL)
+                if (p != HNULL)
                     p = previousH(p, historic);
                 else // Loop list
                 {
@@ -297,7 +305,7 @@ void printHistoricN(tArgs args, tListH historic, int n)
                 }
             }
             // Print
-            for (; p != LNULL; p = nextH(p, historic))
+            for (; p != HNULL; p = nextH(p, historic))
             {
                 item = getItemH(p, historic);
                 printf("%d  %s\n", item.n, item.command);
@@ -314,23 +322,23 @@ void printHistoricN(tArgs args, tListH historic, int n)
     }
 }
 
-void callHistoric(tArgs args, tLists L, int n)
+void callHistoric(tArgs args, tLists *L, int n)
 {
-    if (!isEmptyListH(L.historic))
+    if (!isEmptyListH(L->historic))
     {
-        tPosH p = firstH(L.historic);
-        tItemH item = getItemH(p, L.historic);
+        tPosH p = firstH(L->historic);
+        tItemH item = getItemH(p, L->historic);
 
         // Search command by historic number
-        for (; p != LNULL; p = nextH(p, L.historic))
+        for (; p != HNULL; p = nextH(p, L->historic))
         { // can't call actual cmd command
             if (item.n == n)
                 break;
 
-            item = getItemH(p, L.historic);
+            item = getItemH(p, L->historic);
         }
 
-        if (p == LNULL) // Not found command
+        if (p == HNULL) // Not found command
         {
             printError(args.array[0], "Command number not found");
             return;
@@ -361,21 +369,21 @@ void callHistoric(tArgs args, tLists L, int n)
 /******************************************************************************/
 // open [file] mode
 void openList(tListF L);
-void Cmd_open(tArgs args, tListF LF);
+void Cmd_open(tArgs args, tListF *L);
 void printItemF(tItemF item);
 
-void cmdOpen(tArgs args, tLists L)
+void cmdOpen(tArgs args, tLists *L)
 {
     switch (args.len)
     {
     case 1:
-        openList(L.files);
+        openList(L->files);
         break;
     case 2:
-        Cmd_open(args, L.files);
+        Cmd_open(args, &L->files);
         break;
     case 3:
-        Cmd_open(args, L.files);
+        Cmd_open(args, &L->files);
         break;
     default:
         printError(args.array[0], "Invalid argument");
@@ -390,22 +398,26 @@ void openList(tListF L)
         tPosF p;
         tItemF item;
 
-        for (p = firstF(L); p != LNULL; p = nextF(p, L))
+        for (p = firstF(L); p != FNULL; p = nextF(p, L))
         {
             item = getItemF(p, L);
             printItemF(item);
         }
     }
+    else
+    {
+        printError("open", "filesList is empty");
+    }
 }
 
-void Cmd_open(tArgs args, tListF LF)
+void Cmd_open(tArgs args, tListF *L)
 {
     int i, df, mode = 0;
-    char *modeStr;
-    tItemF I;
+    char *modeStr = NULL;
+    tItemF item;
     tPosF p;
 
-    for (i = 2; args.array[i] != NULL; i++)
+    for (i = 2; i < args.len; i++)
     {
         if (!strcmp(args.array[i], "cr"))
         {
@@ -453,79 +465,110 @@ void Cmd_open(tArgs args, tListF LF)
     }
 
     if ((df = open(args.array[1], mode, 0777)) == -1)
-        perror("Imposible abrir fichero"); // cambiar este perror
+        pPrintError(args.array[0]);
     else
     {
-        I.df = df;
-        strcpy(I.info, args.array[1]);
-        strcpy(I.mode, modeStr);
+        item.df = df;
+        strcpy(item.info, args.array[1]);
+        if (args.len > 2)
+            strcpy(item.mode, modeStr);
+        else
+            strcpy(item.mode, "empty");
 
-        p = firstF(LF);
-        for (int j = 0; j < df; j++)
+        p = findItemF(df, *L);
+
+        if (p == FNULL)
         {
-            p = nextF(p, LF);
+            if (!insertItemF(item, p, L)) // CHAPUZAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+            {
+                printError(args.array[0], "Can´t insert on filesList");
+                return;
+            }
         }
+        else // p exits
+            updateItemF(item, p, L); // chapuzaaaaaaaaaaaaaa
 
-        insertItemF(I, p, &LF);
-        printf("Anadida entrada %d a la tabla ficheros abiertos\n", df);
+        printf("Added %d entry to the open files table\n", df);
     }
 }
 
 void printItemF(tItemF item)
 {
-    printf("Descriptor de archivo: %d\n", item.df);
-    if (strcmp("empty", item.info) != 0)
+    if (strcmp("empty", item.mode) == 0) 
     {
-        printf("Info: %s\n", item.info);
-        printf("Modo: %s\n", item.mode);
+        printf("descriptor: %d -> %s\n", item.df, item.info);
+    }
+    else if (strcmp("empty", item.info) != 0)
+    {
+        printf("descriptor: %d -> %s %s\n", item.df, item.info, item.mode);
     }
     else
         puts("unused");
-    printf("----------------------------\n");
 }
 
 /******************************************************************************/
 // close [df]
+void auxClose(int df, tArgs args, tListF *L);
 
-void auxClose(int df, tListF LF);
-void cmdClose(tArgs args, tLists L)
+void cmdClose(tArgs args, tLists *L)
 {
-    int df;
-
     switch (args.len)
     {
     case 1:
-        openList(L.files);
+        openList(L->files);
         break;
     case 2:
-        if ((df = atoi(args.array[1])) < 0)
+        int df;
+
+        if (!stringToInt(args.array[1], &df))
         {
-            openList(L.files);
+            printError(args.array[0], "Invalid argument");
+        }
+        else if (df < 0)
+        {
+            openList(L->files);
         }
         else
         {
-            auxClose(df, L.files);
+            auxClose(df, args, &L->files);
         }
-    default:
         break;
-    }
-
-    if (args.array[1] == NULL || (df = atoi(args.array[1])) < 0)
-    {
-
-        return;
+    default: // args.len > 2
+        printError(args.array[0], "Invalid num of arguments");
+        break;
     }
 }
 
-void auxClose(int df, tListF LF)
+void auxClose(int df, tArgs args, tListF *L)
 {
     if (close(df) == -1)
     {
-        perror("Inposible cerrar descriptor"); //MODIFICAR ADKJHASIDHAS
+        pPrintError(args.array[0]);
     }
     else
     {
-        updateItemF(df, LF);
+        tItemF item; tPosF p;
+
+        p = findItemF(df, *L);
+        
+        if (p != FNULL)
+        {
+            if (df <= 9)
+            {
+                item = getItemF(p, *L);
+                strcpy(item.info, "empty");
+                strcpy(item.mode, "empty");
+                updateItemF(item, p, L);
+            }
+            else 
+            {
+                deleteAtPositionF(p, L);
+            }
+        }
+        else
+        {
+            printError(args.array[0], "Bad file descriptor");
+        }
     }
 }
 
@@ -536,7 +579,7 @@ void auxClose(int df, tListF LF)
 // infosys
 void infosysAux();
 
-void cmdInfosys(tArgs args, tLists L)
+void cmdInfosys(tArgs args, tLists *L)
 {
     UNUSED(L);
 
@@ -576,7 +619,7 @@ void help();
 
 void helpCommand(tArgs args);
 
-void cmdHelp(tArgs args, tLists L)
+void cmdHelp(tArgs args, tLists *L)
 {
     UNUSED(L);
 

@@ -3,7 +3,7 @@
 
 #include "types.h"
 
-#define LNULL NULL
+#define FNULL NULL
 
 typedef struct tItemF
 {
@@ -39,6 +39,8 @@ void deleteAtPositionF(tPosF p, tListF *L);
 
 tItemF getItemF(tPosF p, tListF L);
 
-void updateItemF(int p, tListF LF);
+void updateItemF(tItemF d, tPosF p, tListF* L);
+
+tPosF findItemF(int df, tListF L);
 
 #endif

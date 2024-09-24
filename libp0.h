@@ -9,19 +9,19 @@
 /* Prints the names and logins of the program authors. authors -l prints
    only the logins and authors -n prints only the names.
 */
-void cmdAuthors(tArgs args, tLists L);
+void cmdAuthors(tArgs args, tLists *L);
 
 // pid
 
 /* Prints the pid of the process executing the shell.
  */
-void cmdPid(tArgs args, tLists L);
+void cmdPid(tArgs args, tLists *L);
 
 // ppid
 
 /* Prints the pid of the shell’s parent process.
  */
-void cmdPpid(tArgs args, tLists L);
+void cmdPpid(tArgs args, tLists *L);
 
 // cd [dir]
 
@@ -29,7 +29,7 @@ void cmdPpid(tArgs args, tLists L);
    chdir system call). When invoked without arguments it prints the current
    working directory (using the getcwd system call.
 */
-void cmdChdir(tArgs args, tLists L);
+void cmdChdir(tArgs args, tLists *L);
 
 // date [-t|-d]
 
@@ -38,7 +38,7 @@ void cmdChdir(tArgs args, tLists L);
      -date -d: Prints the current date in the format DD/MM/YYYY.
      -date -t: Prints and the current time in the format hh:mm:ss.
 */
-void cmdDate(tArgs args, tLists L);
+void cmdDate(tArgs args, tLists *L);
 
 // historic [N|-N]
 
@@ -48,10 +48,10 @@ void cmdDate(tArgs args, tLists L);
      – historic N: Repeats command number N (from historic list).
      – historic -N Prints only the lastN commands.
 */
-void cmdHistoric(tArgs args, tLists L);
+void cmdHistoric(tArgs args, tLists *L);
 
 // open [file] mode
-void cmdOpen(tArgs args, tLists L);
+void cmdOpen(tArgs args, tLists *L);
 /* Opens a file and adds it (together with the file descriptor and the opening
    mode to the list of shell open files. For the mode we’ll use cr for O CREAT,
    ap for O APPEND, ex for O EXCL, ro for O RDONLY, rw for O RDWR, wo for O
@@ -61,14 +61,14 @@ void cmdOpen(tArgs args, tLists L);
    from its parent process open descriptors 0, 1 and 2 (stdin, stout, and
    stderr).
 */
-void cmdOpen(tArgs args, tLists L);
+void cmdOpen(tArgs args, tLists *L);
 
 // close [df]
 // void
 /* Closes the df file descriptor and eliminates the corresponding item from
    the list.
 */
-void cmdClose(tArgs args, tLists L);
+void cmdClose(tArgs args, tLists *L);
 
 // dup [df]
 // void
@@ -80,13 +80,13 @@ void cmdClose(tArgs args, tLists L);
 /* Prints information on the machine running the shell (as obtained via
    the uname system call/library function).
 */
-void cmdInfosys(tArgs args, tLists L);
+void cmdInfosys(tArgs args, tLists *L);
 
 // help [cmd]
 /* help: Displays a list of available commands.
    help cmd: Gives a brief help on the usage of command cmd.
 */
-void cmdHelp(tArgs args, tLists L);
+void cmdHelp(tArgs args, tLists *L);
 
 // quit
 // exit

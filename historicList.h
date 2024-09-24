@@ -3,7 +3,7 @@
 
 #include "types.h"
 
-#define LNULL NULL
+#define HNULL NULL
 
 typedef struct tItemH
 {

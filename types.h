@@ -39,7 +39,7 @@ typedef struct tLists
 typedef struct tCommand
 {
     const char *name;
-    void (*func)(tArgs, tLists);
+    void (*func)(tArgs, tLists*);
     const char *help0;
     const char *help1;
 } tCommand;

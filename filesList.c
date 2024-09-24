@@ -2,14 +2,14 @@
 
 bool createNodeF(tPosF *p);
 
-void createEmptyListF(tListF *L)
+void createEmptyListF (tListF *L)
 {
-    *L = LNULL;
+    *L = FNULL;
 }
 
 bool isEmptyListF(tListF L)
 {
-    return L == LNULL;
+    return L == FNULL;
 }
 
 tPosF firstF(tListF L)
@@ -26,7 +26,7 @@ tPosF previousF(tPosF p, tListF L)
 {
     if (p->prev == lastF(L))
     {
-        return LNULL;
+        return FNULL;
     }
     else
         return p->prev;
@@ -46,15 +46,15 @@ bool insertItemF(tItemF d, tPosF p, tListF *L)
         return false;
 
     q->data = d;
-    q->next = LNULL;
-    q->prev = LNULL;
+    q->next = FNULL;
+    q->prev = FNULL;
 
     if (isEmptyListF(*L)) // Empty list
     {
         *L = q; // The first node its q
         q->prev = q;
     }
-    else if (p == LNULL) // Insert at the end
+    else if (p == FNULL) // Insert at the end
     {
         tPosF r;
 
@@ -87,9 +87,9 @@ void deleteAtPositionF(tPosF p, tListF *L)
 
     if (p == *L) // p is the first node
     {
-        if (p->next == LNULL)
+        if (p->next == FNULL)
         {
-            *L = LNULL;
+            *L = FNULL;
         }
         else
         {
@@ -98,11 +98,11 @@ void deleteAtPositionF(tPosF p, tListF *L)
         }
         createEmptyListF(L);
     }
-    else if (p->next == LNULL) // p is the lastF node
+    else if (p->next == FNULL) // p is the lastF node
     {
         q = p->prev;
         (*L)->prev = q;
-        q->next = LNULL;
+        q->next = FNULL;
     }
     else // p is in the middle
     {
@@ -124,22 +124,23 @@ tItemF getItemF(tPosF p, tListF L)
 bool createNodeF(tPosF *p)
 {
     *p = malloc(sizeof(struct tNodeF));
-    if (*p == LNULL)
+    if (*p == FNULL)
         return false;
     else
         return true;
 }
 
-void updateItemF(int p, tListF LF)
+void updateItemF(tItemF d, tPosF p, tListF* L)
 {
+    UNUSED(L);
+    p->data=d;
+}
 
-    tPosF q = firstF(LF);
+tPosF findItemF(int df, tListF L)
+{
+    tPosF p;
 
-    for (int j = 0; j < p; j++)
-    {
-        q = nextF(q, LF);
-    }
-
-    strcpy(q->data.info, "empty");
-    strcpy(q->data.mode, "");
+    for (p = L; (p != FNULL) && (p->data.df != df); p = p->next);
+    
+    return p;
 }
