@@ -55,6 +55,7 @@ void cmdHistoric(tArgs args, tLists L);
    from its parent process open descriptors 0, 1 and 2 (stdin, stout, and
    stderr).
 */
+void cmdOpen(tArgs args, tLists L);
 
 // close [df]
 // void

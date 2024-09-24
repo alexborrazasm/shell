@@ -360,6 +360,62 @@ void callHistoric(tArgs args, tLists L, int n)
 
 /******************************************************************************/
 // open [file] mode
+void openL(tLists L);
+
+void cmdOpen(tArgs args, tLists L)
+{
+    switch (args.len)
+    {
+    case 1:
+        openL(L);
+        break;
+    case 2:
+        Cmd_open(args);
+        break;
+    case 3:
+        Cmd_open(args);
+        break;
+    default:
+        printError(args.array[0], "Invalid argument");
+        break;
+    }
+}
+
+void openL(tLists L)
+{
+}
+
+void Cmd_open(tArgs args)
+{
+    int i, df, mode = 0;
+
+    for (i = 2; args.array[i] != NULL; i++)
+        if (!strcmp(args.array[i], "cr"))
+            mode |= O_CREAT;
+        else if (!strcmp(args.array[i], "ex"))
+            mode |= O_EXCL;
+        else if (!strcmp(args.array[i], "ro"))
+            mode |= O_RDONLY;
+        else if (!strcmp(args.array[i], "wo"))
+            mode |= O_WRONLY;
+        else if (!strcmp(args.array[i], "rw"))
+            mode |= O_RDWR;
+        else if (!strcmp(args.array[i], "ap"))
+            mode |= O_APPEND;
+        else if (!strcmp(args.array[i], "tr"))
+            mode |= O_TRUNC;
+        else
+            break;
+
+    if ((df = open(args.array[1], mode, 0777)) == -1)
+        perror("Imposible abrir fichero"); // cambiar este perror
+    else
+    {
+
+        // Añadir datos a la lista
+        // printf ("Anadida entrada a la tabla ficheros abiertos..................",......);
+    }
+}
 
 /******************************************************************************/
 // close [df]

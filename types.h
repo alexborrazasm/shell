@@ -9,6 +9,7 @@
 #include <unistd.h>
 #include <sys/utsname.h>
 #include <errno.h>
+#include <fcntl.h>
 
 #define MAX_BUFFER_INPUT 50
 #define MAX_ARGS 10
