@@ -95,7 +95,8 @@ void deleteAtPositionF(tPosF p, tListF *L)
         {
             *L = p->next;         // point the list to second node
             (*L)->prev = p->prev; // p->prev point to lastF node
-        }    createEmptyListF(L);
+        }
+        createEmptyListF(L);
     }
     else if (p->next == LNULL) // p is the lastF node
     {
@@ -129,13 +130,16 @@ bool createNodeF(tPosF *p)
         return true;
 }
 
+void updateItemF(int p, tListF LF)
+{
 
-bool updateItemF(tPosF p,tItemF I) {
-    if (p == NULL) {
-        return false;
+    tPosF q = firstF(LF);
+
+    for (int j = 0; j < p; j++)
+    {
+        q = nextF(q, LF);
     }
-    
-    p->data = I;
-    
-    return true;
+
+    strcpy(q->data.info, "empty");
+    strcpy(q->data.mode, "");
 }

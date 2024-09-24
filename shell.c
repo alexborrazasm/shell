@@ -22,7 +22,7 @@ tCommand commands[] =
      "Open without arguments lists the shell open files\nmodes:\n"
      "cr: O_CREAT\tap: O_APPEND\tex: O_EXCL\tro: O_RDONLY\n"
      "rw: O_RDWR\two O_WRONLY\ttr: O_TRUNC"},
-    {"close", cmdHistoric, "close [df]", // change me
+    {"close", cmdClose, "close [df]", // change me
      "Closes the df file descriptor and eliminates the corresponding item "
      "from the list"},
     {"dup", cmdHistoric, "dup [df]", // change me

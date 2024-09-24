@@ -387,7 +387,8 @@ void openList(tListF L)
 {
     if (!isEmptyListF(L))
     {
-        tPosF p; tItemF item;
+        tPosF p;
+        tItemF item;
 
         for (p = firstF(L); p != LNULL; p = nextF(p, L))
         {
@@ -460,16 +461,18 @@ void Cmd_open(tArgs args, tListF LF)
         strcpy(I.mode, modeStr);
 
         p = firstF(LF);
-        for (int j=0; j<df;j++ ){
-            p=nextF(p, LF);
+        for (int j = 0; j < df; j++)
+        {
+            p = nextF(p, LF);
         }
 
         insertItemF(I, p, &LF);
-        printf ("Anadida entrada %d a la tabla ficheros abiertos\n",df);
+        printf("Anadida entrada %d a la tabla ficheros abiertos\n", df);
     }
 }
 
-void printItemF(tItemF item) {
+void printItemF(tItemF item)
+{
     printf("Descriptor de archivo: %d\n", item.df);
     if (strcmp("empty", item.info) != 0)
     {
@@ -483,6 +486,48 @@ void printItemF(tItemF item) {
 
 /******************************************************************************/
 // close [df]
+
+void auxClose(int df, tListF LF);
+void cmdClose(tArgs args, tLists L)
+{
+    int df;
+
+    switch (args.len)
+    {
+    case 1:
+        openList(L.files);
+        break;
+    case 2:
+        if ((df = atoi(args.array[1])) < 0)
+        {
+            openList(L.files);
+        }
+        else
+        {
+            auxClose(df, L.files);
+        }
+    default:
+        break;
+    }
+
+    if (args.array[1] == NULL || (df = atoi(args.array[1])) < 0)
+    {
+
+        return;
+    }
+}
+
+void auxClose(int df, tListF LF)
+{
+    if (close(df) == -1)
+    {
+        perror("Inposible cerrar descriptor"); //MODIFICAR ADKJHASIDHAS
+    }
+    else
+    {
+        updateItemF(df, LF);
+    }
+}
 
 /******************************************************************************/
 // dup [df]
@@ -592,6 +637,7 @@ void helpCommand(tArgs args)
         strcmp("exit", args.array[1]) == 0 ||
         strcmp("quit", args.array[1]) == 0)
     {
+
         printf("%s    %s\n", args.array[1], "End the shell");
         return;
     }
@@ -612,30 +658,6 @@ void cmdExit(tArgs args, bool *end)
 
 /* examples
 
-void Cmd_open (char * tr[])
-{
-    int i,df, mode=0;
-
-    if (tr[0]==NULL) { //no hay parametro
-       ..............ListarFicherosAbiertos...............
-        return;
-    }
-    for (i=1; tr[i]!=NULL; i++)
-      if (!strcmp(tr[i],"cr")) mode|=O_CREAT;
-      else if (!strcmp(tr[i],"ex")) mode|=O_EXCL;
-      else if (!strcmp(tr[i],"ro")) mode|=O_RDONLY;
-      else if (!strcmp(tr[i],"wo")) mode|=O_WRONLY;
-      else if (!strcmp(tr[i],"rw")) mode|=O_RDWR;
-      else if (!strcmp(tr[i],"ap")) mode|=O_APPEND;
-      else if (!strcmp(tr[i],"tr")) mode|=O_TRUNC;
-      else break;
-
-    if ((df=open(tr[0],mode,0777))==-1)
-        perror ("Imposible abrir fichero");
-    else{
-        ...........AnadirAFicherosAbiertos (descriptor...modo...nombre....)....
-        printf ("Anadida entrada a la tabla ficheros abiertos..................",......);
-}
 
 void Cmd_close (char *tr[])
 {

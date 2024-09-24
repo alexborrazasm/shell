@@ -68,6 +68,7 @@ void cmdOpen(tArgs args, tLists L);
 /* Closes the df file descriptor and eliminates the corresponding item from
    the list.
 */
+void cmdClose(tArgs args, tLists L);
 
 // dup [df]
 // void
