@@ -152,6 +152,18 @@ void freeHistoryList(tListH *list)
     }
 }
 
+void freeFileList(tListF *list)
+{
+   tPosF p;
+
+   
+    while (!isEmptyListF(*list)) {
+        p = lastF(*list); 
+        deleteAtPositionF(p, list);
+        printf("a\n"); 
+    }
+}
+
 int stringCut(char *input, char *parts[])
 {
     int i = 1;

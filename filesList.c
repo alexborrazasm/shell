@@ -7,6 +7,46 @@ void createEmptyListF(tListF *L)
     *L = LNULL;
 }
 
+
+
+void printItemF(tItemF item) {
+    printf("Descriptor de archivo: %d\n", item.df);
+    printf("Info: %s\n", item.info);
+    printf("Modo: %s\n", item.mode);
+    printf("----------------------------\n");
+}
+
+void initFList(tListF *L) {
+    tItemF input;
+    tItemF output;
+    tItemF error;
+
+
+    // Inicializando los valores para 'input'
+    input.df = 0;
+    strcpy(input.info, "entrada estandar");
+    strcpy(input.mode, "O_RDWR");
+
+    // Inicializando los valores para 'output'
+    output.df = 1;
+    strcpy(output.info, "salida estandar");
+    strcpy(output.mode, "O_RDWR");
+
+    // Inicializando los valores para 'error'
+    error.df = 2;
+    strcpy(error.info, "error estandar");
+    strcpy(error.mode, "O_RDWR");
+
+
+    // Insertando los ítems en la lista
+    insertItemF(input, LNULL, L); 
+
+    insertItemF(output, LNULL, L);   
+
+    insertItemF(error, LNULL, L);   
+
+}
+
 bool isEmptyListF(tListF L)
 {
     return L == LNULL;
@@ -95,7 +135,7 @@ void deleteAtPositionF(tPosF p, tListF *L)
         {
             *L = p->next;         // point the list to second node
             (*L)->prev = p->prev; // p->prev point to lastF node
-        }
+        }    createEmptyListF(L);
     }
     else if (p->next == LNULL) // p is the lastF node
     {
