@@ -7,28 +7,6 @@ void createEmptyListF(tListF *L)
     *L = LNULL;
 }
 
-void initFList(tListF L){
-    tItemF imput;
-    tItemF output;
-    tItemF error;
-
-    imput.df=0;
-    strcpy(imput.info, "entrada estandar");
-    strcpy(imput.info, "O_RDWR");
-
-    output.df=1;
-    strcpy(output.info, "entrada estandar");
-    strcpy(output.info, "O_RDWR");
-
-    error.df=2;
-    strcpy(error.info, "entrada estandar");
-    strcpy(error.info, "O_RDWR");
-
-    insertItemF(imput, lastF(L), &L);
-    insertItemF(output, lastF(L), &L);
-    insertItemF(error, lastF(L), &L);
-}
-
 bool isEmptyListF(tListF L)
 {
     return L == LNULL;

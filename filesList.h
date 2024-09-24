@@ -7,8 +7,8 @@
 
 typedef struct tItemF
 {
-    char info[MAX_BUFFER_INPUT];
     int df;
+    char info[MAX_BUFFER_INPUT];
     char mode[MAX_BUFFER_INPUT];
 } tItemF;
 
@@ -38,8 +38,6 @@ bool insertItemF(tItemF d, tPosF p, tListF *L);
 void deleteAtPositionF(tPosF p, tListF *L);
 
 tItemF getItemF(tPosF p, tListF L);
-
-void initFList(tListF L);
 
 bool updateItemF(tPosF p,tItemF I);
 #endif

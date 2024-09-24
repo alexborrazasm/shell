@@ -17,7 +17,7 @@ tCommand commands[] =
      "Shows the historic of commands executed by this shell.\n\t\t   "
      "-N: Prints only the lastN commands\n\t\t    "
      "N: Repeats command number N"},
-    {"open", cmdHistoric, "open [file] mode", // change me
+    {"open", cmdOpen, "open [file] mode", // change me
      "Opens a file and adds it the to the list of shell open files\n\t\t    "
      "Open without arguments lists the shell open files\nmodes:\n"
      "cr: O_CREAT\tap: O_APPEND\tex: O_EXCL\tro: O_RDONLY\n"
@@ -187,5 +187,38 @@ void getCommands(tCommand *copy)
     for (int i = 0; i < n; i++)
     {
         copy[i] = commands[i];
+    }
+}
+
+void initFList(tListF *L)
+{
+    tItemF input;
+    tItemF output;
+    tItemF error;
+    tItemF empty;
+
+    input.df=0;
+    strcpy(input.info, "standard input");
+    strcpy(input.mode, "O_RDWR");
+
+    output.df=1;
+    strcpy(output.info, "standard output");
+    strcpy(output.mode, "O_RDWR");
+
+    error.df=2;
+    strcpy(error.info, "standard error");
+    strcpy(error.mode, "O_RDWR");
+
+    insertItemF(input, LNULL, L);
+    insertItemF(output, LNULL, L);
+    insertItemF(error, LNULL, L);
+
+    strcpy(empty.info, "empty");
+    strcpy(empty.mode, "empty");
+
+    for (int i = 4; i <= 9; i++)
+    {
+        empty.df = i;
+        insertItemF(empty, LNULL, L);
     }
 }

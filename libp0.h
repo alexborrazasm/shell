@@ -45,7 +45,7 @@ void cmdHistoric(tArgs args, tLists L);
 */
 
 // open [file] mode
-// void
+void cmdOpen(tArgs args, tLists L);
 /* Opens a file and adds it (together with the file descriptor and the opening
    mode to the list of shell open files. For the mode we’ll use cr for O CREAT,
    ap for O APPEND, ex for O EXCL, ro for O RDONLY, rw for O RDWR, wo for O

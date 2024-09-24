@@ -360,7 +360,7 @@ void callHistoric(tArgs args, tLists L, int n)
 
 /******************************************************************************/
 // open [file] mode
-void openL(tListF LF);
+void openList(tListF LF);
 void Cmd_open(tArgs args);
 
 void cmdOpen(tArgs args, tLists L)
@@ -368,7 +368,7 @@ void cmdOpen(tArgs args, tLists L)
     switch (args.len)
     {
     case 1:
-        openL(L.files);
+        openList(L.files);
         break;
     case 2:
         Cmd_open(args);
@@ -382,17 +382,16 @@ void cmdOpen(tArgs args, tLists L)
     }
 }
 
-void openL(tListF LF)
+void openList(tListF L)
 {
-    tPosF p;
-
-    if (!isEmptyListF(LF))
-    {
-        p = firstF(LF);
-
-        for (; nextF(p, LF) != LNULL; nextF(p, LF))
+    if (!isEmptyListF(L))
+    {   
+        tPosF p; tItemF item;
+        
+        for (p = firstF(L); p != LNULL; p = nextF(p, L))
         {
-            printf("Descriptor: %d ->%s %s", p->data.df, p->data.info, p->data.mode);
+            item = getItemF(p, L);
+            printf("Descriptor: %d -> %s %s\n", item.df, item.info, item.mode);
         }
     }
 }

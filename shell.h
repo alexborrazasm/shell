@@ -26,4 +26,6 @@ int getCommandsLen();
 
 void getCommands(tCommand *pointer);
 
+void initFList(tListF *L);
+
 #endif // SHELL_H

@@ -21,8 +21,6 @@ typedef struct tArgs
     int len;
 } tArgs;
 
-
-
 // Forward declaration for tListH
 typedef struct tNode *tPosH;
 typedef tPosH tListH;
