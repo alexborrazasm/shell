@@ -362,6 +362,7 @@ void callHistoric(tArgs args, tLists L, int n)
 // open [file] mode
 void openList(tListF L);
 void Cmd_open(tArgs args, tListF LF);
+void printItemF(tItemF item);
 
 void cmdOpen(tArgs args, tLists L)
 {
@@ -388,7 +389,7 @@ void openList(tListF L)
     {
         tPosF p; tItemF item;
 
-        for (p = firstF(L); P != LNULL; p = nextF(p, L))
+        for (p = firstF(L); p != LNULL; p = nextF(p, L))
         {
             item = getItemF(p, L);
             printItemF(item);
@@ -466,6 +467,13 @@ void Cmd_open(tArgs args, tListF LF)
         insertItemF(I, p, &LF);
         printf ("Anadida entrada %d a la tabla ficheros abiertos\n",df);
     }
+}
+
+void printItemF(tItemF item) {
+    printf("Descriptor de archivo: %d\n", item.df);
+    printf("Info: %s\n", item.info);
+    printf("Modo: %s\n", item.mode);
+    printf("----------------------------\n");
 }
 
 /******************************************************************************/
