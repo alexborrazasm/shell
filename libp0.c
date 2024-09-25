@@ -448,7 +448,7 @@ void printItemF(tItemF item)
     }
     else if (strcmp("unused", item.info) != 0)
     {
-        printf("descriptor: %d -> %s %s\n",
+        printf("descriptor: %d -> \033[1;34m%s\034 \033[1;32m%s\033[0m\n",
         item.df, item.info, modeToString(item.mode));
     }
     else

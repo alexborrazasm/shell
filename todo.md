@@ -17,7 +17,4 @@
 
 # to do
 
-    - [] open [file] mode
-    - [] close [df]
     - [] dup [df]
-    - [] help [cmd]
