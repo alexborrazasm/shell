@@ -208,22 +208,22 @@ void initFList(tListF *L)
 
     input.df=0;
     strcpy(input.info, "standard input");
-    strcpy(input.mode, "O_RDWR");
+    input.mode = O_RDWR;
 
     output.df=1;
     strcpy(output.info, "standard output");
-    strcpy(output.mode, "O_RDWR");
+    output.mode = O_RDWR;
 
     error.df=2;
     strcpy(error.info, "standard error");
-    strcpy(error.mode, "O_RDWR");
+    error.mode = O_RDWR;
 
     insertItemF(input, FNULL, L);
     insertItemF(output, FNULL, L);
     insertItemF(error, FNULL, L);
 
-    strcpy(empty.info, "empty");
-    strcpy(empty.mode, "empty");
+    strcpy(empty.info, "unused");
+    error.mode = MNULL;
 
     for (int i = 3; i <= 9; i++)
     {

@@ -371,24 +371,21 @@ void callHistoric(tArgs args, tLists *L, int n)
 void openList(tListF L);
 void Cmd_open(tArgs args, tListF *L);
 void printItemF(tItemF item);
+int getMode(tArgs args);
+const char* modeToString(int mode);
 
 void cmdOpen(tArgs args, tLists *L)
 {
-    switch (args.len)
+    if (args.len == 1)
     {
-    case 1:
         openList(L->files);
-        break;
-    case 2:
-        Cmd_open(args, &L->files);
-        break;
-    case 3:
-        Cmd_open(args, &L->files);
-        break;
-    default:
-        printError(args.array[0], "Invalid argument");
-        break;
     }
+    else if (args.len < 1)
+    {
+        printError(args.array[0], "Invalid argument");
+    }
+    else
+        Cmd_open(args, &L->files);
 }
 
 void openList(tListF L)
@@ -412,57 +409,11 @@ void openList(tListF L)
 
 void Cmd_open(tArgs args, tListF *L)
 {
-    int i, df, mode = 0;
-    char *modeStr = NULL;
+    int df, mode;
     tItemF item;
     tPosF p;
 
-    for (i = 2; i < args.len; i++)
-    {
-        if (!strcmp(args.array[i], "cr"))
-        {
-            mode |= O_CREAT;
-            modeStr = "O_CREATE";
-        }
-
-        else if (!strcmp(args.array[i], "ex"))
-        {
-            mode |= O_EXCL;
-            modeStr = "O_EXCL";
-        }
-
-        else if (!strcmp(args.array[i], "ro"))
-        {
-            mode |= O_RDONLY;
-            modeStr = "O_RDONLY";
-        }
-
-        else if (!strcmp(args.array[i], "wo"))
-        {
-            mode |= O_WRONLY;
-            modeStr = "O_WRONLY";
-        }
-
-        else if (!strcmp(args.array[i], "rw"))
-        {
-            mode |= O_RDWR;
-            modeStr = "O_RDWR";
-        }
-
-        else if (!strcmp(args.array[i], "ap"))
-        {
-            mode |= O_APPEND;
-            modeStr = "O_APPEND";
-        }
-
-        else if (!strcmp(args.array[i], "tr"))
-        {
-            mode |= O_TRUNC;
-            modeStr = "O_TRUNC";
-        }
-        else
-            break;
-    }
+    mode = getMode(args);
 
     if ((df = open(args.array[1], mode, 0777)) == -1)
         pPrintError(args.array[0]);
@@ -470,23 +421,20 @@ void Cmd_open(tArgs args, tListF *L)
     {
         item.df = df;
         strcpy(item.info, args.array[1]);
-        if (args.len > 2)
-            strcpy(item.mode, modeStr);
-        else
-            strcpy(item.mode, "empty");
+        item.mode = mode;
 
         p = findItemF(df, *L);
 
         if (p == FNULL)
         {
-            if (!insertItemF(item, p, L)) // CHAPUZAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+            if (!insertItemF(item, p, L))
             {
                 printError(args.array[0], "Can´t insert on filesList");
                 return;
             }
         }
         else // p exits
-            updateItemF(item, p, L); // chapuzaaaaaaaaaaaaaa
+            updateItemF(item, p, L);
 
         printf("Added %d entry to the open files table\n", df);
     }
@@ -494,17 +442,95 @@ void Cmd_open(tArgs args, tListF *L)
 
 void printItemF(tItemF item)
 {
-    if (strcmp("empty", item.mode) == 0) 
+    if (item.mode == MNULL)
     {
         printf("descriptor: %d -> %s\n", item.df, item.info);
     }
-    else if (strcmp("empty", item.info) != 0)
+    else if (strcmp("unused", item.info) != 0)
     {
-        printf("descriptor: %d -> %s %s\n", item.df, item.info, item.mode);
+        printf("descriptor: %d -> %s %s\n",
+        item.df, item.info, modeToString(item.mode));
     }
     else
-        puts("unused");
+        printf("descriptor: %d -> %s\n", item.df, item.info);
 }
+
+int getMode(tArgs args)
+{
+    int mode = 0;
+
+    for (int i = 2; i < args.len; i++)
+    {
+        if (!strcmp(args.array[i], "cr"))
+        {
+            mode |= O_CREAT;
+        }
+        else if (!strcmp(args.array[i], "ex"))
+        {
+            mode |= O_EXCL;
+        }
+        else if (!strcmp(args.array[i], "ro"))
+        {
+            mode |= O_RDONLY;
+        }
+        else if (!strcmp(args.array[i], "wo"))
+        {
+            mode |= O_WRONLY;
+        }
+        else if (!strcmp(args.array[i], "rw"))
+        {
+            mode |= O_RDWR;
+        }
+        else if (!strcmp(args.array[i], "ap"))
+        {
+            mode |= O_APPEND;
+        }
+        else if (!strcmp(args.array[i], "tr"))
+        {
+            mode |= O_TRUNC;
+        }
+        else
+            break;
+    }
+    return mode;
+}
+
+const char* modeToString(int mode) {
+    static char buffer[64] = {0};
+
+    buffer[0] = '\0';
+
+    if (mode & O_CREAT) {
+        strcat(buffer, "O_CREATE ");
+    }
+    if (mode & O_EXCL) {
+        strcat(buffer, "O_EXCL ");
+    }
+    if (mode & O_RDONLY) {
+        strcat(buffer, "O_RDONLY ");
+    }
+    if (mode & O_WRONLY) {
+        strcat(buffer, "O_WRONLY ");
+    }
+    if (mode & O_RDWR) {
+        strcat(buffer, "O_RDWR ");
+    }
+    if (mode & O_APPEND) {
+        strcat(buffer, "O_APPEND ");
+    }
+    if (mode & O_TRUNC) {
+        strcat(buffer, "O_TRUNC ");
+    }
+
+    // Remove the trailing space if buffer is not empty
+    int len = strlen(buffer);
+    if (len > 0) {
+        buffer[len - 1] = '\0';
+    }
+
+    return buffer;
+}
+
 
 /******************************************************************************/
 // close [df]
@@ -556,8 +582,8 @@ void auxClose(int df, tArgs args, tListF *L)
             if (df <= 9)
             {
                 item = getItemF(p, *L);
-                strcpy(item.info, "empty");
-                strcpy(item.mode, "empty");
+                strcpy(item.info, "unused");
+                item.mode = MNULL;
                 updateItemF(item, p, L);
             }
             else 

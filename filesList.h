@@ -9,7 +9,7 @@ typedef struct tItemF
 {
     int df;
     char info[MAX_BUFFER_INPUT];
-    char mode[MAX_BUFFER_INPUT];
+    int mode;
 } tItemF;
 
 struct tNodeF

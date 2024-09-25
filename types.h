@@ -14,6 +14,7 @@
 #define MAX_BUFFER_INPUT 50
 #define MAX_ARGS 10
 #define UNUSED(expr) do { (void)(expr); } while (0)
+#define MNULL -1
 
 typedef struct tArgs
 {
