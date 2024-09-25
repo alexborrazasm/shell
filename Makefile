@@ -19,9 +19,6 @@ filesList.o: types.h filesList.h filesList.c
 historicList.o: types.h historicList.h historicList.c
 	$(CC) $(CFLAGS) -c historicList.c
 
-test.out: test.c types.h shell.h historicList.h shell.o historicList.o
-	$(CC) $(CFLAGS) -o test.out test.c shell.o historicList.o
-
 clean: 
 	rm *.out *.o
 
