@@ -379,14 +379,8 @@ void cmdOpen(tArgs args, tLists *L)
     case 1:
         openList(L->files);
         break;
-    case 2:
-        Cmd_open(args, &L->files);
-        break;
-    case 3:
-        Cmd_open(args, &L->files);
-        break;
     default:
-        printError(args.array[0], "Invalid argument");
+        Cmd_open(args, &L->files);
         break;
     }
 }
@@ -413,7 +407,8 @@ void openList(tListF L)
 void Cmd_open(tArgs args, tListF *L)
 {
     int i, df, mode = 0;
-    char *modeStr = NULL;
+    char modeStr[MAX_BUFFER_INPUT*16] = "";
+
     tItemF item;
     tPosF p;
 
@@ -422,43 +417,43 @@ void Cmd_open(tArgs args, tListF *L)
         if (!strcmp(args.array[i], "cr"))
         {
             mode |= O_CREAT;
-            modeStr = "O_CREATE";
+            strcat(modeStr," O_CREATE" );
         }
 
         else if (!strcmp(args.array[i], "ex"))
         {
             mode |= O_EXCL;
-            modeStr = "O_EXCL";
+            strcat(modeStr, " O_EXCL");
         }
 
         else if (!strcmp(args.array[i], "ro"))
         {
             mode |= O_RDONLY;
-            modeStr = "O_RDONLY";
+            strcat(modeStr, " O_RDONLY");
         }
 
         else if (!strcmp(args.array[i], "wo"))
         {
             mode |= O_WRONLY;
-            modeStr = "O_WRONLY";
+            strcat(modeStr, " O_WRONLY");
         }
 
         else if (!strcmp(args.array[i], "rw"))
         {
             mode |= O_RDWR;
-            modeStr = "O_RDWR";
+            strcat(modeStr, " O_RDWR");
         }
 
         else if (!strcmp(args.array[i], "ap"))
         {
             mode |= O_APPEND;
-            modeStr = "O_APPEND";
+            strcat(modeStr," O_APPEND" );
         }
 
         else if (!strcmp(args.array[i], "tr"))
         {
             mode |= O_TRUNC;
-            modeStr = "O_TRUNC";
+            strcat(modeStr," O_TRUNC" );
         }
         else
             break;
@@ -485,10 +480,14 @@ void Cmd_open(tArgs args, tListF *L)
                 return;
             }
         }
-        else // p exits
+        else{
+            printf("Mode: %d\n", mode);
             updateItemF(item, p, L); // chapuzaaaaaaaaaaaaaa
+            printf("Added %d entry to the open files table\n", df);
 
-        printf("Added %d entry to the open files table\n", df);
+        } // p exits
+            
+        
     }
 }
 
