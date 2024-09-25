@@ -222,7 +222,7 @@ void initFList(tListF *L)
     insertItemF(error, FNULL, L);
 
     strcpy(empty.info, "unused");
-    error.mode = MNULL;
+    empty.mode = MNULL;
 
     for (int i = 3; i <= 9; i++)
     {
