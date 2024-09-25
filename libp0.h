@@ -74,6 +74,7 @@ void cmdClose(tArgs args, tLists *L);
 /* Duplicates the df file descriptor (using the dup system call, creating the
    corresponding new entry on the file list.
 */
+void cmdDup(tArgs args, tLists *L);
 
 // infosys
 /* Prints information on the machine running the shell (as obtained via

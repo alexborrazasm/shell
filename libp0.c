@@ -32,7 +32,7 @@ void cmdAuthors(tArgs args, tLists *L)
         }
         break;
 
-    default: // args.len > 2
+    default:
         printError(args.array[0], "Invalid num of arguments");
         break;
     }
@@ -171,8 +171,8 @@ void cmdDate(tArgs args, tLists *L)
         }
         break;
 
-    default: // args,len < 2
-        printError(args.array[0], "Invalid num of argument");
+    default:
+        printError(args.array[0], "Invalid num of arguments");
         break;
     }
 }
@@ -559,7 +559,7 @@ void cmdClose(tArgs args, tLists *L)
             auxClose(df, args, &L->files);
         }
         break;
-    default: // args.len > 2
+    default:
         printError(args.array[0], "Invalid num of arguments");
         break;
     }
@@ -600,7 +600,81 @@ void auxClose(int df, tArgs args, tListF *L)
 
 /******************************************************************************/
 // dup [df]
+void auxDup(int df, tArgs args, tListF *L);
 
+void cmdDup(tArgs args, tLists *L)
+{
+    switch (args.len)
+    {
+    case 1:
+        openList(L->files);
+        break;
+    case 2:
+        int df;
+
+        if (!stringToInt(args.array[1], &df))
+        {
+            printError(args.array[0], "Invalid argument");
+        }
+        else if (df < 0)
+        {
+            openList(L->files);
+        }
+        else
+        {
+            auxDup(df, args, &L->files);
+        }
+        break;
+    default:
+        printError(args.array[0], "Invalid num of arguments");
+        break;
+    }
+}
+
+void auxDup(int df, tArgs args, tListF *L)
+{
+    tPosF p; char newInfo[MAX_BUFFER_INPUT + 9]; int newDf;
+
+    if ((newDf = dup(df)) == -1)
+    {
+        printf("%d\n", newDf);
+        pPrintError(args.array[0]);
+        return;
+    }
+
+    p = findItemF(df, *L);
+
+    if (p != FNULL)
+    {
+        tItemF item;
+        
+        item = getItemF(p, *L);
+                 
+        sprintf(newInfo, "dup %d (%s)", df, item.info);
+        
+        // Change item to insert
+        item.df = newDf;
+        strcpy(item.info, newInfo);
+
+        // Search p to insert
+        p = findItemF(newDf, *L);
+
+        if (p == FNULL)
+        {
+            if (!insertItemF(item, p, L))
+            {
+                printError(args.array[0], "Can´t insert on filesList");
+                return;
+            }
+        }
+        else // p exits
+            updateItemF(item, p, L);
+    }
+    else
+    {
+        printError(args.array[0], "Bad file descriptor");
+    }
+}
 /******************************************************************************/
 // infosys
 void infosysAux();
@@ -724,40 +798,3 @@ void cmdExit(tArgs args, bool *end)
     else
         *end = true;
 }
-
-/* examples
-
-
-void Cmd_close (char *tr[])
-{
-    int df;
-
-    if (tr[0]==NULL || (df=atoi(tr[0]))<0) { //no hay parametro
-      ..............ListarFicherosAbiertos............... //o el descriptor es menor que 0
-        return;
-    }
-
-
-    if (close(df)==-1)
-        perror("Inposible cerrar descriptor");
-    else
-       ........EliminarDeFicherosAbiertos......
-}
-
-void Cmd_dup (char * tr[])
-{
-    int df, duplicado;
-    char aux[MAXNAME],*p;
-
-    if (tr[0]==NULL || (df=atoi(tr[0]))<0) { //no hay parametro
-        ListOpenFiles(-1);                 //o el descriptor es menor que 0
-        return;
-    }
-
-    duplicado=dup(df);
-    p=.....NombreFicheroDescriptor(df).......;
-    sprintf (aux,"dup %d (%s)",df, p);
-    .......AnadirAFicherosAbiertos......duplicado......aux.....fcntl(duplicado,F_GETFL).....;
-}
-
-*/
