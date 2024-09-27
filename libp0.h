@@ -2,6 +2,7 @@
 #define LIBP0_H
 
 #include "types.h" // For tLists and tArgs
+#include "shell.h"
 #include "historicList.h"
 
 // authors [-l|-n]
