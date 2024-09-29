@@ -2,7 +2,7 @@
 !*.h
 !Makefile
 !*.md
-/.vscode
+.vscode
 *.o
 *.out
 *.txt

@@ -7,6 +7,7 @@
         "libp0.h": "c",
         "limits.h": "c",
         "syslimits.h": "c",
-        "shell.h": "c"
+        "shell.h": "c",
+        "types.h": "c"
     }
 }
