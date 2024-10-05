@@ -10,7 +10,8 @@ void cmdMakefile(tArgs args, tLists *L){
         {
             close(df);  //Probably it's ok?¿ idk
             printf("El archivo ha sido creado\n"); //modify
-        } else 
+        } 
+        else 
         {
             printf("No se ha podido crear el archivo o el directorio\n"); //modify
         }
