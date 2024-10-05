@@ -2,7 +2,25 @@
 /******************************************************************************/
 // makefile
 
-//void cmdMakefile(tArgs args, tLists *L);
+void cmdMakefile(tArgs args, tLists *L){
+    int df;
+    switch (args.len)
+    {
+    case 2:
+        if ((df = open(args.array[1], O_CREAT, 0755)) != -1) //Also we could use 0777
+        {
+            close(df);  //Probably it's ok?¿ idk
+            printf("El archivo ha sido creado\n"); //modify
+        } else {
+            printf("No se ha podido crear el archivo o el directorio\n"); //modify
+        }
+        break;
+    
+    default:
+        printf("error sintaxis"); //modify
+        break;
+    }
+}
 
 /******************************************************************************/
 // makedir

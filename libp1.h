@@ -5,7 +5,7 @@
 #include "libp0.h"
 
 // creates a file
-//void cmdMakefile(tArgs args, tLists *L);
+void cmdMakefile(tArgs args, tLists *L);
 
 // creates a directory
 //void cmdMakedir(tArgs args, tLists *L);
