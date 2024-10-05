@@ -1,7 +1,6 @@
 #include "libp1.h"
 /******************************************************************************/
 // makefile
-
 void cmdMakefile(tArgs args, tLists *L){
     int df;
     switch (args.len)
@@ -11,7 +10,8 @@ void cmdMakefile(tArgs args, tLists *L){
         {
             close(df);  //Probably it's ok?¿ idk
             printf("El archivo ha sido creado\n"); //modify
-        } else {
+        } else 
+        {
             printf("No se ha podido crear el archivo o el directorio\n"); //modify
         }
         break;
@@ -86,12 +86,12 @@ char LetraTF (mode_t m)
         case S_IFDIR: return 'd'; // directorio  
         case S_IFCHR: return 'c'; // char device
         case S_IFIFO: return 'p'; // pipe
-        default: return '?'; // desconocido, no deberia aparecer
+        default: return '?'; // desconocido, no debería aparecer
      }
 }
 // las siguientes funciones devuelven los permisos de un fichero en formato rwx----
 // a partir del campo st_mode de la estructura stat 
-// las tres son correctas pero usan distintas estrategias de asignaciÃ³n de memoria
+// las tres son correctas pero usan distintas estrategias de asignación de memoria
 
 char * ConvierteModo (mode_t m, char *permisos)
 {
@@ -161,7 +161,4 @@ char * ConvierteModo3 (mode_t m)
     
     return permisos;
 }    
-
-
-
 */
