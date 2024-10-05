@@ -1,7 +1,8 @@
 #ifndef LIBP1_H
 #define LIBP1_H
 
-#include "types.h" 
+#include "types.h"
+#include "libp0.h"
 
 // creates a file
 //void cmdMakefile(tArgs args, tLists *L);
@@ -13,7 +14,7 @@
 //void cmdListfile(tArgs args, tLists *L);
 
 // prints current working directory
-//void cmdCwd(tArgs args, tLists *L); 
+void cmdCwd(tArgs args, tLists *L); 
 
 // lists directories contents
 //void cmdListdir(tArgs args, tLists *L); 

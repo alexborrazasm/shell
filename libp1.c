@@ -16,8 +16,13 @@
 
 /******************************************************************************/
 // cwd
-
-//void cmdCwd(tArgs args, tLists *L); 
+void cmdCwd(tArgs args, tLists *L)
+{
+    if (args.len == 1)
+        cmdChdir(args, L);
+    else
+        printError("cwd", "Invalid num of arguments");
+}
 
 /******************************************************************************/
 // listdir
