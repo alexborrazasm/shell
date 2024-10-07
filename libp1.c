@@ -2,14 +2,20 @@
 #include "libp0.h"
 /******************************************************************************/
 // makefile
-void makefileAux(char *path);
-
-void cmdMakefile(tArgs args, tLists *L)
-{
+void cmdMakefile(tArgs args, tLists *L){
+    int df;
     switch (args.len)
     {
     case 2:
-        makefileAux(args.array[1]);
+        if ((df = open(args.array[1], O_CREAT, 0755)) != -1) //Also we could use 0777
+        {
+            close(df);  //Probably it's ok?¿ idk
+            printf("El archivo ha sido creado\n"); //modify
+        } 
+        else 
+        {
+            printf("No se ha podido crear el archivo o el directorio\n"); //modify
+        }
         break;
 
     default:
@@ -72,7 +78,13 @@ void makedirAux(char *path)
 
 /******************************************************************************/
 // cwd
-
+void cmdCwd(tArgs args, tLists *L)
+{
+    if (args.len == 1)
+        cmdChdir(args, L);
+    else
+        printError("cwd", "Invalid num of arguments");
+}
 
 /******************************************************************************/
 // listdir
@@ -117,12 +129,12 @@ char LetraTF (mode_t m)
         case S_IFDIR: return 'd'; // directorio
         case S_IFCHR: return 'c'; // char device
         case S_IFIFO: return 'p'; // pipe
-        default: return '?'; // desconocido, no deberia aparecer
+        default: return '?'; // desconocido, no debería aparecer
      }
 }
 // las siguientes funciones devuelven los permisos de un fichero en formato rwx----
-// a partir del campo st_mode de la estructura stat
-// las tres son correctas pero usan distintas estrategias de asignaciÃ³n de memoria
+// a partir del campo st_mode de la estructura stat 
+// las tres son correctas pero usan distintas estrategias de asignación de memoria
 
 char * ConvierteModo (mode_t m, char *permisos)
 {
@@ -191,8 +203,5 @@ char * ConvierteModo3 (mode_t m)
     if (m&S_ISVTX) permisos[9]='t';
 
     return permisos;
-}
-
-
-
+}    
 */

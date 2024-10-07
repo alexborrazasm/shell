@@ -115,10 +115,10 @@ void getcwdAux(char *path)
     // de un path)
     max_path_length = pathconf(".", _PC_PATH_MAX);
 
-    char directorio_actual[max_path_length];
-    if (getcwd(directorio_actual, sizeof(directorio_actual)) != NULL)
+    char currentDir[max_path_length];
+    if (getcwd(currentDir, sizeof(currentDir)) != NULL)
     {
-        printf("Path: \033[1;34m%s\033[0m\n", directorio_actual);
+        printf("\033[1;34m%s\033[0m\n", currentDir);
     }
     else
     {
@@ -130,7 +130,7 @@ void chdirAux(tArgs args)
 {
     if (chdir(args.array[1]) == 0)
     {
-        printf("Path: \033[1;34m%s\033[0m\n", args.array[1]);
+        printf("\033[1;34m%s\033[0m\n", args.array[1]);
     }
     else
     {

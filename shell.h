@@ -5,6 +5,7 @@
 #include "historicList.h"
 #include "filesList.h"
 #include "libp0.h"
+#include "libp1.h"
 
 void printPrompt();
 
