@@ -9,7 +9,7 @@ tCommand commands[] =
      "Prints the pid of the process executing the shell"},
     {"ppid", cmdPpid, "ppid",
      "Prints the pid of the shell´s parent process"},
-    {"cd", cmdChdir, "cd [dir]",
+    {"cd", cmdCd, "cd [dir]",
      "Changes or print the current working directory of the shell"},
     {"date", cmdDate, "date [-t|-d]",
      "Prints the current date and/or the time."},

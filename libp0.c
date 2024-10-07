@@ -85,9 +85,11 @@ void cmdPpid(tArgs args, tLists *L)
 
 /******************************************************************************/
 // cd [path]
+void getcwdAux(char *path);
+
 void chdirAux(tArgs args);
 
-void cmdChdir(tArgs args, tLists *L)
+void cmdCd(tArgs args, tLists *L)
 {
     UNUSED(L);
 

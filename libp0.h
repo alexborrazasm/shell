@@ -30,8 +30,7 @@ void cmdPpid(tArgs args, tLists *L);
    chdir system call). When invoked without arguments it prints the current
    working directory (using the getcwd system call.
 */
-void cmdChdir(tArgs args, tLists *L);
-//void getcwdAux(char *path);
+void cmdCd(tArgs args, tLists *L);
 
 // date [-t|-d]
 
