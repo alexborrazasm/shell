@@ -1,67 +1,103 @@
 #include "libp1.h"
+#include "libp0.h"
 /******************************************************************************/
 // makefile
+void makefileAux(char *path);
 
-void cmdMakefile(tArgs args, tLists *L){
-    int df;
+void cmdMakefile(tArgs args, tLists *L)
+{
     switch (args.len)
     {
     case 2:
-        if ((df = open(args.array[1], O_CREAT, 0755)) != -1) //Also we could use 0777
-        {
-            close(df);  //Probably it's ok?¿ idk
-            printf("El archivo ha sido creado\n"); //modify
-        } else {
-            printf("No se ha podido crear el archivo o el directorio\n"); //modify
-        }
+        makefileAux(args.array[1]);
         break;
-    
+
     default:
-        printf("error sintaxis"); //modify
+        printf("error sintaxis"); // modify
         break;
+    }
+}
+
+void makefileAux(char *path)
+{
+    int df;
+    if ((df = open(path, O_CREAT, 0755)) != -1) // Also we could use 0777
+    {
+        close(df);
+        printf("El archivo ha sido creado\n"); // modify
+    }
+    else
+    {
+        printf("No se ha podido crear el archivo o el directorio\n"); // modify
     }
 }
 
 /******************************************************************************/
 // makedir
+void makedirAux(char *path);
 
-//void cmdMakedir(tArgs args, tLists *L);
+void cmdMakedir(tArgs args, tLists *L)
+{
+    switch (args.len)
+    {
+    case 2:
+        makedirAux(args.array[1]);
+        break;
+
+    default:
+        printf("error sintaxis"); // modify
+        break;
+    }
+}
+
+void makedirAux(char *path)
+{
+    int df;
+    df = open(path, O_CREAT, 0755); // Also we could use 0777
+    if (df != -1)
+    {
+        close(df);                             // Probably it's ok?¿ idk
+        printf("El archivo ha sido creado\n"); // placeholder
+    }
+    else
+    {
+        printf("No se ha podido crear el archivo o el directorio\n"); // placeholder
+    }
+}
 
 /******************************************************************************/
 // listfile
 
-//void cmdListfile(tArgs args, tLists *L);
+// void cmdListfile(tArgs args, tLists *L);
 
 /******************************************************************************/
 // cwd
 
-//void cmdCwd(tArgs args, tLists *L); 
 
 /******************************************************************************/
 // listdir
 
-//void cmdListdir(tArgs args, tLists *L); 
+// void cmdListdir(tArgs args, tLists *L);
 
 /******************************************************************************/
 // reclist
 
-//void cmdReclist(tArgs args, tLists *L); 
+// void cmdReclist(tArgs args, tLists *L);
 
 /******************************************************************************/
 // revlist
 
-//void cmdRevlist(tArgs args, tLists *L); 
+// void cmdRevlist(tArgs args, tLists *L);
 
 /******************************************************************************/
 // erase
 
-//void cmdErase(tArgs args, tLists *L); 
+// void cmdErase(tArgs args, tLists *L);
 
 /******************************************************************************/
 // delrec
 
-//void cmdDelrec(tArgs args, tLists *L); 
-
+// void cmdDelrec(tArgs args, tLists *L);
 
 /* help
 
@@ -73,25 +109,25 @@ void cmdMakefile(tArgs args, tLists *L){
 
 char LetraTF (mode_t m)
 {
-     switch (m&S_IFMT) { // and bit a bit con los bits de formato,0170000 
+     switch (m&S_IFMT) { // and bit a bit con los bits de formato,0170000
         case S_IFSOCK: return 's'; // socket
         case S_IFLNK: return 'l'; // symbolic link
         case S_IFREG: return '-'; // fichero normal
         case S_IFBLK: return 'b'; // block device
-        case S_IFDIR: return 'd'; // directorio  
+        case S_IFDIR: return 'd'; // directorio
         case S_IFCHR: return 'c'; // char device
         case S_IFIFO: return 'p'; // pipe
         default: return '?'; // desconocido, no deberia aparecer
      }
 }
 // las siguientes funciones devuelven los permisos de un fichero en formato rwx----
-// a partir del campo st_mode de la estructura stat 
+// a partir del campo st_mode de la estructura stat
 // las tres son correctas pero usan distintas estrategias de asignaciÃ³n de memoria
 
 char * ConvierteModo (mode_t m, char *permisos)
 {
     strcpy (permisos,"---------- ");
-    
+
     permisos[0]=LetraTF(m);
     if (m&S_IRUSR) permisos[1]='r';    // propietario
     if (m&S_IWUSR) permisos[2]='w';
@@ -105,7 +141,7 @@ char * ConvierteModo (mode_t m, char *permisos)
     if (m&S_ISUID) permisos[3]='s';    // setuid, setgid y stickybit
     if (m&S_ISGID) permisos[6]='s';
     if (m&S_ISVTX) permisos[9]='t';
-    
+
     return permisos;
 }
 
@@ -114,7 +150,7 @@ char * ConvierteModo2 (mode_t m)
 {
     static char permisos[12];
     strcpy (permisos,"---------- ");
-    
+
     permisos[0]=LetraTF(m);
     if (m&S_IRUSR) permisos[1]='r';    // propietario
     if (m&S_IWUSR) permisos[2]='w';
@@ -128,7 +164,7 @@ char * ConvierteModo2 (mode_t m)
     if (m&S_ISUID) permisos[3]='s';    // setuid, setgid y stickybit
     if (m&S_ISGID) permisos[6]='s';
     if (m&S_ISVTX) permisos[9]='t';
-    
+
     return permisos;
 }
 
@@ -139,7 +175,7 @@ char * ConvierteModo3 (mode_t m)
     if ((permisos=(char *) malloc (12))==NULL)
         return NULL;
     strcpy (permisos,"---------- ");
-    
+
     permisos[0]=LetraTF(m);
     if (m&S_IRUSR) permisos[1]='r';    // propietario
     if (m&S_IWUSR) permisos[2]='w';
@@ -153,9 +189,9 @@ char * ConvierteModo3 (mode_t m)
     if (m&S_ISUID) permisos[3]='s';    // setuid, setgid y stickybit
     if (m&S_ISGID) permisos[6]='s';
     if (m&S_ISVTX) permisos[9]='t';
-    
+
     return permisos;
-}    
+}
 
 
 

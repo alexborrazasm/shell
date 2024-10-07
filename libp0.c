@@ -85,7 +85,6 @@ void cmdPpid(tArgs args, tLists *L)
 
 /******************************************************************************/
 // cd [path]
-void getcwdAux(tArgs args);
 void chdirAux(tArgs args);
 
 void cmdChdir(tArgs args, tLists *L)
@@ -95,7 +94,7 @@ void cmdChdir(tArgs args, tLists *L)
     switch (args.len)
     {
     case 1:
-        getcwdAux(args);
+        getcwdAux(args.array[1]);
         break;
 
     case 2:
@@ -108,7 +107,7 @@ void cmdChdir(tArgs args, tLists *L)
     }
 }
 
-void getcwdAux(tArgs args)
+void getcwdAux(char *path)
 {
     long max_path_length;
 
@@ -123,7 +122,7 @@ void getcwdAux(tArgs args)
     }
     else
     {
-        pPrintError(args.array[0]);
+        pPrintError(path);
     }
 }
 

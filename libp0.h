@@ -31,6 +31,7 @@ void cmdPpid(tArgs args, tLists *L);
    working directory (using the getcwd system call.
 */
 void cmdChdir(tArgs args, tLists *L);
+//void getcwdAux(char *path);
 
 // date [-t|-d]
 
