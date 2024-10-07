@@ -27,7 +27,38 @@ void cmdMakefile(tArgs args, tLists *L){
 /******************************************************************************/
 // makedir
 
-//void cmdMakedir(tArgs args, tLists *L);
+// makedir
+void makedirAux(char *path);
+
+void cmdMakedir(tArgs args, tLists *L)
+{
+    switch (args.len)
+    {
+    case 2:
+        makedirAux(args.array[1]);
+        break;
+
+    default:
+        printf("error sintaxis"); // modify
+        break;
+    }
+}
+
+void makedirAux(char *path)
+{
+    int df;
+    df = open(path, O_CREAT, 0755); // Also we could use 0777
+    if (df != -1)
+    {
+        close(df);                             // Probably it's ok?¿ idk
+        printf("El archivo ha sido creado\n"); // placeholder
+    }
+    else
+    {
+        printf("No se ha podido crear el archivo o el directorio\n"); // placeholder
+    }
+}
+
 
 /******************************************************************************/
 // listfile
