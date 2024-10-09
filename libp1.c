@@ -78,7 +78,17 @@ void cmdCwd(tArgs args, tLists *L)
 /******************************************************************************/
 // listdir
 
-//void cmdListdir(tArgs args, tLists *L); 
+void cmdListdir(tArgs args, tLists *L)
+{
+    if (args.len == 1)
+    {
+        cmdCd(args, L);
+    }
+    else
+    {
+        auxListDir(args);
+    }
+}
 
 /******************************************************************************/
 // reclist

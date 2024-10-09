@@ -32,7 +32,8 @@ tCommand commands[] =
      "Prints information on the machine running the shell"},
     {"help", cmdHelp, "help [cmd]",
      "Gives a brief help on the usage of command"},
-    {"cwd", cmdCwd, "cwd", "Prints current working directory"}
+    {"cwd", cmdCwd, "cwd [dir]", "Prints current working directory"},
+    {"listdir", cmdListdir, "listdir [dir]", "Lists directories contents"}
 };
 
 int getInput(char *input);

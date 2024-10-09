@@ -17,7 +17,7 @@ void cmdMakedir(tArgs args, tLists *L);
 void cmdCwd(tArgs args, tLists *L); 
 
 // lists directories contents
-//void cmdListdir(tArgs args, tLists *L); 
+void cmdListdir(tArgs args, tLists *L); 
 
 // lists directories recursively (subdirectories after)
 //void cmdReclist(tArgs args, tLists *L); 
