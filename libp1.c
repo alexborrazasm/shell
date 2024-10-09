@@ -6,6 +6,8 @@ void cmdMakefile(tArgs args, tLists *L){
     int df;
     switch (args.len)
     {
+    case 1:
+        cmdCwd(args, L);
     case 2:
         if ((df = open(args.array[1], O_CREAT, 0755)) != -1) //Also we could use 0777
         {

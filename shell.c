@@ -33,7 +33,9 @@ tCommand commands[] =
     {"help", cmdHelp, "help [cmd]",
      "Gives a brief help on the usage of command"},
     {"cwd", cmdCwd, "cwd [dir]", "Prints current working directory"},
-    {"listdir", cmdListdir, "listdir [dir]", "Lists directories contents"}
+    {"listdir", cmdListdir, "listdir [dir]", "Lists directories contents"},
+    {"makefile", cmdMakefile, "makefile [name]", "Creates a file"},
+    {"makedir", cmdMakedir, "makedir [name]", "creates a directory"}
 };
 
 int getInput(char *input);
