@@ -13,9 +13,11 @@
 #include <sys/stat.h>
 
 #define MAX_BUFFER_INPUT 50
-#define MAX_ARGS 10
+#define MAX_ARGS 30
 #define UNUSED(expr) do { (void)(expr); } while (0)
 #define MNULL -1
+
+typedef unsigned char byte;
 
 typedef struct tArgs
 {

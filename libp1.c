@@ -1,5 +1,38 @@
 #include "libp1.h"
 #include "libp0.h"
+
+#define FLAG_LONG  (1 << 0)  // 0001 (1)
+#define FLAG_ACC   (1 << 1)  // 0010 (2)
+#define FLAG_LINK  (1 << 2)  // 0100 (4)
+
+byte processListFlags(tArgs args, bool itsFlag[MAX_ARGS])
+{
+    byte flags = 0;  // no flags
+
+    for (int i = 1; i < args.len; i++) 
+    {   
+        if (args.array[i][0] != '-')
+        {
+            break;
+        } 
+        else if (strcmp(args.array[i], "-long") == 0)
+        {
+            flags |= FLAG_LONG;
+            itsFlag[i] = true;
+        } else if (strcmp(args.array[i], "-acc") == 0)
+        {
+            flags |= FLAG_ACC;
+            itsFlag[i] = true;
+        } else if (strcmp(args.array[i], "-link") == 0)
+        {
+            flags |= FLAG_LINK;
+            itsFlag[i] = true;
+        }
+    }
+
+    return flags; 
+}
+
 /******************************************************************************/
 // makefile
 void cmdMakefile(tArgs args, tLists *L){
@@ -66,21 +99,29 @@ void makedirAux(char *path)
 // listfile
 void auxListfile(tArgs args, int n);
 
+void auxListfileFlags(tArgs args);
+
 void cmdListfile(tArgs args, tLists *L)
 {
     UNUSED(L);
 
     if (args.len == 1) // Print actual working directory
         cmdCd(args, L);
-    else // List file
-    {
-        for (int i = 1; i < args.len; i++)
+    else if (args.len > 1) // List file
+    {   
+        if (args.array[1][0] == '-') // 1 or more flags
         {
-            auxListfile(args, i);
+            auxListfileFlags(args);
+        }
+        else // no flags
+        {
+            for (int i = 1; i < args.len; i++)
+            {
+                auxListfile(args, i);
+            }
         }
     }
 }
-
 
 void auxListfile(tArgs args, int n) { // to do
     char* filepath = args.array[n];
@@ -92,8 +133,35 @@ void auxListfile(tArgs args, int n) { // to do
         return;
     }
 
-    // Imprimir el tamaño del archivo y su nombre
+    // Print size and name
     printf("%10ld  %s\n", fileStat.st_size, filepath);
+}
+
+void auxListfileFlags(tArgs args)
+{   
+    bool itsFlag[args.len];
+
+    for (int i = 0; i < args.len; i++) {
+        itsFlag[i] = false;
+    }
+
+    byte flags = processListFlags(args, itsFlag);
+
+    if (flags & FLAG_LONG) 
+    {
+        puts("flag long");
+    }
+    else 
+    {
+        if (flags & FLAG_ACC)
+        {
+            puts("flag acc");
+        }
+        if (flags & FLAG_LINK)
+        {
+            puts("flag link");
+        }
+    }
 }
 
 /******************************************************************************/
