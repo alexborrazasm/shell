@@ -43,6 +43,7 @@ void cmdMakefile(tArgs args, tLists *L){
     {
     case 1:
         cmdCwd(args, L);
+        break;
     case 2:
         if ((df = open(args.array[1], O_CREAT, 0755)) != -1) //Also we could use 0777
         {
@@ -69,6 +70,8 @@ void makedirAux(char *path);
 
 void cmdMakedir(tArgs args, tLists *L)
 {
+    UNUSED(L);
+
     switch (args.len)
     {
     case 2:
@@ -99,9 +102,11 @@ void makedirAux(char *path)
 
 /******************************************************************************/
 // listfile
-void auxListfile(tArgs args, int n);
+void auxListfile(tArgs args, int n, byte flags);
 
-void auxListfileFlags(tArgs args);
+void printAcc(char* filepath, struct stat filestat);
+
+void printLink(char* filepath, struct stat filestat, tArgs args);
 
 void cmdListfile(tArgs args, tLists *L)
 {
@@ -113,50 +118,86 @@ void cmdListfile(tArgs args, tLists *L)
     {   
         if (args.array[1][0] == '-') // 1 or more flags
         {
-            auxListfileFlags(args);
+            int pLastFlag = 0; byte flags = processListFlags(args, &pLastFlag);
+            
+            for (int i = pLastFlag + 1; i < args.len; i++)
+            {
+                auxListfile(args, i, flags);
+            }
+            
         }
         else // no flags
         {
             for (int i = 1; i < args.len; i++)
             {
-                auxListfile(args, i);
+                auxListfile(args, i, 0);
             }
         }
     }
 }
 
-void auxListfile(tArgs args, int n) { // to do
+void auxListfile(tArgs args, int n, byte flags) 
+{   
     char* filepath = args.array[n];
-    struct stat fileStat;
+    struct stat filestat;
 
-    // Obtain file info
-    if (stat(filepath, &fileStat) != 0) {
+    // Obtain file info, lstat don´t follow symbolic links
+    if (lstat(filepath, &filestat) != 0) {
         pPrintError(args.array[0]);
         return;
     }
 
-    // Print size and name
-    printf("%10ld  %s\n", fileStat.st_size, filepath);
-}
-
-void auxListfileFlags(tArgs args)
-{   
-    int lastFlag = 0;
-    byte flags = processListFlags(args, &lastFlag);
-
     if (flags & FLAG_LONG) 
     {
-        puts("flag long");
+        puts("flag long TO DO"); // to do
     }
-    else 
+    else
     {
         if (flags & FLAG_ACC)
         {
-            puts("flag acc");
+            printAcc(filepath, filestat);
+        } 
+        else
+        {
+            // Print size and name
+            printf("%10ld  %s", filestat.st_size, filepath);
         }
+        
         if (flags & FLAG_LINK)
         {
-            puts("flag link");
+            printLink(filepath, filestat, args);
+        }
+        puts("");
+    }
+}
+
+void printAcc(char* filepath, struct stat filestat)
+{
+    char buffer[20];
+    struct tm *tm_info;
+
+    // Convert time to readable format 
+    tm_info = localtime(&filestat.st_mtime);
+    strftime(buffer, sizeof(buffer), "%Y/%m/%d-%H:%M", tm_info);
+
+    // Print size, date and name
+    printf("%10ld  %s %s", filestat.st_size, buffer, filepath);
+}
+
+void printLink(char* filepath, struct stat filestat, tArgs args)
+{
+    if (S_ISLNK(filestat.st_mode)) // It is a symbolic link?
+    {
+        char buffer[1024]; // To store the path
+        // Read symbolic link
+        ssize_t len = readlink(filepath, buffer, sizeof(buffer) - 1);
+
+        if (len != -1) {
+            buffer[len] = '\0'; // "to string"
+            // print the path of symbolic link
+            printf(" -> %s", buffer);
+        } else {
+            printError(args.array[0], "Can´t read the symbolic link");
         }
     }
 }
@@ -177,6 +218,8 @@ void auxListdir(tArgs args);
 
 void cmdListdir(tArgs args, tLists *L) // to do
 {
+    UNUSED(L);
+
     if (args.len == 1)
         cmdCd(args, L);
     else
@@ -185,6 +228,7 @@ void cmdListdir(tArgs args, tLists *L) // to do
 
 void auxListdir(tArgs args)
 {
+    UNUSED(args);
     puts("HOLA");
 }
 
