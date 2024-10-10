@@ -5,28 +5,30 @@
 #define FLAG_ACC   (1 << 1)  // 0010 (2)
 #define FLAG_LINK  (1 << 2)  // 0100 (4)
 
-byte processListFlags(tArgs args, bool itsFlag[MAX_ARGS])
+byte processListFlags(tArgs args, int* lastFlag)
 {
     byte flags = 0;  // no flags
 
     for (int i = 1; i < args.len; i++) 
     {   
-        if (args.array[i][0] != '-')
-        {
-            break;
-        } 
-        else if (strcmp(args.array[i], "-long") == 0)
+        if (strcmp(args.array[i], "-long") == 0)
         {
             flags |= FLAG_LONG;
-            itsFlag[i] = true;
-        } else if (strcmp(args.array[i], "-acc") == 0)
+            *lastFlag = i;
+        } 
+        else if (strcmp(args.array[i], "-acc") == 0)
         {
             flags |= FLAG_ACC;
-            itsFlag[i] = true;
-        } else if (strcmp(args.array[i], "-link") == 0)
+            *lastFlag = i;
+        } 
+        else if (strcmp(args.array[i], "-link") == 0)
         {
             flags |= FLAG_LINK;
-            itsFlag[i] = true;
+            *lastFlag = i;
+        }
+        else 
+        {
+            break;
         }
     }
 
@@ -139,13 +141,8 @@ void auxListfile(tArgs args, int n) { // to do
 
 void auxListfileFlags(tArgs args)
 {   
-    bool itsFlag[args.len];
-
-    for (int i = 0; i < args.len; i++) {
-        itsFlag[i] = false;
-    }
-
-    byte flags = processListFlags(args, itsFlag);
+    int lastFlag = 0;
+    byte flags = processListFlags(args, &lastFlag);
 
     if (flags & FLAG_LONG) 
     {
