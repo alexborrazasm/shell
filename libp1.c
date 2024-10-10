@@ -64,8 +64,37 @@ void makedirAux(char *path)
 
 /******************************************************************************/
 // listfile
+void auxListfile(tArgs args, int n);
 
-//void cmdListfile(tArgs args, tLists *L);
+void cmdListfile(tArgs args, tLists *L)
+{
+    UNUSED(L);
+
+    if (args.len == 1) // Print actual working directory
+        cmdCd(args, L);
+    else // List file
+    {
+        for (int i = 1; i < args.len; i++)
+        {
+            auxListfile(args, i);
+        }
+    }
+}
+
+
+void auxListfile(tArgs args, int n) { // to do
+    char* filepath = args.array[n];
+    struct stat fileStat;
+
+    // Obtain file info
+    if (stat(filepath, &fileStat) != 0) {
+        pPrintError(args.array[0]);
+        return;
+    }
+
+    // Imprimir el tamaño del archivo y su nombre
+    printf("%10ld  %s\n", fileStat.st_size, filepath);
+}
 
 /******************************************************************************/
 // cwd
@@ -74,22 +103,24 @@ void cmdCwd(tArgs args, tLists *L)
     if (args.len == 1)
         cmdCd(args, L);
     else
-        printError("cwd", "Invalid num of arguments");
+        printError(args.array[0], "Invalid num of arguments");
 }
 
 /******************************************************************************/
 // listdir
+void auxListdir(tArgs args);
 
-void cmdListdir(tArgs args, tLists *L)
+void cmdListdir(tArgs args, tLists *L) // to do
 {
     if (args.len == 1)
-    {
         cmdCd(args, L);
-    }
     else
-    {
-        auxListDir(args);
-    }
+        auxListdir(args);
+}
+
+void auxListdir(tArgs args)
+{
+    puts("HOLA");
 }
 
 /******************************************************************************/

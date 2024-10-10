@@ -11,7 +11,7 @@ void cmdMakefile(tArgs args, tLists *L);
 void cmdMakedir(tArgs args, tLists *L);
 
 // gives information on files or directories
-//void cmdListfile(tArgs args, tLists *L);
+void cmdListfile(tArgs args, tLists *L);
 
 // prints current working directory
 void cmdCwd(tArgs args, tLists *L); 

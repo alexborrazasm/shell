@@ -33,7 +33,16 @@ tCommand commands[] =
     {"help", cmdHelp, "help [cmd]",
      "Gives a brief help on the usage of command"},
     {"cwd", cmdCwd, "cwd [dir]", "Prints current working directory"},
-    {"listdir", cmdListdir, "listdir [dir]", "Lists directories contents"},
+    {"listdir", cmdListdir, "listdir [-hid][-long][-link][-acc] n1 n2 ..",
+     "List directory contents"
+     "\n\t-long: long listing\n\t-hid: include hidden files"
+	 "\n\t-acc: acesstime"
+     "\n\t-link: if it is a symbolic link, the path content"},
+    {"listfile", cmdListfile, "listfile [-long][-link][-acc] name1 name2 ..",
+    "Lists files"
+    "\n\t-long: long list"
+    "\n\t-acc: acesstime"
+	"\n\t-link: if it is a symbolic link, the path contained\n"},
     {"makefile", cmdMakefile, "makefile [name]", "Creates a file"},
     {"makedir", cmdMakedir, "makedir [name]", "creates a directory"}
 };
