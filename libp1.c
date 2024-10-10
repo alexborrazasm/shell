@@ -265,7 +265,7 @@ void printLong(struct stat filestat)
     struct group *gr = getgrgid(filestat.st_gid);
     char *group = gr ? gr->gr_name : "unknown";
 
-    printf("  %lu (%lu)     %-9s %s %s %7lu ", filestat.st_nlink,
+    printf("  %lu (%8lu)     %-9s %s %s %7lu ", filestat.st_nlink,
            filestat.st_ino, owner, group, permissions, filestat.st_size);
 
     free(permissions);
