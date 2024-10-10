@@ -25,6 +25,8 @@ void printError(char *name, char *msg);
 
 void pPrintError(char *name);
 
+void pPrintErrorFile(char *name, char *filename);
+
 int getCommandsLen();
 
 void getCommands(tCommand *pointer);

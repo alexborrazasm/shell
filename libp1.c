@@ -10,7 +10,7 @@ byte processListFlags(tArgs args, int* lastFlag)
     byte flags = 0;  // no flags
 
     for (int i = 1; i < args.len; i++) 
-    {   
+    {    
         if (strcmp(args.array[i], "-long") == 0)
         {
             flags |= FLAG_LONG;
@@ -35,11 +35,52 @@ byte processListFlags(tArgs args, int* lastFlag)
     return flags; 
 }
 
+char getFileTypeChar(mode_t m)
+{
+    switch (m & S_IFMT) { // bitwise AND with the format bits, 0170000
+    case S_IFSOCK: return 's'; // socket
+    case S_IFLNK: return 'l';  // symbolic link
+    case S_IFREG: return '-';  // regular file
+    case S_IFBLK: return 'b';  // block device
+    case S_IFDIR: return 'd';  // directory  
+    case S_IFCHR: return 'c';  // character device
+    case S_IFIFO: return 'p';  // pipe
+    default: return '?';       // unknown, shouldn't appear
+    }
+}
+
+// free(permissions)!!!!
+char* getFilePermissions(mode_t m)
+{
+    char *permissions;
+
+    if ((permissions=(char *) malloc (12))==NULL)
+        return NULL;
+    strcpy (permissions,"---------- ");
+    
+    permissions[0]=getFileTypeChar(m);
+    if (m&S_IRUSR) permissions[1]='r';    // proprietary
+    if (m&S_IWUSR) permissions[2]='w';
+    if (m&S_IXUSR) permissions[3]='x';
+    if (m&S_IRGRP) permissions[4]='r';    // group
+    if (m&S_IWGRP) permissions[5]='w';
+    if (m&S_IXGRP) permissions[6]='x';
+    if (m&S_IROTH) permissions[7]='r';    // rest
+    if (m&S_IWOTH) permissions[8]='w';
+    if (m&S_IXOTH) permissions[9]='x';
+    if (m&S_ISUID) permissions[3]='s';    // setuid, setgid y stickybit
+    if (m&S_ISGID) permissions[6]='s';
+    if (m&S_ISVTX) permissions[9]='t';
+    
+    return permissions;
+}
+
 /******************************************************************************/
 // makefile
 void cmdMakefile(tArgs args, tLists *L){
     int df;
-    switch (args.len)
+    
+    switch (args.len)   
     {
     case 1:
         cmdCwd(args, L);
@@ -77,7 +118,6 @@ void cmdMakedir(tArgs args, tLists *L)
     case 2:
         makedirAux(args.array[1]);
         break;
-
     default:
         printf("error sintaxis"); // modify
         break;
@@ -104,9 +144,11 @@ void makedirAux(char *path)
 // listfile
 void auxListfile(tArgs args, int n, byte flags);
 
-void printAcc(char* filepath, struct stat filestat);
+void printDate(time_t date);
 
 void printLink(char* filepath, struct stat filestat, tArgs args);
+
+void printLong(struct stat filestat);
 
 void cmdListfile(tArgs args, tLists *L)
 {
@@ -143,45 +185,51 @@ void auxListfile(tArgs args, int n, byte flags)
 
     // Obtain file info, lstat don´t follow symbolic links
     if (lstat(filepath, &filestat) != 0) {
-        pPrintError(args.array[0]);
+        pPrintErrorFile(args.array[0], filepath);
         return;
     }
 
-    if (flags & FLAG_LONG) 
+    if ((flags & FLAG_LONG) && (flags & FLAG_ACC))
     {
-        puts("flag long TO DO"); // to do
+        printDate(filestat.st_atime);
+        printLong(filestat);
     }
-    else
+    else if (flags & FLAG_LONG)
     {
-        if (flags & FLAG_ACC)
-        {
-            printAcc(filepath, filestat);
-        } 
-        else
-        {
-            // Print size and name
-            printf("%10ld  %s", filestat.st_size, filepath);
-        }
+        printDate(filestat.st_mtime);
+        printLong(filestat);
+    } 
+    else if (flags & FLAG_ACC)
+    {
+        printf("%10ld  ", filestat.st_size);
+        printDate(filestat.st_atime);  
+    }
+    else 
+    {
+        printf("%10ld  ", filestat.st_size);
+    }
+
+    printf("%s", filepath);
         
-        if (flags & FLAG_LINK)
-        {
-            printLink(filepath, filestat, args);
-        }
-        puts("");
+    if (flags & FLAG_LINK)
+    {
+        printLink(filepath, filestat, args);
     }
+
+    puts("");
 }
 
-void printAcc(char* filepath, struct stat filestat)
+void printDate(time_t date)
 {
     char buffer[20];
     struct tm *tm_info;
 
     // Convert time to readable format 
-    tm_info = localtime(&filestat.st_mtime);
+    tm_info = localtime(&date);
     strftime(buffer, sizeof(buffer), "%Y/%m/%d-%H:%M", tm_info);
 
     // Print size, date and name
-    printf("%10ld  %s %s", filestat.st_size, buffer, filepath);
+    printf("%s ", buffer);
 }
 
 void printLink(char* filepath, struct stat filestat, tArgs args)
@@ -192,14 +240,35 @@ void printLink(char* filepath, struct stat filestat, tArgs args)
         // Read symbolic link
         ssize_t len = readlink(filepath, buffer, sizeof(buffer) - 1);
 
-        if (len != -1) {
+        if (len != -1) 
+        {
             buffer[len] = '\0'; // "to string"
             // print the path of symbolic link
             printf(" -> %s", buffer);
-        } else {
+        }
+        else 
+        {
             printError(args.array[0], "Can´t read the symbolic link");
         }
     }
+}
+
+void printLong(struct stat filestat) 
+{   
+    char* permissions = getFilePermissions(filestat.st_mode);
+
+    // Obtain proprietary
+    struct passwd *pw = getpwuid(filestat.st_uid);
+    char *owner = pw ? pw->pw_name : "unknown";
+
+    // Obtain group
+    struct group *gr = getgrgid(filestat.st_gid);
+    char *group = gr ? gr->gr_name : "unknown";
+
+    printf("  %lu (%lu)     %-9s %s %s %7lu ", filestat.st_nlink,
+           filestat.st_ino, owner, group, permissions, filestat.st_size);
+
+    free(permissions);
 }
 
 /******************************************************************************/
@@ -260,90 +329,4 @@ void auxListdir(tArgs args)
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
-
-char LetraTF (mode_t m)
-{
-     switch (m&S_IFMT) { // and bit a bit con los bits de formato,0170000 
-        case S_IFSOCK: return 's'; // socket
-        case S_IFLNK: return 'l'; // symbolic link
-        case S_IFREG: return '-'; // fichero normal
-        case S_IFBLK: return 'b'; // block device
-        case S_IFDIR: return 'd'; // directorio  
-        case S_IFCHR: return 'c'; // char device
-        case S_IFIFO: return 'p'; // pipe
-        default: return '?'; // desconocido, no debería aparecer
-     }
-}
-// las siguientes funciones devuelven los permisos de un fichero en formato rwx----
-// a partir del campo st_mode de la estructura stat 
-// las tres son correctas pero usan distintas estrategias de asignación de memoria
-
-char * ConvierteModo (mode_t m, char *permisos)
-{
-    strcpy (permisos,"---------- ");
-    
-    permisos[0]=LetraTF(m);
-    if (m&S_IRUSR) permisos[1]='r';    // propietario
-    if (m&S_IWUSR) permisos[2]='w';
-    if (m&S_IXUSR) permisos[3]='x';
-    if (m&S_IRGRP) permisos[4]='r';    // grupo
-    if (m&S_IWGRP) permisos[5]='w';
-    if (m&S_IXGRP) permisos[6]='x';
-    if (m&S_IROTH) permisos[7]='r';    // resto
-    if (m&S_IWOTH) permisos[8]='w';
-    if (m&S_IXOTH) permisos[9]='x';
-    if (m&S_ISUID) permisos[3]='s';    // setuid, setgid y stickybit
-    if (m&S_ISGID) permisos[6]='s';
-    if (m&S_ISVTX) permisos[9]='t';
-    
-    return permisos;
-}
-
-
-char * ConvierteModo2 (mode_t m)
-{
-    static char permisos[12];
-    strcpy (permisos,"---------- ");
-    
-    permisos[0]=LetraTF(m);
-    if (m&S_IRUSR) permisos[1]='r';    // propietario
-    if (m&S_IWUSR) permisos[2]='w';
-    if (m&S_IXUSR) permisos[3]='x';
-    if (m&S_IRGRP) permisos[4]='r';    // grupo
-    if (m&S_IWGRP) permisos[5]='w';
-    if (m&S_IXGRP) permisos[6]='x';
-    if (m&S_IROTH) permisos[7]='r';    // resto
-    if (m&S_IWOTH) permisos[8]='w';
-    if (m&S_IXOTH) permisos[9]='x';
-    if (m&S_ISUID) permisos[3]='s';    // setuid, setgid y stickybit
-    if (m&S_ISGID) permisos[6]='s';
-    if (m&S_ISVTX) permisos[9]='t';
-    
-    return permisos;
-}
-
-char * ConvierteModo3 (mode_t m)
-{
-    char *permisos;
-
-    if ((permisos=(char *) malloc (12))==NULL)
-        return NULL;
-    strcpy (permisos,"---------- ");
-    
-    permisos[0]=LetraTF(m);
-    if (m&S_IRUSR) permisos[1]='r';    // propietario
-    if (m&S_IWUSR) permisos[2]='w';
-    if (m&S_IXUSR) permisos[3]='x';
-    if (m&S_IRGRP) permisos[4]='r';    // grupo
-    if (m&S_IWGRP) permisos[5]='w';
-    if (m&S_IXGRP) permisos[6]='x';
-    if (m&S_IROTH) permisos[7]='r';    // resto
-    if (m&S_IWOTH) permisos[8]='w';
-    if (m&S_IXOTH) permisos[9]='x';
-    if (m&S_ISUID) permisos[3]='s';    // setuid, setgid y stickybit
-    if (m&S_ISGID) permisos[6]='s';
-    if (m&S_ISVTX) permisos[9]='t';
-    
-    return permisos;
-}    
 */

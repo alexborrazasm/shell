@@ -196,6 +196,12 @@ void pPrintError(char *name)
     fprintf(stderr, "\033[1;31mError: %s: %s\033[0m\n", name, strerror(errno));
 }
 
+void pPrintErrorFile(char *name, char *filename)
+{
+    fprintf(stderr, "\033[1;31mError: %s: %s: %s\033[0m\n",
+     name, filename, strerror(errno));
+}
+
 int getCommandsLen()
 {
     return sizeof(commands) / sizeof(commands[0]);

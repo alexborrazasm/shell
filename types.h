@@ -11,6 +11,8 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <sys/stat.h>
+#include <pwd.h>
+#include <grp.h>
 
 #define MAX_BUFFER_INPUT 50
 #define MAX_ARGS 30
