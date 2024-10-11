@@ -57,6 +57,40 @@ char getFileTypeChar(mode_t m)
     }
 }
 
+void auxList(tArgs args, tLists *L, tMode mode, 
+             void function(tArgs args, int n, byte flags, char* path))
+{
+        if (args.len == 1) // Print actual working directory
+        cmdCd(args, L);
+    else if (args.len > 1) // List file
+    {   
+        if (args.array[1][0] == '-') // 1 or more flags
+        {
+            int pLastFlag = 1;
+            byte flags = processListFlags(args, &pLastFlag, mode);
+            
+            if (args.len == pLastFlag)  // Only lags but no path
+            {  
+                args.len = 1;  // cmdCd prints path with args.len = 1
+                cmdCd(args, L);
+                return;
+            }
+
+            for (int i = pLastFlag; i < args.len; i++)
+            {
+                function(args, i, flags, NULL);
+            }
+        }
+        else // no flags
+        {
+            for (int i = 1; i < args.len; i++)
+            {
+                function(args, i, 0, NULL);
+            }
+        }
+    }
+}
+
 // free(permissions)!!!!
 char* getFilePermissions(mode_t m)
 {
@@ -159,37 +193,7 @@ void printLong(struct stat filestat);
 
 void cmdListfile(tArgs args, tLists *L)
 {
-    UNUSED(L);
-
-    if (args.len == 1) // Print actual working directory
-        cmdCd(args, L);
-    else if (args.len > 1) // List file
-    {   
-        if (args.array[1][0] == '-') // 1 or more flags
-        {
-            int pLastFlag = 1; 
-            byte flags = processListFlags(args, &pLastFlag, listfile);
-            
-            if (args.len == pLastFlag)  // Only lags but no path
-            {  
-                args.len = 1;  // cmdCd prints path with args.len = 1
-                cmdCd(args, L);
-                return;
-            }
-
-            for (int i = pLastFlag; i < args.len; i++)
-            {
-                auxListfile(args, i, flags, NULL);
-            }
-        }
-        else // no flags
-        {
-            for (int i = 1; i < args.len; i++)
-            {
-                auxListfile(args, i, 0, NULL);
-            }
-        }
-    }
+    auxList(args, L, listfile, auxListfile);
 }
 
 void auxListfile(tArgs args, int n, byte flags, char* path) 
@@ -330,45 +334,16 @@ void cmdCwd(tArgs args, tLists *L)
 
 /******************************************************************************/
 // listdir
-void auxListdir(tArgs args, int n, byte flags);
+void auxListdir(tArgs args, int n, byte flags, char* path);
 
 void cmdListdir(tArgs args, tLists *L)
 {
-    UNUSED(L);
-
-    if (args.len == 1) // Print actual working directory
-        cmdCd(args, L);
-    else if (args.len > 1) // List file
-    {   
-        if (args.array[1][0] == '-') // 1 or more flags
-        {
-            int pLastFlag = 1;
-            byte flags = processListFlags(args, &pLastFlag, listdir);
-            
-            if (args.len == pLastFlag)  // Only lags but no path
-            {  
-                args.len = 1;  // cmdCd prints path with args.len = 1
-                cmdCd(args, L);
-                return;
-            }
-
-            for (int i = pLastFlag; i < args.len; i++)
-            {
-                auxListdir(args, i, flags);
-            }
-        }
-        else // no flags
-        {
-            for (int i = 1; i < args.len; i++)
-            {
-                auxListdir(args, i, 0);
-            }
-        }
-    }
+    auxList(args, L, listdir, auxListdir);
 }
 
-void auxListdir(tArgs args, int n, byte flags)
+void auxListdir(tArgs args, int n, byte flags, char* path)
 {
+    UNUSED(path);
     char *dirPath = args.array[n];
 
     // Open dir
@@ -407,6 +382,7 @@ void auxListdir(tArgs args, int n, byte flags)
 
 /******************************************************************************/
 // reclist
+void auxReclist(tArgs args, int n, byte flags);
 
 void cmdReclist(tArgs args, tLists *L)
 {
