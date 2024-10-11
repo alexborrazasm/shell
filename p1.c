@@ -34,5 +34,4 @@ void shell()
     }
     freeHistoryList(&L.historic);
     freeFileList(&L.files);
-
 }

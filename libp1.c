@@ -4,8 +4,11 @@
 #define FLAG_LONG  (1 << 0)  // 0001 (1)
 #define FLAG_ACC   (1 << 1)  // 0010 (2)
 #define FLAG_LINK  (1 << 2)  // 0100 (4)
+#define FLAG_HID   (1 << 3)  // 1000 (8)
 
-byte processListFlags(tArgs args, int* lastFlag)
+typedef enum tMode {listfile, listdir} tMode;
+
+byte processListFlags(tArgs args, int* lastFlag, tMode mode)
 {
     byte flags = 0;  // no flags
 
@@ -24,6 +27,11 @@ byte processListFlags(tArgs args, int* lastFlag)
         else if (strcmp(args.array[i], "-link") == 0)
         {
             flags |= FLAG_LINK;
+            *lastFlag = i;
+        }
+        else if ((strcmp(args.array[i], "-hid") && (mode == listdir)) == 0)
+        {
+            flags |= FLAG_HID;
             *lastFlag = i;
         }
         else 
@@ -142,7 +150,7 @@ void makedirAux(char *path)
 
 /******************************************************************************/
 // listfile
-void auxListfile(tArgs args, int n, byte flags);
+void auxListfile(tArgs args, int n, byte flags, char* path);
 
 void printDate(time_t date);
 
@@ -160,31 +168,48 @@ void cmdListfile(tArgs args, tLists *L)
     {   
         if (args.array[1][0] == '-') // 1 or more flags
         {
-            int pLastFlag = 0; byte flags = processListFlags(args, &pLastFlag);
+            int pLastFlag = 0; 
+            byte flags = processListFlags(args, &pLastFlag, listfile);
             
+            if (args.len == pLastFlag + 1)  // Only lags but no path
+            {  
+                args.len = 1;
+                cmdCd(args, L);
+                return;
+            }
+
             for (int i = pLastFlag + 1; i < args.len; i++)
             {
-                auxListfile(args, i, flags);
+                auxListfile(args, i, flags, NULL);
             }
-            
         }
         else // no flags
         {
             for (int i = 1; i < args.len; i++)
             {
-                auxListfile(args, i, 0);
+                auxListfile(args, i, 0, NULL);
             }
         }
     }
 }
 
-void auxListfile(tArgs args, int n, byte flags) 
+void auxListfile(tArgs args, int n, byte flags, char* path) 
 {   
-    char* filepath = args.array[n];
     struct stat filestat;
+    char* filepath = args.array[n];
+    char* realPath;
+
+    // Path is for use this function on listdir 
+    if (path == NULL)
+        realPath = filepath;
+    else
+    {
+        realPath = malloc(256 * sizeof(char));
+        snprintf(realPath, 256, "%s/%s", path, filepath);
+    }
 
     // Obtain file info, lstat don´t follow symbolic links
-    if (lstat(filepath, &filestat) != 0) {
+    if (lstat(realPath, &filestat) != 0) {
         pPrintErrorFile(args.array[0], filepath);
         return;
     }
@@ -217,6 +242,9 @@ void auxListfile(tArgs args, int n, byte flags)
     }
 
     puts("");
+
+    if (path != NULL)
+        free(realPath);
 }
 
 void printDate(time_t date)
@@ -257,18 +285,38 @@ void printLong(struct stat filestat)
 {   
     char* permissions = getFilePermissions(filestat.st_mode);
 
-    // Obtain proprietary
-    struct passwd *pw = getpwuid(filestat.st_uid);
-    char *owner = pw ? pw->pw_name : "unknown";
+    if (permissions != NULL)
+    {
+        printf("  %lu (%8lu)     ", filestat.st_nlink, filestat.st_ino);
 
-    // Obtain group
-    struct group *gr = getgrgid(filestat.st_gid);
-    char *group = gr ? gr->gr_name : "unknown";
+        // Get user and group
+        struct group *grp;
+        struct passwd *pwd;
 
-    printf("  %lu (%8lu)     %-9s %s %s %7lu ", filestat.st_nlink,
-           filestat.st_ino, owner, group, permissions, filestat.st_size);
+        pwd = getpwuid(filestat.st_uid);
+        grp = getgrgid(filestat.st_gid);
+        
+        if(pwd != NULL) {
+            printf("%-9s", pwd->pw_name);
+        } else {
+            printf("%-9ld", (long)filestat.st_uid);
+        }
+    
+        if(grp != NULL) {
+            printf("%s", grp->gr_name);}
+        else{
+            printf("%ld", (long)filestat.st_gid);
+        }
 
-    free(permissions);
+        // size
+        printf(" %7lu ", filestat.st_size);
+
+        free(permissions);
+    }
+    else
+    {
+        printError("File permissions", "Error getting file permissions");
+    }
 }
 
 /******************************************************************************/
@@ -283,22 +331,77 @@ void cmdCwd(tArgs args, tLists *L)
 
 /******************************************************************************/
 // listdir
-void auxListdir(tArgs args);
+void auxListdir(tArgs args, int n, byte flags);
 
-void cmdListdir(tArgs args, tLists *L) // to do
+void cmdListdir(tArgs args, tLists *L)
 {
     UNUSED(L);
 
-    if (args.len == 1)
+    if (args.len == 1) // Print actual working directory
         cmdCd(args, L);
-    else
-        auxListdir(args);
+    else if (args.len > 1) // List file
+    {   
+        if (args.array[1][0] == '-') // 1 or more flags
+        {
+            int pLastFlag = 0;
+            byte flags = processListFlags(args, &pLastFlag, listdir);
+            
+            if (args.len == pLastFlag + 1)  // Only lags but no path
+            {  
+                args.len = 1;
+                cmdCd(args, L);
+                return;
+            }
+
+            for (int i = pLastFlag + 1; i < args.len; i++)
+            {
+                auxListdir(args, i, flags);
+            }
+        }
+        else // no flags
+        {
+            for (int i = 1; i < args.len; i++)
+            {
+                auxListdir(args, i, 0);
+            }
+        }
+    }
 }
 
-void auxListdir(tArgs args)
+void auxListdir(tArgs args, int n, byte flags)
 {
-    UNUSED(args);
-    puts("HOLA");
+    char *dirPath = args.array[n];
+
+    // Open dir
+    DIR *dir = opendir(dirPath);
+    if (dir == NULL) 
+    {
+        pPrintErrorFile(args.array[0], dirPath);
+        return;
+    }
+
+    tArgs fakeArgs;
+    fakeArgs.len = 2;
+
+    fakeArgs.array[0] = args.array[0];
+
+    // Read dir contents
+    struct dirent *entry;
+    while ((entry = readdir(dir)) != NULL) 
+    {
+        // Avoid list "." and ".."
+        if (strcmp(entry->d_name, ".") != 0 && strcmp(entry->d_name, "..") != 0)
+        {   // Avoid or not .* files
+            if ((flags & FLAG_HID) || entry->d_name[0] != '.')
+            {
+                fakeArgs.array[1] = entry->d_name;
+                auxListfile(fakeArgs, 1, flags, dirPath);
+            }
+        }
+    }
+
+    // At finish close dir
+    closedir(dir);
 }
 
 /******************************************************************************/
