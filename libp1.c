@@ -173,7 +173,7 @@ void cmdListfile(tArgs args, tLists *L)
             
             if (args.len == pLastFlag + 1)  // Only lags but no path
             {  
-                args.len = 1;
+                args.len = 1;  // cmdCd prints path with args.len = 1
                 cmdCd(args, L);
                 return;
             }
@@ -348,7 +348,7 @@ void cmdListdir(tArgs args, tLists *L)
             
             if (args.len == pLastFlag + 1)  // Only lags but no path
             {  
-                args.len = 1;
+                args.len = 1;  // cmdCd prints path with args.len = 1
                 cmdCd(args, L);
                 return;
             }
