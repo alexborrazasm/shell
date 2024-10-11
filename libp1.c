@@ -17,22 +17,22 @@ byte processListFlags(tArgs args, int* lastFlag, tMode mode)
         if (strcmp(args.array[i], "-long") == 0)
         {
             flags |= FLAG_LONG;
-            *lastFlag = i;
+            *lastFlag = i + 1;
         } 
         else if (strcmp(args.array[i], "-acc") == 0)
         {
             flags |= FLAG_ACC;
-            *lastFlag = i;
+            *lastFlag = i + 1;
         } 
         else if (strcmp(args.array[i], "-link") == 0)
         {
             flags |= FLAG_LINK;
-            *lastFlag = i;
+            *lastFlag = i + 1;
         }
-        else if ((strcmp(args.array[i], "-hid") && (mode == listdir)) == 0)
+        else if ((strcmp(args.array[i], "-hid") == 0) && (mode == listdir))
         {
             flags |= FLAG_HID;
-            *lastFlag = i;
+            *lastFlag = i + 1;
         }
         else 
         {
@@ -168,17 +168,17 @@ void cmdListfile(tArgs args, tLists *L)
     {   
         if (args.array[1][0] == '-') // 1 or more flags
         {
-            int pLastFlag = 0; 
+            int pLastFlag = 1; 
             byte flags = processListFlags(args, &pLastFlag, listfile);
             
-            if (args.len == pLastFlag + 1)  // Only lags but no path
+            if (args.len == pLastFlag)  // Only lags but no path
             {  
                 args.len = 1;  // cmdCd prints path with args.len = 1
                 cmdCd(args, L);
                 return;
             }
 
-            for (int i = pLastFlag + 1; i < args.len; i++)
+            for (int i = pLastFlag; i < args.len; i++)
             {
                 auxListfile(args, i, flags, NULL);
             }
@@ -210,7 +210,7 @@ void auxListfile(tArgs args, int n, byte flags, char* path)
 
     // Obtain file info, lstat don´t follow symbolic links
     if (lstat(realPath, &filestat) != 0) {
-        pPrintErrorFile(args.array[0], filepath);
+        pPrintErrorFile(args.array[0], realPath);
         return;
     }
 
@@ -238,7 +238,7 @@ void auxListfile(tArgs args, int n, byte flags, char* path)
         
     if (flags & FLAG_LINK)
     {
-        printLink(filepath, filestat, args);
+        printLink(realPath, filestat, args);
     }
 
     puts("");
@@ -343,17 +343,17 @@ void cmdListdir(tArgs args, tLists *L)
     {   
         if (args.array[1][0] == '-') // 1 or more flags
         {
-            int pLastFlag = 0;
+            int pLastFlag = 1;
             byte flags = processListFlags(args, &pLastFlag, listdir);
             
-            if (args.len == pLastFlag + 1)  // Only lags but no path
+            if (args.len == pLastFlag)  // Only lags but no path
             {  
                 args.len = 1;  // cmdCd prints path with args.len = 1
                 cmdCd(args, L);
                 return;
             }
 
-            for (int i = pLastFlag + 1; i < args.len; i++)
+            for (int i = pLastFlag; i < args.len; i++)
             {
                 auxListdir(args, i, flags);
             }
@@ -384,6 +384,8 @@ void auxListdir(tArgs args, int n, byte flags)
     fakeArgs.len = 2;
 
     fakeArgs.array[0] = args.array[0];
+    
+    printf("**\033[1;34m%s\033[0m\n", dirPath);
 
     // Read dir contents
     struct dirent *entry;
