@@ -20,15 +20,15 @@ void cmdCwd(tArgs args, tLists *L);
 void cmdListdir(tArgs args, tLists *L); 
 
 // lists directories recursively (subdirectories after)
-//void cmdReclist(tArgs args, tLists *L); 
+void cmdReclist(tArgs args, tLists *L); 
 
 // lists directories recursively (subdirectories before)
-//void cmdRevlist(tArgs args, tLists *L); 
+void cmdRevlist(tArgs args, tLists *L); 
 
 // deletes files and/or empty directories
-//void cmdErase(tArgs args, tLists *L); 
+void cmdErase(tArgs args, tLists *L); 
 
 // deletes files and/pr non empty directories recursively
-//void cmdDelrec(tArgs args, tLists *L); 
+void cmdDelrec(tArgs args, tLists *L); 
 
 #endif // LIBP1_H

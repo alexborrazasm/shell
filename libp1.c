@@ -114,7 +114,6 @@ void cmdMakefile(tArgs args, tLists *L){
 /******************************************************************************/
 // makedir
 
-// makedir
 void makedirAux(char *path);
 
 void cmdMakedir(tArgs args, tLists *L)
@@ -409,22 +408,36 @@ void auxListdir(tArgs args, int n, byte flags)
 /******************************************************************************/
 // reclist
 
-//void cmdReclist(tArgs args, tLists *L); 
+void cmdReclist(tArgs args, tLists *L)
+{
+    UNUSED(L); UNUSED(args);
+}
 
 /******************************************************************************/
 // revlist
 
-//void cmdRevlist(tArgs args, tLists *L); 
+void cmdRevlist(tArgs args, tLists *L)
+{
+    UNUSED(L); UNUSED(args);
+} 
 
 /******************************************************************************/
 // erase
 
-//void cmdErase(tArgs args, tLists *L); 
+void cmdErase(tArgs args, tLists *L)
+{
+    UNUSED(args); UNUSED(L);
+    puts("TO DO");
+}
 
 /******************************************************************************/
 // delrec
 
-//void cmdDelrec(tArgs args, tLists *L); 
+void cmdDelrec(tArgs args, tLists *L)
+{
+    UNUSED(args); UNUSED(L);
+    puts("TO DO");
+} 
 
 
 /* help

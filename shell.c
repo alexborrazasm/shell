@@ -39,12 +39,28 @@ tCommand commands[] =
 	 "\n\t-acc: acesstime"
      "\n\t-link: if it is a symbolic link, the path content"},
     {"listfile", cmdListfile, "listfile [-long][-link][-acc] name1 name2 ..",
-    "Lists files"
-    "\n\t-long: long list"
-    "\n\t-acc: acesstime"
-	"\n\t-link: if it is a symbolic link, the path contained\n"},
+     "Lists files"
+     "\n\t-long: long list"
+     "\n\t-acc: acesstime"
+	 "\n\t-link: if it is a symbolic link, the path contained\n"},
     {"makefile", cmdMakefile, "makefile [name]", "Creates a file"},
-    {"makedir", cmdMakedir, "makedir [name]", "creates a directory"}
+    {"makedir", cmdMakedir, "makedir [name]", "creates a directory"},
+    {"reclist", cmdReclist, "reclist [-hid][-long][-link][-acc] n1 n2 ..",
+      "Recursively list contents of directories (subdirs after)"
+      "Lists files"
+      "\n\t-long: long list"
+      "\n\t-acc: acesstime"
+	  "\n\t-link: if it is a symbolic link, the path contained\n"},
+    {"revlist", cmdRevlist, "revlist [-hid][-long][-link][-acc] n1 n2 ..",
+      "Recursively list contents of directories (subdirs before)"
+      "Lists files"
+      "\n\t-long: long list"
+      "\n\t-acc: acesstime"
+	  "\n\t-link: if it is a symbolic link, the path contained\n"},
+    {"erase", cmdErase, "erase [name1 name2 ..]",
+      "Delete empty files or directories"},
+    {"delrec", cmdDelrec, "delrec [name1 name2 ..]",
+     "Delete files or non empty directories recursively"}
 };
 
 int getInput(char *input);
