@@ -65,8 +65,8 @@ bool isDirectory(tArgs args, char* path)
 {
     struct stat fileStat;
     
-    // Obtain info
-    if (stat(path, &fileStat) != 0) 
+    // Obtain info, lstat don´t follow symbolic links
+    if (lstat(path, &fileStat) != 0) 
     {
         pPrintErrorFile(args.array[0], path);
         return false;
@@ -426,11 +426,16 @@ void auxListdir(tArgs args, int n, byte flags, char* fullPath)
         path = fullPath;
     }
 
-    // Print directory name
-    printf("******\033[1;34m%s\033[0m\n", path);
+    if (isDirectory(args, path))
+    {
+        // Print directory name
+        printf("******\033[1;34m%s\033[0m\n", path);
 
-    // Open dir and prints content
-    openDir(args, path, flags, auxListfile);
+        // Open dir and prints content
+        openDir(args, path, flags, auxListfile);
+    }
+    else  // It's a file
+        auxListfile(args, n, flags, fullPath);
 }
 
 /******************************************************************************/
