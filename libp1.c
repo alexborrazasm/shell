@@ -110,7 +110,8 @@ void auxList(tArgs args, tLists *L, tMode mode,
     }
 }
 
-void auxDel(tArgs args, void function(tArgs args, int n, char* fullPath))
+void auxDel(tArgs args,
+            void function(tArgs args, int n, byte flags, char* fullPath))
 {
     if (args.len == 1) // Print actual working directory
         printError(args.array[0], "missing operand");
@@ -119,7 +120,7 @@ void auxDel(tArgs args, void function(tArgs args, int n, char* fullPath))
         // Looping arguments
         for (int i = 1; i < args.len; i++)
         {
-            function(args, i, NULL);
+            function(args, i, 0, NULL);
         }
     }
 }
@@ -489,7 +490,7 @@ void auxRevlist(tArgs args, int n, byte flags, char* fullPath)
 
 /******************************************************************************/
 // erase
-void auxErase(tArgs args, int n, char* fullPath);
+void auxErase(tArgs args, int n, byte flags, char* fullPath);
 
 void cmdErase(tArgs args, tLists *L)
 {
@@ -497,8 +498,10 @@ void cmdErase(tArgs args, tLists *L)
     auxDel(args, auxErase);
 }
 
-void auxErase(tArgs args, int n, char* fullPath)
+void auxErase(tArgs args, int n, byte flags, char* fullPath)
 {
+    UNUSED(flags);
+
     char* path = buildPath(args.array[n], fullPath);
 
     if (remove(path) == -1)
@@ -509,8 +512,22 @@ void auxErase(tArgs args, int n, char* fullPath)
 
 /******************************************************************************/
 // delrec
+void auxDelrec(tArgs args, int n, byte flags, char* fullPath);
+
 void cmdDelrec(tArgs args, tLists *L)
 {
-    UNUSED(args); UNUSED(L);
-    puts("TO DO");
-} 
+    UNUSED(L);
+    auxDel(args, auxErase);
+}
+
+void auxDelrec(tArgs args, int n, byte flags, char* fullPath)
+{
+    UNUSED(flags);
+
+    char* path = buildPath(args.array[n], fullPath);
+
+    if (remove(path) == -1)
+    {
+        openDir(args, path, 0, auxDelrec);
+    }
+}
