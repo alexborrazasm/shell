@@ -517,7 +517,7 @@ void auxDelrec(tArgs args, int n, byte flags, char* fullPath);
 void cmdDelrec(tArgs args, tLists *L)
 {
     UNUSED(L);
-    auxDel(args, auxErase);
+    auxDel(args, auxDelrec);
 }
 
 void auxDelrec(tArgs args, int n, byte flags, char* fullPath)
@@ -526,8 +526,12 @@ void auxDelrec(tArgs args, int n, byte flags, char* fullPath)
 
     char* path = buildPath(args.array[n], fullPath);
 
-    if (remove(path) == -1)
+    if (remove(path) == -1) // Try to remove dir
     {
-        openDir(args, path, 0, auxDelrec);
+        openDir(args, path, 0, auxDelrec); // Remove recursively
+        if (remove(path) == -1)
+        {
+            pPrintErrorFile(args.array[0], path);
+        }
     }
 }
