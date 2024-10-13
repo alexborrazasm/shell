@@ -125,19 +125,37 @@ void auxDel(tArgs args,
     }
 }
 
+void auxMake(tArgs args, tLists *L, void function (tArgs args))
+{
+    switch (args.len)
+    {
+        case 1:
+            cmdCd(args, L);
+            break;
+        case 2:
+            function(args);
+            break;
+        default:
+            printError(args.array[0], "Invalid num of arguments");
+            break;
+    }
+}
+
 // free me!!!
 char* buildPath(char* relativePath, char* fullPath)
 {
     char *newPath;
-
+    
     if (fullPath == NULL) // It's not necessary
     {
         newPath = strdup(relativePath);
     }
     else // Build full path
     {
-        newPath = malloc(MAX_PATH * sizeof(char));
-        snprintf(newPath, MAX_PATH, "%s/%s", fullPath, relativePath);
+        // +1 for '/' and for para '\0'
+        size_t length = strlen(fullPath) + strlen(relativePath) + 2;  
+        newPath = malloc(length * sizeof(char));
+        snprintf(newPath, length, "%s/%s", fullPath, relativePath);
     }
 
     return newPath;
@@ -205,68 +223,43 @@ void openDir(tArgs args, char* path, byte flags,
 
 /******************************************************************************/
 // makefile
+void auxMakefile(tArgs args);
+
 void cmdMakefile(tArgs args, tLists *L){
+    auxMake(args, L, auxMakefile);
+}
+
+void auxMakefile(tArgs args)
+{
     int df;
-    
-    switch (args.len)   
+
+    df = open(args.array[1], O_CREAT, 0755); // Also we could use 0777
+    if (df != -1)
     {
-    case 1:
-        cmdCwd(args, L);
-        break;
-    case 2:
-        if ((df = open(args.array[1], O_CREAT, 0755)) != -1) //Also we could use 0777
-        {
-            close(df);  //Probably it's ok?¿ idk
-            printf("El archivo ha sido creado\n"); //modify
-        } 
-        else 
-        {
-            printf("No se ha podido crear el archivo o el directorio\n"); //modify
-        }
-        break;
-    
-    default:
-        printf("error sintaxis"); //modify
-        break;
+        close(df);  // Close file descriptor
+    }
+    else
+    {
+        pPrintErrorFile(args.array[0], args.array[1]);
     }
 }
 
 /******************************************************************************/
 // makedir
-
-void makedirAux(char *path);
+void auxMakedir(tArgs args);
 
 void cmdMakedir(tArgs args, tLists *L)
 {
-    UNUSED(L);
-
-    switch (args.len)
-    {
-    case 2:
-        makedirAux(args.array[1]);
-        break;
-    default:
-        printf("error sintaxis"); // modify
-        break;
-    }
+    auxMake(args, L, auxMakedir);
 }
 
-void makedirAux(char *path)
+void auxMakedir(tArgs args)
 {
-    int df;
-    df = open(path, O_CREAT, 0755); // Also we could use 0777
-    if (df != -1)
+    if(mkdir(args.array[1], 0755) == -1)  // Also we could use 0777
     {
-        close(df);                             // Probably it's ok?¿ idk
-        printf("El archivo ha sido creado\n"); // placeholder
-    }
-    else
-    {
-        printf("No se ha podido crear el archivo o el directorio\n"); // placeholder
+        pPrintErrorFile(args.array[0], args.array[1]);
     }
 }
-
-
 /******************************************************************************/
 // listfile
 void auxListfile(tArgs args, int n, byte flags, char* fullPath);
@@ -387,6 +380,9 @@ void printLong(struct stat filestat)
         else{
             printf("%ld", (long)filestat.st_gid);
         }
+
+        // permissions
+        printf(" %s", permissions);
 
         // size
         printf(" %7lu ", filestat.st_size);

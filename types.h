@@ -20,7 +20,6 @@
 #define MAX_ARGS 30
 #define UNUSED(expr) do { (void)(expr); } while (0)
 #define MNULL -1
-#define MAX_PATH 256
 
 typedef unsigned char byte;
 
