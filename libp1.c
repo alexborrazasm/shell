@@ -110,6 +110,20 @@ void auxList(tArgs args, tLists *L, tMode mode,
     }
 }
 
+void auxDel(tArgs args, void function(tArgs args, int n, char* fullPath))
+{
+    if (args.len == 1) // Print actual working directory
+        printError(args.array[0], "missing operand");
+    else if (args.len > 1) // Delete files
+    {   
+        // Looping arguments
+        for (int i = 1; i < args.len; i++)
+        {
+            function(args, i, NULL);
+        }
+    }
+}
+
 // free me!!!
 char* buildPath(char* relativePath, char* fullPath)
 {
@@ -184,7 +198,6 @@ void openDir(tArgs args, char* path, byte flags,
             }
         }
     }
-
     // At finish close dir
     closedir(dir);
 }
@@ -271,10 +284,12 @@ void cmdListfile(tArgs args, tLists *L)
 void auxListfile(tArgs args, int n, byte flags, char* fullPath) 
 {   
     struct stat filestat;
-    char* path = buildPath(args.array[n], fullPath);
+    char* filename = args.array[n];
+    char* path = buildPath(filename, fullPath);
 
     // Obtain file info, lstat don´t follow symbolic links
-    if (lstat(path, &filestat) != 0) {
+    if (lstat(path, &filestat) != 0) 
+    {
         pPrintErrorFile(args.array[0], path);
         return;
     }
@@ -299,7 +314,7 @@ void auxListfile(tArgs args, int n, byte flags, char* fullPath)
         printf("%10ld  ", filestat.st_size);
     }
 
-    printf("%s", path);
+    printf("%s", filename);
         
     if (flags & FLAG_LINK)
     {
@@ -474,10 +489,22 @@ void auxRevlist(tArgs args, int n, byte flags, char* fullPath)
 
 /******************************************************************************/
 // erase
+void auxErase(tArgs args, int n, char* fullPath);
+
 void cmdErase(tArgs args, tLists *L)
 {
-    UNUSED(args); UNUSED(L);
-    puts("TO DO");
+    UNUSED(L);
+    auxDel(args, auxErase);
+}
+
+void auxErase(tArgs args, int n, char* fullPath)
+{
+    char* path = buildPath(args.array[n], fullPath);
+
+    if (remove(path) == -1)
+    {
+        pPrintErrorFile(args.array[0], path);
+    }
 }
 
 /******************************************************************************/
@@ -487,13 +514,3 @@ void cmdDelrec(tArgs args, tLists *L)
     UNUSED(args); UNUSED(L);
     puts("TO DO");
 } 
-
-
-/* help
-
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <string.h>
-*/
