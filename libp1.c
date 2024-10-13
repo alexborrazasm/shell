@@ -528,8 +528,9 @@ void auxDelrec(tArgs args, int n, byte flags, char* fullPath)
 
     if (remove(path) == -1) // Try to remove dir
     {
+        // Dir it's not empty
         openDir(args, path, 0, auxDelrec); // Remove recursively
-        if (remove(path) == -1)
+        if (remove(path) == -1) // Finally remove dir
         {
             pPrintErrorFile(args.array[0], path);
         }
