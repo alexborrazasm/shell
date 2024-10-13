@@ -16,10 +16,11 @@
 #include <grp.h>
 #include <dirent.h>
 
-#define MAX_BUFFER_INPUT 50
+#define MAX_BUFFER_INPUT 256
 #define MAX_ARGS 30
 #define UNUSED(expr) do { (void)(expr); } while (0)
 #define MNULL -1
+#define MAX_PATH 256
 
 typedef unsigned char byte;
 

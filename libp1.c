@@ -8,6 +8,9 @@
 
 typedef enum tMode {listfile, listdir} tMode;
 
+/**************************************************************************8* */
+// Auxiliary functions to all file
+
 byte processListFlags(tArgs args, int* lastFlag, tMode mode)
 {
     byte flags = 0;  // no flags
@@ -57,10 +60,26 @@ char getFileTypeChar(mode_t m)
     }
 }
 
-void auxList(tArgs args, tLists *L, tMode mode, 
-             void function(tArgs args, int n, byte flags, char* path))
+// Return true if path is a directory
+bool isDirectory(tArgs args, char* path) 
 {
-        if (args.len == 1) // Print actual working directory
+    struct stat fileStat;
+    
+    // Obtain info
+    if (stat(path, &fileStat) != 0) 
+    {
+        pPrintErrorFile(args.array[0], path);
+        return false;
+    }
+
+    // Verify
+    return S_ISDIR(fileStat.st_mode);
+}
+
+void auxList(tArgs args, tLists *L, tMode mode, 
+             void function(tArgs args, int n, byte flags, char* fullPath))
+{
+    if (args.len == 1) // Print actual working directory
         cmdCd(args, L);
     else if (args.len > 1) // List file
     {   
@@ -91,7 +110,25 @@ void auxList(tArgs args, tLists *L, tMode mode,
     }
 }
 
-// free(permissions)!!!!
+// free me!!!
+char* buildPath(char* relativePath, char* fullPath)
+{
+    char *newPath;
+
+    if (fullPath == NULL) // It's not necessary
+    {
+        newPath = strdup(relativePath);
+    }
+    else // Build full path
+    {
+        newPath = malloc(MAX_PATH * sizeof(char));
+        snprintf(newPath, MAX_PATH, "%s/%s", fullPath, relativePath);
+    }
+
+    return newPath;
+}
+
+// free me!!!!
 char* getFilePermissions(mode_t m)
 {
     char *permissions;
@@ -115,6 +152,41 @@ char* getFilePermissions(mode_t m)
     if (m&S_ISVTX) permissions[9]='t';
     
     return permissions;
+}
+
+// Open dir and apply a function
+void openDir(tArgs args, char* path, byte flags,
+             void function(tArgs args, int n, byte flags, char* path))
+{
+    // Open dir
+    DIR *dir = opendir(path);
+    if (dir == NULL) 
+    {
+        pPrintErrorFile(args.array[0], path);
+        return;
+    }
+
+    tArgs newArgs;
+    newArgs.array[0] = args.array[0];
+    newArgs.len = 2;
+
+    // Read dir contents
+    struct dirent *entry;
+    while ((entry = readdir(dir)) != NULL)
+    {
+        // Avoid list "." and ".."
+        if (strcmp(entry->d_name, ".") != 0 && strcmp(entry->d_name, "..") != 0)
+        {   // Avoid or not .* files
+            if ((flags & FLAG_HID) || entry->d_name[0] != '.')
+            {
+                newArgs.array[1] = entry->d_name;
+                function(newArgs, 1, flags, path);
+            }
+        }
+    }
+
+    // At finish close dir
+    closedir(dir);
 }
 
 /******************************************************************************/
@@ -183,7 +255,7 @@ void makedirAux(char *path)
 
 /******************************************************************************/
 // listfile
-void auxListfile(tArgs args, int n, byte flags, char* path);
+void auxListfile(tArgs args, int n, byte flags, char* fullPath);
 
 void printDate(time_t date);
 
@@ -196,24 +268,14 @@ void cmdListfile(tArgs args, tLists *L)
     auxList(args, L, listfile, auxListfile);
 }
 
-void auxListfile(tArgs args, int n, byte flags, char* path) 
+void auxListfile(tArgs args, int n, byte flags, char* fullPath) 
 {   
     struct stat filestat;
-    char* filepath = args.array[n];
-    char* realPath;
-
-    // Path is for use this function on listdir 
-    if (path == NULL)
-        realPath = filepath;
-    else
-    {
-        realPath = malloc(256 * sizeof(char));
-        snprintf(realPath, 256, "%s/%s", path, filepath);
-    }
+    char* path = buildPath(args.array[n], fullPath);
 
     // Obtain file info, lstat don´t follow symbolic links
-    if (lstat(realPath, &filestat) != 0) {
-        pPrintErrorFile(args.array[0], realPath);
+    if (lstat(path, &filestat) != 0) {
+        pPrintErrorFile(args.array[0], path);
         return;
     }
 
@@ -237,17 +299,16 @@ void auxListfile(tArgs args, int n, byte flags, char* path)
         printf("%10ld  ", filestat.st_size);
     }
 
-    printf("%s", filepath);
+    printf("%s", path);
         
     if (flags & FLAG_LINK)
     {
-        printLink(realPath, filestat, args);
+        printLink(path, filestat, args);
     }
 
     puts("");
 
-    if (path != NULL)
-        free(realPath);
+    free(path);
 }
 
 void printDate(time_t date)
@@ -334,202 +395,81 @@ void cmdCwd(tArgs args, tLists *L)
 
 /******************************************************************************/
 // listdir
-void auxListdir(tArgs args, int n, byte flags, char* path);
+
+void auxListdir(tArgs args, int n, byte flags, char* fullPath);
 
 void cmdListdir(tArgs args, tLists *L)
 {
     auxList(args, L, listdir, auxListdir);
 }
 
-void auxListdir(tArgs args, int n, byte flags, char* path)
+void auxListdir(tArgs args, int n, byte flags, char* fullPath)
 {
-    UNUSED(path);
-    char *dirPath = args.array[n];
-    char *realPath;
+    char *path;
 
-    if (path == NULL)
-        realPath = dirPath;
-    else
+    if (fullPath == NULL)
+        path = args.array[n];
+    else // Use absolute path
     {
-        realPath = path;
+        path = fullPath;
     }
 
-    // Open dir
-    DIR *dir = opendir(realPath);
-    if (dir == NULL) 
-    {
-        pPrintErrorFile(args.array[0], realPath);
-        return;
-    }
+    // Print directory name
+    printf("******\033[1;34m%s\033[0m\n", path);
 
-    tArgs fakeArgs;
-    fakeArgs.len = 2;
-
-    fakeArgs.array[0] = args.array[0];
-    
-    printf("**\033[1;34m%s\033[0m\n", realPath);
-
-    // Read dir contents
-    struct dirent *entry;
-    while ((entry = readdir(dir)) != NULL)
-    {
-        // Avoid list "." and ".."
-        if (strcmp(entry->d_name, ".") != 0 && strcmp(entry->d_name, "..") != 0)
-        {   // Avoid or not .* files
-            if ((flags & FLAG_HID) || entry->d_name[0] != '.')
-            {
-                fakeArgs.array[1] = entry->d_name;
-                auxListfile(fakeArgs, 1, flags, realPath);
-            }
-        }
-    }
-
-    // At finish close dir
-    closedir(dir);
+    // Open dir and prints content
+    openDir(args, path, flags, auxListfile);
 }
 
 /******************************************************************************/
 // reclist
-void auxReclist(tArgs args, int n, byte flags, char* path);
 
-bool isDirectory(char* path);
+void auxReclist(tArgs args, int n, byte flags, char* fullPath);
 
 void cmdReclist(tArgs args, tLists *L)
 {
     auxList(args, L, listdir, auxReclist);
 }
 
-void auxReclist(tArgs args, int n, byte flags, char* path)
+void auxReclist(tArgs args, int n, byte flags, char* fullPath)
 {   
-    char* dirPath = args.array[n];
-    char* realPath;
+    char* path = buildPath(args.array[n], fullPath);
 
-    if (path == NULL)
-        realPath = dirPath;
-    else
-    {
-        realPath = malloc(256 * sizeof(char));
-        snprintf(realPath, 256, "%s/%s", path, dirPath);
-    }
-
-    if (isDirectory(realPath)) 
+    if (isDirectory(args, path)) 
     {    
-        // List actual directory
-        auxListdir(args, n, flags, realPath);
+        // List actual directory before
+        auxListdir(args, n, flags, path);
 
-        // Open dir
-        DIR *dir = opendir(realPath);
-        if (dir == NULL) 
-        {
-            pPrintErrorFile(args.array[0], realPath);
-            return;
-        }
-
-        // List directory contents
-        struct dirent *entry;
-
-        tArgs newArgs;
-        newArgs.array[0] = args.array[0];
-        newArgs.len = 2;
-
-        while ((entry = readdir(dir)) != NULL)
-        {
-            // Avoid list "." and ".."
-            if (strcmp(entry->d_name, ".") != 0 && strcmp(entry->d_name, "..") != 0)
-            {   // Avoid or not .* files
-                if ((flags & FLAG_HID) || entry->d_name[0] != '.')
-                {
-                    newArgs.array[1] = entry->d_name;
-                    auxReclist(newArgs, 1, flags, realPath);
-                }
-            }
-        }
-        // At finish close dir
-        closedir(dir);
-        if (path != NULL)
-            free(realPath);
-    }
-}
-
-bool isDirectory(char* path) {
-    struct stat fileStat;
-    
-    // Obtain info
-    if (stat(path, &fileStat) != 0) {
-        pPrintErrorFile("isDirectory", path);
-        return false;
+        // List subdirectories after recursively
+        openDir(args, path, flags, auxReclist);
     }
 
-    // Verify
-    return S_ISDIR(fileStat.st_mode);
+    free(path);
 }
-
 
 /******************************************************************************/
 // revlist
-void auxRevlist(tArgs args, int n, byte flags, char* path);
+void auxRevlist(tArgs args, int n, byte flags, char* fullPath);
 
 void cmdRevlist(tArgs args, tLists *L)
 {
     auxList(args, L, listdir, auxRevlist);
 }
 
-void auxRevlist(tArgs args, int n, byte flags, char* path)
-{
-    char* dirPath = args.array[n];
-    char* realPath;
+void auxRevlist(tArgs args, int n, byte flags, char* fullPath)
+{   
+    char* path = buildPath(args.array[n], fullPath);
 
-    if (path == NULL)
-        realPath = dirPath;
-    else
-    {
-        realPath = malloc(256 * sizeof(char));
-        snprintf(realPath, 256, "%s/%s", path, dirPath);
+    if (isDirectory(args, path)) 
+    {    
+        // List subdirectories before recursively
+        openDir(args, path, flags, auxRevlist);
+        
+        // List actual directory after
+        auxListdir(args, n, flags, path);
     }
 
-    if (isDirectory(realPath)) 
-    {
-        // Open directory
-        DIR *dir = opendir(realPath);
-        if (dir == NULL) 
-        {
-            pPrintErrorFile(args.array[0], realPath);
-            if (path != NULL)
-                free(realPath);
-            return;
-        }
-
-        // List directory contents first (subdirectories recursively)
-        struct dirent *entry;
-
-        tArgs newArgs;
-        newArgs.array[0] = args.array[0];
-        newArgs.len = 2;
-
-        while ((entry = readdir(dir)) != NULL)
-        {
-            // Avoid listing "." and ".."
-            if (strcmp(entry->d_name, ".") != 0 && strcmp(entry->d_name, "..") != 0)
-            {   
-                // Avoid or not hidden files
-                if ((flags & FLAG_HID) || entry->d_name[0] != '.')
-                {
-                    newArgs.array[1] = entry->d_name;
-                    // Recursively list subdirectories before listing the current dir
-                    auxRevlist(newArgs, 1, flags, realPath);
-                }
-            }
-        }
-
-        // After listing subdirectories, list the actual directory
-        auxListdir(args, n, flags, realPath);
-
-        // Close directory
-        closedir(dir);
-
-        if (path != NULL)
-            free(realPath);
-    }
+    free(path);
 }
 
 /******************************************************************************/
