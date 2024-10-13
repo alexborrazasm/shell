@@ -698,11 +698,11 @@ void infosysAux(tArgs args)
     struct utsname info_sistema; // Estructura que guarda info del sistema ;)
     if (uname(&info_sistema) == 0)
     {
-        printf("Nombre del sistema operativo:\t\033[1;34m%s\033[0m\n"
-               "Nombre del nodo (host):\t\t\033[1;34m%s\033[0m\n"
-               "Versión del sistema operativo:\t\033[1;34m%s\033[0m\n"
-               "Información de la versión:\t\033[1;34m%s\033[0m\n"
-               "Tipo de hardware (arquitectura):\033[1;34m%s\033[0m\n",
+        printf("SO:\t\t\033[1;34m%s\033[0m\n"
+               "Hostname:\t\033[1;34m%s\033[0m\n"
+               "Kernel:\t\t\033[1;34m%s\033[0m\n"
+               "Version:\t\033[1;34m%s\033[0m\n"
+               "Arch:\t\t\033[1;34m%s\033[0m\n",
                info_sistema.sysname, info_sistema.nodename,
                info_sistema.release, info_sistema.version,
                info_sistema.machine);
