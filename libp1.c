@@ -48,15 +48,16 @@ byte processListFlags(tArgs args, int* lastFlag, tMode mode)
 
 char getFileTypeChar(mode_t m)
 {
-    switch (m & S_IFMT) { // bitwise AND with the format bits, 0170000
-    case S_IFSOCK: return 's'; // socket
-    case S_IFLNK: return 'l';  // symbolic link
-    case S_IFREG: return '-';  // regular file
-    case S_IFBLK: return 'b';  // block device
-    case S_IFDIR: return 'd';  // directory  
-    case S_IFCHR: return 'c';  // character device
-    case S_IFIFO: return 'p';  // pipe
-    default: return '?';       // unknown, shouldn't appear
+    switch (m & S_IFMT)  // bitwise AND with the format bits, 0170000
+    { 
+        case S_IFSOCK: return 's'; // socket
+        case S_IFLNK: return 'l';  // symbolic link
+        case S_IFREG: return '-';  // regular file
+        case S_IFBLK: return 'b';  // block device
+        case S_IFDIR: return 'd';  // directory  
+        case S_IFCHR: return 'c';  // character device
+        case S_IFIFO: return 'p';  // pipe
+        default: return '?';       // unknown, shouldn't appear
     }
 }
 

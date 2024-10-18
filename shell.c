@@ -252,9 +252,9 @@ void initFList(tListF *L)
     strcpy(error.info, "standard error");
     error.mode = O_RDWR;
 
-    insertItemF(input, FNULL, L);
-    insertItemF(output, FNULL, L);
-    insertItemF(error, FNULL, L);
+    insertItemF(input, L);
+    insertItemF(output, L);
+    insertItemF(error, L);
 
     strcpy(empty.info, "unused");
     empty.mode = MNULL;
@@ -262,7 +262,7 @@ void initFList(tListF *L)
     for (int i = 3; i <= 9; i++)
     {
         empty.df = i;
-        insertItemF(empty, FNULL, L);
+        insertItemF(empty, L);
     }
 }
 

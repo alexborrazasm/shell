@@ -427,7 +427,7 @@ void Cmd_open(tArgs args, tListF *L)
 
         if (p == FNULL)
         {
-            if (!insertItemF(item, p, L))
+            if (!insertItemF(item, L))
             {
                 printError(args.array[0], "Can´t insert on filesList");
                 return;
@@ -637,7 +637,6 @@ void auxDup(int df, tArgs args, tListF *L)
 
     if ((newDf = dup(df)) == -1)
     {
-        printf("%d\n", newDf);
         pPrintError(args.array[0]);
         return;
     }
@@ -661,7 +660,7 @@ void auxDup(int df, tArgs args, tListF *L)
 
         if (p == FNULL)
         {
-            if (!insertItemF(item, p, L))
+            if (!insertItemF(item, L))
             {
                 printError(args.array[0], "Can´t insert on filesList");
                 return;

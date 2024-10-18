@@ -35,7 +35,7 @@ tPosH previousH(tPosH p, tListH L)
 tPosH nextH(tPosH p, tListH L)
 {
     UNUSED(L);
-    return p->next; // Devuelve NULL si es el último, y si no el siguiente
+    return p->next;
 }
 
 bool insertItemH(tItemH d, tPosH p, tListH *L)

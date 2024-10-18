@@ -1,5 +1,7 @@
 #include "filesList.h"
 
+tPosF findPosition(tListF L, tItemF d);
+
 bool createNodeF(tPosF *p);
 
 void createEmptyListF (tListF *L)
@@ -35,10 +37,21 @@ tPosF previousF(tPosF p, tListF L)
 tPosF nextF(tPosF p, tListF L)
 {
     UNUSED(L);
-    return p->next; // Devuelve NULL si es el último, y si no el siguiente
+    return p->next;
 }
 
-bool insertItemF(tItemF d, tPosF p, tListF *L)
+tPosF findPosition(tListF L, tItemF d)
+{
+    tPosF p;
+
+    p = L;
+    while ((p->next != FNULL) && (p->next->data.df < d.df))
+        p = p->next;
+
+    return p->next;
+}
+
+bool insertItemF(tItemF d, tListF *L)
 {
     tPosF q;
 
@@ -54,30 +67,36 @@ bool insertItemF(tItemF d, tPosF p, tListF *L)
         *L = q; // The first node its q
         q->prev = q;
     }
-    else if (p == FNULL) // Insert at the end
-    {
-        tPosF r;
-
-        r = (*L)->prev; // (*L)->prev is the lastF node
-        r->next = q;
-        q->prev = r;
-        (*L)->prev = q;
-    }
-    else if (p == *L) // Insert at first position
-    {
+    else if (d.df < (*L)->data.df) // d is less than all items in the list 
+    {   // Inset at first position
         q->next = *L;
         q->prev = (*L)->prev; // (*L)->prev point to lastF node
         (*L)->prev = q;
         *L = q;
     }
-    else // Insert in the middle
+    else  // Find and insert in the middle
     {
-        // Pointers are reassigned
-        q->next = p;
-        q->prev = p->prev;
-        p->prev->next = q;
-        p->prev = q;
+        tPosF p = findPosition(*L, d);
+        
+        
+        if (p == FNULL) // Insert at end position
+        {
+            tPosF last = (*L)->prev;
+            last->next = q;
+            q->prev = last;
+            (*L)->prev = q; // (*L)->prev point to lastF node
+        }
+        
+        else // Insert int the middle
+        {
+            // Pointers are reassigned
+            q->next = p;
+            q->prev = p->prev;
+            p->prev->next = q;
+            p->prev = q;
+        }
     }
+
     return true;
 }
 
@@ -136,11 +155,15 @@ void updateItemF(tItemF d, tPosF p, tListF* L)
     p->data=d;
 }
 
-tPosF findItemF(int df, tListF L)
-{
+tPosF findItemF(int df, tListF L) {
     tPosF p;
 
-    for (p = L; (p != FNULL) && (p->data.df != df); p = p->next);
+    for (p = L; (p != FNULL) && (p->data.df < df); p = p->next);
     
-    return p;
+    // Check if the item has been found
+    if ((p != FNULL) && (p->data.df == df)) {
+        return p; // Item found
+    }
+    
+    return FNULL; // Item not found
 }

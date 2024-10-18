@@ -1,9 +1,6 @@
 /*  José Manuel Villar García  jose.villarg@udc.es
     Alex Borrazás Mancebo      alexandre.bmancebo
 */
-
-
-
 #include "shell.h"
 
 void shell();

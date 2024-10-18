@@ -33,7 +33,7 @@ tPosF nextF(tPosF p, tListF L);
 
 tPosF previousF(tPosF p, tListF L);
 
-bool insertItemF(tItemF d, tPosF p, tListF *L);
+bool insertItemF(tItemF d, tListF *L);
 
 void deleteAtPositionF(tPosF p, tListF *L);
 
