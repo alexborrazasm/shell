@@ -5,6 +5,7 @@
 #define FLAG_ACC   (1 << 1)  // 0010 (2)
 #define FLAG_LINK  (1 << 2)  // 0100 (4)
 #define FLAG_HID   (1 << 3)  // 1000 (8)
+#define FLAG_AVOID (1 << 4)
 
 typedef enum tMode {listfile, listdir} tMode;
 
@@ -209,7 +210,8 @@ void openDir(tArgs args, char* path, byte flags,
     while ((entry = readdir(dir)) != NULL)
     {
         // Avoid list "." and ".."
-        if (strcmp(entry->d_name, ".") != 0 && strcmp(entry->d_name, "..") != 0)
+        if (!(flags & FLAG_AVOID) || 
+             (strcmp(entry->d_name, ".") != 0 && strcmp(entry->d_name, "..") != 0))
         {   // Avoid or not .* files
             if ((flags & FLAG_HID) || entry->d_name[0] != '.')
             {
@@ -226,7 +228,8 @@ void openDir(tArgs args, char* path, byte flags,
 // makefile
 void auxMakefile(tArgs args);
 
-void cmdMakefile(tArgs args, tLists *L){
+void cmdMakefile(tArgs args, tLists *L)
+{
     auxMake(args, L, auxMakefile);
 }
 
@@ -364,8 +367,8 @@ void printLong(struct stat filestat)
         printf("  %lu (%8lu)     ", filestat.st_nlink, filestat.st_ino);
 
         // Get user and group
-        struct group *grp;
-        struct passwd *pwd;
+        struct group *grp = NULL;
+        struct passwd *pwd = NULL;
 
         pwd = getpwuid(filestat.st_uid);
         grp = getgrgid(filestat.st_gid);
@@ -432,6 +435,9 @@ void auxListdir(tArgs args, int n, byte flags, char* fullPath)
         // Print directory name
         printf("******\033[1;34m%s\033[0m\n", path);
 
+        // Avoid call .. and .
+        if (flags & FLAG_AVOID)
+            flags &= ~FLAG_AVOID;
         // Open dir and prints content
         openDir(args, path, flags, auxListfile);
     }
@@ -458,6 +464,9 @@ void auxReclist(tArgs args, int n, byte flags, char* fullPath)
         // List actual directory before
         auxListdir(args, n, flags, path);
 
+        // To avoid infinite loop with . and ..
+        flags |= FLAG_AVOID;
+
         // List subdirectories after recursively
         openDir(args, path, flags, auxReclist);
     }
@@ -479,10 +488,15 @@ void auxRevlist(tArgs args, int n, byte flags, char* fullPath)
     char* path = buildPath(args.array[n], fullPath);
 
     if (isDirectory(args, path)) 
-    {    
+    {   
+        // To avoid infinite loop with . and ..
+        flags |= FLAG_AVOID;
+        
         // List subdirectories before recursively
         openDir(args, path, flags, auxRevlist);
         
+        flags &= ~FLAG_AVOID;
+
         // List actual directory after
         auxListdir(args, n, flags, path);
     }
