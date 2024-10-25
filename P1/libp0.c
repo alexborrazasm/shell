@@ -579,7 +579,7 @@ void auxClose(int df, tArgs args, tListF *L)
         
         if (p != FNULL)
         {
-            if (df <= 9)
+            if (df <= 19)
             {
                 item = getItemF(p, *L);
                 strcpy(item.info, "unused");

@@ -35,6 +35,7 @@ tCommand commands[] =
     {"cwd", cmdCwd, "cwd [dir]", "Prints current working directory"},
     {"listdir", cmdListdir, "listdir [-hid][-long][-link][-acc] n1 n2 ..",
      "List directory contents"
+     "\n\t -hid: includes hidden files"
      "\n\t-long: long listing\n\t-hid: include hidden files"
 	 "\n\t-acc: acesstime"
      "\n\t-link: if it is a symbolic link, the path content"},
@@ -48,12 +49,14 @@ tCommand commands[] =
     {"reclist", cmdReclist, "reclist [-hid][-long][-link][-acc] n1 n2 ..",
       "Recursively list contents of directories (subdirs after)"
       "Lists files"
+      "\n\t -hid: includes hidden files"
       "\n\t-long: long list"
       "\n\t-acc: acesstime"
 	  "\n\t-link: if it is a symbolic link, the path contained\n"},
     {"revlist", cmdRevlist, "revlist [-hid][-long][-link][-acc] n1 n2 ..",
       "Recursively list contents of directories (subdirs before)"
       "Lists files"
+      "\n\t -hid: includes hidden files"
       "\n\t-long: long list"
       "\n\t-acc: acesstime"
 	  "\n\t-link: if it is a symbolic link, the path contained\n"},
@@ -259,7 +262,7 @@ void initFList(tListF *L)
     strcpy(empty.info, "unused");
     empty.mode = MNULL;
 
-    for (int i = 3; i <= 9; i++)
+    for (int i = 3; i <= 19; i++)
     {
         empty.df = i;
         insertItemF(empty, L);
