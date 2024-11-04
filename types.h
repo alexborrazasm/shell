@@ -19,7 +19,7 @@
 #define MAX_BUFFER_INPUT 256
 #define MAX_ARGS 30
 #define UNUSED(expr) do { (void)(expr); } while (0)
-#define MNULL -1
+#define MODE_NULL -1
 
 typedef unsigned char byte;
 
@@ -30,17 +30,22 @@ typedef struct tArgs
 } tArgs;
 
 // Forward declaration for tListH
-typedef struct tNode *tPosH;
+typedef struct tNodeH *tPosH;
 typedef tPosH tListH;
 
 // Forward declaration for tListF
 typedef struct tNodeF *tPosF;
 typedef tPosF tListF;
 
+// Forward declaration for tListF
+typedef struct tNodeM *tPosM;
+typedef tPosM tListM;
+
 typedef struct tLists
 {
     tListH historic;
     tListF files;
+    tListM memory;
 } tLists;
 // End forward declaration for tListH
 

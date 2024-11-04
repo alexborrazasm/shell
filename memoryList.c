@@ -1,62 +1,62 @@
-#include "historicList.h"
+#include "memoryList.h"
 
-bool createNodeH(tPosH *p);
+bool createNodeM(tPosM *p);
 
-void createEmptyListH(tListH *L)
+void createEmptyListM(tListM *L)
 {
-    *L = HNULL;
+    *L = MNULL;
 }
 
-bool isEmptyListH(tListH L)
+bool isEmptyListM(tListM L)
 {
-    return L == HNULL;
+    return L == MNULL;
 }
 
-tPosH firstH(tListH L)
+tPosM firstM(tListM L)
 {
     return L;
 }
 
-tPosH lastH(tListH L)
+tPosM lastM(tListM L)
 {
     return L->prev;
 }
 
-tPosH previousH(tPosH p, tListH L)
+tPosM previousM(tPosM p, tListM L)
 {
-    if (p->prev == lastH(L))
+    if (p->prev == lastM(L))
     {
-        return HNULL;
+        return MNULL;
     }
     else
         return p->prev;
 }
 
-tPosH nextH(tPosH p, tListH L)
+tPosM nextM(tPosM p, tListM L)
 {
     UNUSED(L);
     return p->next;
 }
 
-bool insertItemH(tItemH d, tPosH p, tListH *L)
+bool insertItemM(tItemM d, tPosM p, tListM *L)
 {
-    tPosH q;
+    tPosM q;
 
-    if (!createNodeH(&q))
+    if (!createNodeM(&q))
         return false;
 
     q->data = d;
-    q->next = HNULL;
-    q->prev = HNULL;
+    q->next = MNULL;
+    q->prev = MNULL;
 
-    if (isEmptyListH(*L)) // Empty list
+    if (isEmptyListM(*L)) // Empty list
     {
         *L = q; // The first node its q
         q->prev = q;
     }
-    else if (p == HNULL) // Insert at the end
+    else if (p == MNULL) // Insert at the end
     {
-        tPosH r;
+        tPosM r;
 
         r = (*L)->prev; // (*L)->prev is the last node
         r->next = q;
@@ -81,15 +81,15 @@ bool insertItemH(tItemH d, tPosH p, tListH *L)
     return true;
 }
 
-void deleteAtPositionH(tPosH p, tListH *L)
+void deleteAtPositionM(tPosM p, tListM *L)
 {
-    tPosH q;
+    tPosM q;
 
     if (p == *L) // p is the first node
     {
-        if (p->next == HNULL)
+        if (p->next == MNULL)
         {
-            *L = HNULL;
+            *L = MNULL;
         }
         else
         {
@@ -97,11 +97,11 @@ void deleteAtPositionH(tPosH p, tListH *L)
             (*L)->prev = p->prev; // p->prev point to last node
         }
     }
-    else if (p->next == HNULL) // p is the last node
+    else if (p->next == MNULL) // p is the last node
     {
         q = p->prev;
         (*L)->prev = q;
-        q->next = HNULL;
+        q->next = MNULL;
     }
     else // p is in the middle
     {
@@ -114,16 +114,16 @@ void deleteAtPositionH(tPosH p, tListH *L)
     free(p);
 }
 
-tItemH getItemH(tPosH p, tListH L)
+tItemM getItemM(tPosM p, tListM L)
 {
     UNUSED(L);
     return (p->data);
 }
 
-bool createNodeH(tPosH *p)
+bool createNodeM(tPosM *p)
 {
-    *p = malloc(sizeof(struct tNodeH));
-    if (*p == HNULL)
+    *p = malloc(sizeof(struct tNodeM));
+    if (*p == MNULL)
         return false;
     else
         return true;

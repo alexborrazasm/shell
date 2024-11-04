@@ -442,7 +442,7 @@ void Cmd_open(tArgs args, tListF *L)
 
 void printItemF(tItemF item)
 {
-    if (item.mode == MNULL)
+    if (item.mode == MODE_NULL)
     {
         printf("descriptor: %d -> %s\n", item.df, item.info);
     }
@@ -583,7 +583,7 @@ void auxClose(int df, tArgs args, tListF *L)
             {
                 item = getItemF(p, *L);
                 strcpy(item.info, "unused");
-                item.mode = MNULL;
+                item.mode = MODE_NULL;
                 updateItemF(item, p, L);
             }
             else 

@@ -260,7 +260,7 @@ void initFList(tListF *L)
     insertItemF(error, L);
 
     strcpy(empty.info, "unused");
-    empty.mode = MNULL;
+    empty.mode = MODE_NULL;
 
     for (int i = 3; i <= 19; i++)
     {

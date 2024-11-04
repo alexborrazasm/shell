@@ -4,8 +4,8 @@ CFLAGS = -Wall -Wextra -g
 LDFLAGS = 
 
 # Targets
-all: p2.c types.h shell.h historicList.h libp0.h filesList.h libp1.h libp2.h shell.o historicList.o libp0.o filesList.o libp1.o libp2.o
-	$(CC) $(CFLAGS) -o p2 p2.c shell.o historicList.o libp0.o filesList.o libp1.o
+all: p2.c types.h shell.h historicList.h libp0.h filesList.h libp1.h libp2.h memoryList.h shell.o historicList.o libp0.o filesList.o libp1.o libp2.o memoryList.o
+	$(CC) $(CFLAGS) -o p2 p2.c shell.o historicList.o libp0.o filesList.o libp1.o libp2.o memoryList.o
 
 shell.o: types.h shell.h libp0.h shell.c
 	$(CC) $(CFLAGS) -c shell.c
@@ -24,6 +24,9 @@ filesList.o: types.h filesList.h filesList.c
 
 historicList.o: types.h historicList.h historicList.c
 	$(CC) $(CFLAGS) -c historicList.c
+
+memoryList.o: types.h memoryList.h memoryList.c
+	$(CC) $(CFLAGS) -c memoryList.c
 
 clean: 
 	rm p2 *.o

@@ -11,11 +11,11 @@ typedef struct tItemH
     int n;
 } tItemH;
 
-struct tNode
+struct tNodeH
 {
     tItemH data;
-    struct tNode *next;
-    struct tNode *prev;
+    struct tNodeH *next;
+    struct tNodeH *prev;
 };
 
 typedef tPosH tListH;
@@ -38,4 +38,4 @@ void deleteAtPositionH(tPosH p, tListH *L);
 
 tItemH getItemH(tPosH p, tListH L);
 
-#endif
+#endif // HISTORIC_LIST_H

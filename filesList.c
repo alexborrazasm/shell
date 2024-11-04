@@ -4,7 +4,7 @@ tPosF findPosition(tListF L, tItemF d);
 
 bool createNodeF(tPosF *p);
 
-void createEmptyListF (tListF *L)
+void createEmptyListF(tListF *L)
 {
     *L = FNULL;
 }
