@@ -47,33 +47,57 @@ tCommand commands[] =
     {"makefile", cmdMakefile, "makefile [name]", "Creates a file"},
     {"makedir", cmdMakedir, "makedir [name]", "creates a directory"},
     {"reclist", cmdReclist, "reclist [-hid][-long][-link][-acc] n1 n2 ..",
-      "Recursively list contents of directories (subdirs after)"
-      "Lists files"
-      "\n\t-hid: includes hidden files"
-      "\n\t-long: long list"
-      "\n\t-acc: acesstime"
-	  "\n\t-link: if it is a symbolic link, the path contained\n"},
+     "Recursively list contents of directories (subdirs after)"
+     "Lists files"
+     "\n\t-hid: includes hidden files"
+     "\n\t-long: long list"
+     "\n\t-acc: acesstime"
+	 "\n\t-link: if it is a symbolic link, the path contained\n"},
     {"revlist", cmdRevlist, "revlist [-hid][-long][-link][-acc] n1 n2 ..",
-      "Recursively list contents of directories (subdirs before)"
-      "Lists files"
-      "\n\t-hid: includes hidden files"
-      "\n\t-long: long list"
-      "\n\t-acc: acesstime"
-	  "\n\t-link: if it is a symbolic link, the path contained\n"},
+     "Recursively list contents of directories (subdirs before)"
+     "Lists files"
+     "\n\t-hid: includes hidden files"
+     "\n\t-long: long list"
+     "\n\t-acc: acesstime"
+	 "\n\t-link: if it is a symbolic link, the path contained\n"},
     {"erase", cmdErase, "erase [name1 name2 ..]",
-      "Delete empty files or directories"},
+     "Delete empty files or directories"},
     {"delrec", cmdDelrec, "delrec [name1 name2 ..]",
      "Delete files or non empty directories recursively"},
-    {"allocate", cmdAllocate, "", ""},
-    {"deallocate", cmdDeallocate, "", ""},
-    {"menfill", cmdMemfill, "", ""},
-    {"mendump", cmdMemdump, "", ""},
-    {"memory", cmdMemory, "", ""},
-    {"readfile", cmdReadfile, "", ""},
-    {"writefile", cmdWritefile, "", ""},
-    {"read", cmdRead, "", ""},
-    {"write", cmdWrite, "", ""},
-    {"recurse", cmdRecurse, "", ""}
+    {"allocate", cmdAllocate, "allocate [-malloc|-shared|-createshared|-mmap]..",
+     "Allocates a block of memory"
+     "\n\t-malloc n: allocates a block of malloc memory of size n bytes"
+     "\n\t-createshared cl n: creates a block of shared memory with key cl and size n"
+     "\n\t-shared cl: allocates the (already existing) shared memory block of key cl"
+     "\n\t-mmap file perm: maps a fille to memory with permissions perm."},
+    {"deallocate", cmdDeallocate, "deallocate [-malloc|-shared|-delkey|-mmap|addr]..",
+     "Deallocates a block of memory"
+     "\n\t-malloc n: deallocates a block of malloc memory of size n bytes"
+     "\n\t-shared cl: deallocates the (already existing) shared memory block of key cl"
+     "\n\t-delkey cl: removes from the system (without unmapping) the memory key cl"
+     "\n\t-mmap f: unmaps the mapped file f"
+     "\n\t-addr: deallocates the memory block at address addr"},
+    {"memfill", cmdMemfill, "memfill addr cont byte",
+     "Fill memory starting from addr with byte"},
+    {"memdump", cmdMemdump, "memdump addr cont", 
+     "Dumps the contents of cont bytes of memory at address addr to the screen"},
+    {"memory", cmdMemory, "memory [-blocks|-funcs|-vars|-all|-pmap] ..",
+     "Show details of the process memory"
+     "\n\t-blocks: prints the list of allocated blocks"
+     "\n\t-funcs: the addresses of the functions"
+     "\n\t-vars: the addresses of the variables"
+     "\n\t-all: prints all of the above (-funcs, -vars and -blocks)"
+     "\n\t-pmap: shows the output of the command pmap for the shell process"},
+    {"readfile", cmdReadfile, "readfile file addr cont",
+     "Reads cont bytes of a file into memory address addr"},
+    {"writefile", cmdWritefile, "writefile [-o] file addr cont", 
+     "Writes to a file cont bytes starting at memory address addr (-o overwrite)"},
+    {"read", cmdRead, "read df addr cont",
+     "Transfer cont bytes of the file described by df to address addr"},
+    {"write", cmdWrite, "write df addr cont",
+     "The same as writefile but we use a (already opened) file descriptor"},
+    {"recurse", cmdRecurse, "recurse n",
+     "Transfer cont bytes from address addr to the file described by df"}
 };
 
 int getInput(char *input);
