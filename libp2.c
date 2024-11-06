@@ -1,4 +1,65 @@
 #include"libp2.h"
+/******************************************************************************/
+// allocate
+void cmdAllocate(tArgs args, tLists *L)
+{
+   UNUSED(args); UNUSED(L);   
+}
+/******************************************************************************/
+// deallocate
+void cmdDeallocate(tArgs args, tLists *L)
+{
+   UNUSED(args); UNUSED(L);   
+}
+
+/******************************************************************************/
+// menfill
+void cmdMemfill(tArgs args, tLists *L)
+{
+   UNUSED(args); UNUSED(L);   
+}
+/******************************************************************************/
+// mendump
+void cmdMemdump(tArgs args, tLists *L)
+{
+   UNUSED(args); UNUSED(L);
+}
+/******************************************************************************/
+// memory
+void cmdMemory(tArgs args, tLists *L)
+{
+   UNUSED(args); UNUSED(L);
+}
+/******************************************************************************/
+// readfile
+void cmdReadfile(tArgs args, tLists *L)
+{
+   UNUSED(args); UNUSED(L);
+}
+/******************************************************************************/
+// writefile
+void cmdWritefile(tArgs args, tLists *L)
+{
+   UNUSED(args); UNUSED(L);
+}
+/******************************************************************************/
+// read 
+void cmdRead(tArgs args, tLists *L)
+{
+   UNUSED(args); UNUSED(L);
+}
+/******************************************************************************/
+// write
+void cmdWrite(tArgs args, tLists *L)
+{
+   UNUSED(args); UNUSED(L);
+}
+/******************************************************************************/
+// recurse 
+void cmdRecurse(tArgs args, tLists *L)
+{
+   UNUSED(args); UNUSED(L);
+}
 /*
 #define TAMANO 2048
 

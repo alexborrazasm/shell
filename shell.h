@@ -4,8 +4,10 @@
 #include "types.h"
 #include "historicList.h"
 #include "filesList.h"
+#include "memoryList.h"
 #include "libp0.h"
 #include "libp1.h"
+#include "libp2.h"
 
 void printPrompt();
 
@@ -15,9 +17,7 @@ void processInput(tLists *L, bool *end);
 
 void selectCommand(tArgs args, char *input, tLists *L, bool *end);
 
-void freeHistoryList(tListH *list);
-
-void freeFileList(tListF *list);
+void freeLists(tLists *L);
 
 int stringCut(char *input, char *parts[]);
 

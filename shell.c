@@ -63,7 +63,17 @@ tCommand commands[] =
     {"erase", cmdErase, "erase [name1 name2 ..]",
       "Delete empty files or directories"},
     {"delrec", cmdDelrec, "delrec [name1 name2 ..]",
-     "Delete files or non empty directories recursively"}
+     "Delete files or non empty directories recursively"},
+    {"allocate", cmdAllocate, "", ""},
+    {"deallocate", cmdDeallocate, "", ""},
+    {"menfill", cmdMemfill, "", ""},
+    {"mendump", cmdMemdump, "", ""},
+    {"memory", cmdMemory, "", ""},
+    {"readfile", cmdReadfile, "", ""},
+    {"writefile", cmdWritefile, "", ""},
+    {"read", cmdRead, "", ""},
+    {"write", cmdWrite, "", ""},
+    {"recurse", cmdRecurse, "", ""}
 };
 
 int getInput(char *input);
@@ -191,6 +201,23 @@ void freeFileList(tListF *list)
         p = lastF(*list); 
         deleteAtPositionF(p, list);
     }
+}
+
+void freeMenList(tListM *list)
+{
+   tPosM p;
+
+    while (!isEmptyListM(*list)) {
+        p = lastM(*list); 
+        deleteAtPositionM(p, list);
+    }
+}
+
+void freeLists(tLists *L)
+{
+    freeHistoryList(&L->historic);
+    freeFileList(&L->files);
+    freeMenList(&L->memory);
 }
 
 int stringCut(char *input, char *parts[])

@@ -17,9 +17,10 @@ void shell()
     bool finished = false;
     tLists L;
 
-    // History list
+    // Init lists
     createEmptyListH(&L.historic);
     createEmptyListF(&L.files);
+    createEmptyListM(&L.memory);
 
     initFList(&L.files);
 
@@ -29,6 +30,5 @@ void shell()
         if (readInput(&L))
             processInput(&L, &finished);
     }
-    freeHistoryList(&L.historic);
-    freeFileList(&L.files);
+    freeLists(&L);
 }
