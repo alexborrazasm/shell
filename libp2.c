@@ -56,23 +56,47 @@ void cmdWrite(tArgs args, tLists *L)
 }
 /******************************************************************************/
 // recurse 
+void rec(int n);
+
 void cmdRecurse(tArgs args, tLists *L)
 {
-   UNUSED(args); UNUSED(L);
-}
-/*
-#define TAMANO 2048
+   UNUSED(L);
 
-void Recursiva (int n)
+   switch (args.len)
+   {
+   case 1:
+      printError(args.array[0], "Not argument");
+      break;
+
+   case 2:
+      int n;
+
+      if (stringToInt(args.array[1], &n))
+         rec(n);
+      else
+         printError(args.array[0], "Invalid argument");
+      break;
+   
+   default:
+      printError(args.array[0], "Invalid num of arguments");
+      break;
+   }
+}
+
+void rec(int n)
 {
-  char automatico[TAMANO];
-  static char estatico[TAMANO];
+   char autoArray[SIZE_REC]; static char staticArray[SIZE_REC];
 
-  printf ("parametro:%3d(%p) array %p, arr estatico %p\n",n,&n,automatico, estatico);
+   printf("param:%3d(%p) array (\033[1;32m%p\033[0m),"
+          " arr static (\033[1;32m%p\033[0m)\n", 
+          n, &n, autoArray, staticArray);
 
-  if (n>0)
-    Recursiva(n-1);
+   if (n>0)
+      rec(n-1);
 }
+
+/*
+
 
 
 void LlenarMemoria (void *p, size_t cont, unsigned char byte)

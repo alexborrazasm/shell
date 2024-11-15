@@ -2,6 +2,9 @@
 #define LIBP2_H
 
 #include "types.h"
+#include "shell.h"
+
+#define SIZE_REC 2048
 
 void cmdAllocate(tArgs args, tLists *L);
 
