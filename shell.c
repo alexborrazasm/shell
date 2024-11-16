@@ -106,7 +106,7 @@ void cmdClear();
 
 void printPrompt()
 {
-    printf("\033[1;32m$ \033[0m");
+    printf(GREEN"$ "RST);
 }
 
 bool readInput(tLists *L)
@@ -265,17 +265,17 @@ int stringCut(char *input, char *parts[])
 
 void printError(char *name, char *msg)
 {
-    fprintf(stderr, "\033[1;31mError: %s: %s\033[0m\n", name, msg);
+    fprintf(stderr, RED"Error: %s: %s\n"RST, name, msg);
 }
 
 void pPrintError(char *name)
 {
-    fprintf(stderr, "\033[1;31mError: %s: %s\033[0m\n", name, strerror(errno));
+    fprintf(stderr, RED"Error: %s: %s\n"RST, name, strerror(errno));
 }
 
 void pPrintErrorFile(char *name, char *filename)
 {
-    fprintf(stderr, "\033[1;31mError: %s: %s: %s\033[0m\n",
+    fprintf(stderr, "Error: %s: %s: %s\n"RST,
      name, filename, strerror(errno));
 }
 

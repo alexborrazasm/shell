@@ -120,7 +120,7 @@ void getcwdAux(char *path)
     char currentDir[max_path_length];
     if (getcwd(currentDir, sizeof(currentDir)) != NULL)
     {
-        printf("\033[1;34m%s\033[0m\n", currentDir);
+        printf(BLUE"%s\n"RST, currentDir);
     }
     else
     {
@@ -132,7 +132,7 @@ void chdirAux(tArgs args)
 {
     if (chdir(args.array[1]) == 0)
     {
-        printf("\033[1;34m%s\033[0m\n", args.array[1]);
+        printf(BLUE"%s\n"RST, args.array[1]);
     }
     else
     {
@@ -193,7 +193,7 @@ void date(tArgs args)
     month = local->tm_mon + 1;
     year = local->tm_year + 1900;
 
-    printf("\033[1;34m%d/%d/%d\033[0m\n", day, month, year);
+    printf(BLUE"%d/%d/%d\n"RST, day, month, year);
 }
 
 void timeC(tArgs args)
@@ -213,7 +213,7 @@ void timeC(tArgs args)
     minutes = local->tm_min;
     seconds = local->tm_sec;
 
-    printf("\033[1;34m%d:%d:%d\033[0m\n", hours, minutes, seconds);
+    printf(BLUE"%d:%d:%d\n"RST, hours, minutes, seconds);
 }
 
 /******************************************************************************/
@@ -448,7 +448,7 @@ void printItemF(tItemF item)
     }
     else if (strcmp("unused", item.info) != 0)
     {
-        printf("descriptor: %d -> \033[1;34m%s\034 \033[1;32m%s\033[0m\n",
+        printf("descriptor: %d -> "BLUE"%s "GREEN"%s\n"RST,
         item.df, item.info, modeToString(item.mode));
     }
     else
@@ -697,11 +697,11 @@ void infosysAux(tArgs args)
     struct utsname info_sistema; // Estructura que guarda info del sistema ;)
     if (uname(&info_sistema) == 0)
     {
-        printf("SO:\t\t\033[1;34m%s\033[0m\n"
-               "Hostname:\t\033[1;34m%s\033[0m\n"
-               "Kernel:\t\t\033[1;34m%s\033[0m\n"
-               "Version:\t\033[1;34m%s\033[0m\n"
-               "Arch:\t\t\033[1;34m%s\033[0m\n",
+        printf("SO:\t\t"BLUE"%s\n"RST
+               "Hostname:\t"BLUE"%s\n"RST
+               "Kernel:\t\t"BLUE"%s\n"RST
+               "Version:\t"BLUE"%s\n"RST
+               "Arch:\t\t"BLUE"%s\n"RST,
                info_sistema.sysname, info_sistema.nodename,
                info_sistema.release, info_sistema.version,
                info_sistema.machine);

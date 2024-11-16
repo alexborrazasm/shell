@@ -433,7 +433,7 @@ void auxListdir(tArgs args, int n, byte flags, char* fullPath)
     if (isDirectory(args, path))
     {
         // Print directory name
-        printf("******\033[1;34m%s\033[0m\n", path);
+        printf("******"BLUE"%s\n"RST, path);
 
         // Avoid call .. and .
         if (flags & FLAG_AVOID)

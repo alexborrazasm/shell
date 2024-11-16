@@ -26,6 +26,14 @@ void cmdMemdump(tArgs args, tLists *L)
 }
 /******************************************************************************/
 // memory [-blocks|-funcs|-vars|-all|-pmap]
+void memoryBlocks(tLists L);
+
+void memoryFuncs();
+
+void memoryVars();
+
+void memoryAll(tLists L);
+
 void memoryPmap();
 
 void cmdMemory(tArgs args, tLists *L)
@@ -33,12 +41,20 @@ void cmdMemory(tArgs args, tLists *L)
    switch (args.len)
    {
    case 1:
-      /* call -all */
-      puts("todo");
+      // call -all 
+      memoryAll(*L);
       break;
    case 2:
       // check args
-      if (strcmp(args.array[1], "-pmap") == 0)
+      if (strcmp(args.array[1], "-blocks") == 0)
+         memoryBlocks(*L);
+      else if (strcmp(args.array[1], "-funcs"))
+         memoryFuncs();
+      else if (strcmp(args.array[1], "-vars"))
+         memoryVars();
+      else if (strcmp(args.array[1], "-pmap"))
+         memoryAll(*L);
+      else if (strcmp(args.array[1], "-pmap"))
          memoryPmap();
       else
          printError(args.array[0], "Invalid argument");
@@ -48,6 +64,42 @@ void cmdMemory(tArgs args, tLists *L)
       printError(args.array[0], "Invalid num of arguments");
       break;
    }
+}
+
+void memoryBlocks(tLists L)
+{
+   UNUSED(L);
+}
+
+void memoryFuncs()
+{
+   // program functions
+   void (*pFunc1)() = pPrintError;
+   void (*pFunc2)() = processInput;
+   void (*pFunc3)(tLists*) = freeLists;
+
+   // library functions
+   void (*libFunc1)(int) = exit;        
+   void *(*libFunc2)(size_t) = malloc;
+   int (*libFunc3)(const char* restrict, ...) = printf;
+
+   // Print
+   printf("Program functions"GREEN"%20p"RST","GREEN"%20p"RST","GREEN"%20p"RST"\n", 
+          (void *)pFunc1, (void *)pFunc2, (void *)pFunc3);
+   printf("Library functions"GREEN"%20p"RST","GREEN"%20p"RST","GREEN"%20p"RST"\n", 
+          (void *)libFunc1, (void *)libFunc2, (void *)libFunc3);
+}
+
+void memoryVars()
+{
+
+}
+
+void memoryAll(tLists L)
+{
+   memoryVars();
+   memoryFuncs();
+   memoryBlocks(L);
 }
 
 void memoryPmap() 
@@ -142,8 +194,8 @@ void rec(int n)
 {
    char autoArray[SIZE_REC]; static char staticArray[SIZE_REC];
 
-   printf("param:%3d(%p) array (\033[1;32m%p\033[0m),"
-          " arr static (\033[1;32m%p\033[0m)\n", 
+   printf("param:%3d("GREEN"%p"RST") array ("GREEN"%p"RST"),"
+          " arr static ("GREEN"%p"RST")\n", 
           n, &n, autoArray, staticArray);
 
    if (n>0)
@@ -151,9 +203,6 @@ void rec(int n)
 }
 
 /*
-
-
-
 void LlenarMemoria (void *p, size_t cont, unsigned char byte)
 {
   unsigned char *arr=(unsigned char *) p;
