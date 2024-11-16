@@ -102,6 +102,8 @@ tCommand commands[] =
 
 int getInput(char *input);
 
+void cmdClear();
+
 void printPrompt()
 {
     printf("\033[1;32m$ \033[0m");
@@ -202,6 +204,11 @@ void selectCommand(tArgs args, char *input, tLists *L, bool *end)
             return;
         }
 
+        if (strcmp("clear", args.array[0]) == 0)
+        {
+            cmdClear();
+            return;
+        }
         printError(input, "command not found...");
     }
 }
@@ -334,3 +341,22 @@ bool stringToInt(char *str, int *n)
     return true;
 }
 
+void cmdClear()
+{
+    pid_t pid;       
+    char *argv[4]={"clear", NULL};
+
+    if ((pid=fork())==-1)
+    {
+        pPrintError("Can't create process");
+        return;
+    }
+
+    if (pid==0)
+    {
+        if (execvp(argv[0], argv)==-1)
+        pPrintError("Cannot execute clear");
+        exit(1);
+    }
+    waitpid(pid, NULL, 0);
+}

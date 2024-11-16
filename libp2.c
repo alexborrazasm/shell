@@ -56,7 +56,7 @@ void memoryPmap()
    char elpid[32];
    char *argv[4]={"pmap", elpid, NULL};
 
-   sprintf (elpid,"%d", (int)getpid());
+   sprintf(elpid,"%d", (int)getpid());
    
    if ((pid=fork())==-1)
    {
@@ -66,19 +66,19 @@ void memoryPmap()
 
    if (pid==0)
    {
-      if (execvp(argv[0],argv)==-1) // try pmap
+      if (execvp(argv[0], argv)==-1) // try pmap
          pPrintError("Cannot execute pmap (linux, solaris)");
       
       argv[0]="procstat"; argv[1]="vm"; argv[2]=elpid; argv[3]=NULL;   
-      if (execvp(argv[0],argv)==-1) // not pmap, try procstat FreeBSD
+      if (execvp(argv[0], argv)==-1) // not pmap, try procstat FreeBSD
          pPrintError("Cannot execute procstat (FreeBSD)");
       
-      argv[0]="procmap",argv[1]=elpid;argv[2]=NULL;    
+      argv[0]="procmap", argv[1]=elpid;argv[2]=NULL;    
       if (execvp(argv[0],argv)==-1)  // try procmap OpenBSD
          pPrintError("Cannot execute procmap (OpenBSD)");
       
       argv[0]="vmmap"; argv[1]="-interleave"; argv[2]=elpid;argv[3]=NULL;
-      if (execvp(argv[0],argv)==-1) // Try vmmap Mac-OS
+      if (execvp(argv[0], argv)==-1) // Try vmmap Mac-OS
          pPrintError("Cannot execute vmmap (Mac-OS)");      
       exit(1);
    }
