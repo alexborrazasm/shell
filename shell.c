@@ -344,7 +344,7 @@ bool stringToInt(char *str, int *n)
 void cmdClear()
 {
     pid_t pid;       
-    char *argv[4]={"clear", NULL};
+    char *argv[4]={"clear", NULL}; // clear don't need any argument
 
     if ((pid=fork())==-1)
     {
