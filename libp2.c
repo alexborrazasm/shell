@@ -25,11 +25,66 @@ void cmdMemdump(tArgs args, tLists *L)
    UNUSED(args); UNUSED(L);
 }
 /******************************************************************************/
-// memory
+// memory [-blocks|-funcs|-vars|-all|-pmap]
+void memoryPmap();
+
 void cmdMemory(tArgs args, tLists *L)
 {
-   UNUSED(args); UNUSED(L);
+   switch (args.len)
+   {
+   case 1:
+      /* call -all */
+      puts("todo");
+      break;
+   case 2:
+      // check args
+      if (strcmp(args.array[1], "-pmap") == 0)
+         memoryPmap();
+      else
+         printError(args.array[0], "Invalid argument");
+      break;
+   
+   default:
+      printError(args.array[0], "Invalid num of arguments");
+      break;
+   }
 }
+
+void memoryPmap() 
+{ 
+   pid_t pid;       
+   char elpid[32];
+   char *argv[4]={"pmap", elpid, NULL};
+
+   sprintf (elpid,"%d", (int)getpid());
+   
+   if ((pid=fork())==-1)
+   {
+      pPrintError("Can't create process");
+      return;
+   }
+
+   if (pid==0)
+   {
+      if (execvp(argv[0],argv)==-1) // try pmap
+         pPrintError("Cannot execute pmap (linux, solaris)");
+      
+      argv[0]="procstat"; argv[1]="vm"; argv[2]=elpid; argv[3]=NULL;   
+      if (execvp(argv[0],argv)==-1) // not pmap, try procstat FreeBSD
+         pPrintError("Cannot execute procstat (FreeBSD)");
+      
+      argv[0]="procmap",argv[1]=elpid;argv[2]=NULL;    
+      if (execvp(argv[0],argv)==-1)  // try procmap OpenBSD
+         pPrintError("Cannot execute procmap (OpenBSD)");
+      
+      argv[0]="vmmap"; argv[1]="-interleave"; argv[2]=elpid;argv[3]=NULL;
+      if (execvp(argv[0],argv)==-1) // Try vmmap Mac-OS
+         pPrintError("Cannot execute vmmap (Mac-OS)");      
+      exit(1);
+   }
+   waitpid(pid, NULL, 0);
+}
+
 /******************************************************************************/
 // readfile
 void cmdReadfile(tArgs args, tLists *L)
@@ -269,33 +324,5 @@ void Cmd_ReadFile (char *ar[])
 }
 
 
-void Do_pmap (void) //sin argumentos
- { pid_t pid;       //hace el pmap (o equivalente) del proceso actual
-   char elpid[32];
-   char *argv[4]={"pmap",elpid,NULL};
-   
-   sprintf (elpid,"%d", (int) getpid());
-   if ((pid=fork())==-1){
-      perror ("Imposible crear proceso");
-      return;
-      }
-   if (pid==0){
-      if (execvp(argv[0],argv)==-1)
-         perror("cannot execute pmap (linux, solaris)");
-         
-      argv[0]="procstat"; argv[1]="vm"; argv[2]=elpid; argv[3]=NULL;   
-      if (execvp(argv[0],argv)==-1)//No hay pmap, probamos procstat FreeBSD 
-         perror("cannot execute procstat (FreeBSD)");
-         
-      argv[0]="procmap",argv[1]=elpid;argv[2]=NULL;    
-            if (execvp(argv[0],argv)==-1)  //probamos procmap OpenBSD
-         perror("cannot execute procmap (OpenBSD)");
-         
-      argv[0]="vmmap"; argv[1]="-interleave"; argv[2]=elpid;argv[3]=NULL;
-      if (execvp(argv[0],argv)==-1) //probamos vmmap Mac-OS
-         perror("cannot execute vmmap (Mac-OS)");      
-      exit(1);
-  }
-  waitpid (pid,NULL,0);
-}
+
 */
