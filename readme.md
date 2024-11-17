@@ -1,7 +1,7 @@
 # TO DO
 
 allocate -malloc Y
-         -mmap 
+         -mmap Y revisar
          -createshared
          -shared
 
