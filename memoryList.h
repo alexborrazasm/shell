@@ -52,6 +52,6 @@ tItemM getItemM(tPosM p, tListM L);
 tPosM findItemM(size_t size, byte type, tListM L);
 
 // Find by memory address
-tPosM findByAddress(void* address, tListM L)
+tPosM findByAddress(void* address, tListM L);
 
 #endif // MEMORY_LIST_H
