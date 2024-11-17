@@ -165,6 +165,16 @@ void allocateShared(tArgs args, tListM *L)
 
 /******************************************************************************/
 // deallocate
+deallocateMalloc(tArgs args, tListM *L);
+
+deallocateMMap(tArgs args, tListM *L);
+
+deallocateShared(tArgs args, tListM *L);
+
+deallocateDelKey(tArgs args, tListM *L);
+
+deallocateAddr(tArgs args, tListM *L);
+
 void cmdDeallocate(tArgs args, tLists *L)
 {
    switch (args.len)
@@ -173,30 +183,31 @@ void cmdDeallocate(tArgs args, tLists *L)
          printMenList(L->memory, 0); 
          break;
       case 2: // check args lenght = 2, print item list if = args[1]
+         if (args.array[1][0] == '-')
+         {
+            if (strcmp(args.array[1], "-malloc") == 0)
+               printMenList(L->memory, M_MALLOC);
+            else if (strcmp(args.array[1], "-mmap") == 0)
+               printMenList(L->memory, M_MMAP);
+            else if (strcmp(args.array[1], "-shared") == 0)
+               printMenList(L->memory, M_SHARED);
+            else if (strcmp(args.array[1], "-delkey") == 0)
+               printMenList(L->memory, M_SHARED);
+            else
+               printError(args.array[0], "Invalid argument");
+         }
+         else // deallocate addr
+            deallocateAddr(args, &L->memory);
+         break;
+      case 3: // check args lenght = 3
          if (strcmp(args.array[1], "-malloc") == 0)
-            printMenList(L->memory, M_MALLOC);
+            deallocateMalloc(args, &L->memory);
          else if (strcmp(args.array[1], "-mmap") == 0)
-            printMenList(L->memory, M_MMAP);
+            deallocateMMap(args, &L->memory);
          else if (strcmp(args.array[1], "-shared") == 0)
-            printMenList(L->memory, M_SHARED);
+            deallocateShared(args, &L->memory);
          else if (strcmp(args.array[1], "-delkey") == 0)
-            printMenList(L->memory, M_SHARED);
-         else // TODO addr
-            printError(args.array[0], "Invalid argument");
-         break;
-      case 3: // check args lenght = 3, malloc shared
-         if (strcmp(args.array[1], "-malloc") == 0)
-            allocateMalloc(args, &L->memory);
-         else if (strcmp(args.array[1], "-shared") == 0)
-            allocateShared(args, &L->memory);
-         else
-            printError(args.array[0], "Invalid argument");
-         break;
-      case 4: // check args lenght = 4, nmap createshared
-         if (strcmp(args.array[1], "-mmap") == 0)
-            allocateMMap(args, &L->memory);
-         else if (strcmp(args.array[1], "-createshared") == 0)
-            allocateCreateShared(args, &L->memory);
+            deallocateDelKey(args, &L->memory);
          else
             printError(args.array[0], "Invalid argument");
          break;
@@ -204,6 +215,30 @@ void cmdDeallocate(tArgs args, tLists *L)
          printError(args.array[0], "Invalid num of arguments");
          break;
       }
+}
+
+deallocateMalloc(tArgs args, tListM *L)
+{
+   UNUSED(args); UNUSED(L);
+}
+
+deallocateMMap(tArgs args, tListM *L)
+{
+   UNUSED(args); UNUSED(L);
+}
+
+deallocateShared(tArgs args, tListM *L)
+{
+   UNUSED(args); UNUSED(L);
+}
+deallocateDelKey(tArgs args, tListM *L)
+{
+   UNUSED(args); UNUSED(L);
+}
+deallocateAddr(tArgs args, tListM *L);
+{
+   UNUSED(args); UNUSED(L);
+}
 }
 
 /******************************************************************************/

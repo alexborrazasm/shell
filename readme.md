@@ -1,6 +1,6 @@
 # TO DO
 
-allocate -mallc Y
+allocate -malloc Y
          -mmap 
          -createshared
          -shared
