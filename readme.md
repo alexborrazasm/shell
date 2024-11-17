@@ -9,7 +9,7 @@ deallocate -malloc Y
            -mmap Y
            -shared
            -delkey
-           addr Y ADD mmap shared mode TODO
+           addr Y but shared TODO
 
 memfill addr 
 
