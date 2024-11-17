@@ -19,6 +19,8 @@ char* auxPrintMenList(tItemM item);
 
 void printHead(byte type);
 
+void* mapFile(char* file, int protection, tArgs args, tListM *L);
+
 void cmdAllocate(tArgs args, tLists *L)
 {
    switch (args.len)
@@ -43,6 +45,8 @@ void cmdAllocate(tArgs args, tLists *L)
          allocateMalloc(args, &L->memory);
       else if (strcmp(args.array[1], "-shared") == 0)
          allocateShared(args, &L->memory);
+      else if (strcmp(args.array[1], "-mmap") == 0)
+         allocateMMap(args, &L->memory);
       else
          printError(args.array[0], "Invalid argument");
       break;
@@ -138,6 +142,32 @@ void printMenList(tListM L, byte type)
    }
 }
 
+void* mapFile(char* file, int protection, tArgs args, tListM *L)
+{
+   int df, map=MAP_PRIVATE, mode=O_RDONLY;
+   struct stat s;
+   void *p;
+
+   if (protection&PROT_WRITE)
+      mode = O_RDWR;
+   if (stat(file, &s) == -1 || (df = open(file, mode)) == -1)
+      return NULL;
+   if ((p = mmap(NULL, s.st_size, protection, map, df, 0)) == MAP_FAILED)
+      return NULL;
+
+   tItemM item;
+   item.address = p;
+   strcpy(item.name, file);
+   item.type = M_MMAP;
+   item.date = getTime(args);
+   item.keyDF = df;
+   item.size = s.st_size;
+
+   insertItemM(item, MNULL, L);
+   
+   return p;
+}
+
 void allocateMalloc(tArgs args, tListM *L)
 {
    long size = getSize(args.array[2]);
@@ -173,7 +203,19 @@ void allocateMalloc(tArgs args, tListM *L)
 
 void allocateMMap(tArgs args, tListM *L)
 {
-   UNUSED(L); UNUSED(args);
+   char *perm; void *p; int protection = 0;
+
+   if ((perm=args.array[3])!=NULL && strlen(perm)<4) 
+   {
+      if (strchr(perm, 'r') != NULL) protection |= PROT_READ;
+      if (strchr(perm, 'w') != NULL) protection |= PROT_WRITE;
+      if (strchr(perm, 'x') != NULL) protection |= PROT_EXEC;
+   }
+
+   if ((p = mapFile(args.array[2], protection, args, L)) == NULL)
+      pPrintError(args.array[0]);
+   else
+      printf("file "BLUE"%s"RST" mapped to "GREEN"%p\n"RST, args.array[2], p);
 }
 
 void allocateCreateShared(tArgs args, tListM *L)
@@ -606,42 +648,6 @@ void do_AllocateShared (char *tr[])
       printf ("Asignada memoria compartida de clave %lu en %p\n",(unsigned long) cl, p);
    else
       printf ("Imposible asignar memoria compartida clave %lu:%s\n",(unsigned long) cl,strerror(errno));
-}
-
-void * MapearFichero (char * fichero, int protection)
-{
-    int df, map=MAP_PRIVATE,modo=O_RDONLY;
-    struct stat s;
-    void *p;
-
-    if (protection&PROT_WRITE)
-          modo=O_RDWR;
-    if (stat(fichero,&s)==-1 || (df=open(fichero, modo))==-1)
-          return NULL;
-    if ((p=mmap (NULL,s.st_size, protection,map,df,0))==MAP_FAILED)
-           return NULL;
-// Guardar en la lista    InsertarNodoMmap (&L,p, s.st_size,df,fichero);
-// Gurdas en la lista de descriptores usados df, fichero
-    return p;
-}
-
-void do_AllocateMmap(char *arg[])
-{
-     char *perm;
-     void *p;
-     int protection=0;
-
-     if (arg[0]==NULL)
-            {ImprimirListaMmap(&L); return;}
-     if ((perm=arg[1])!=NULL && strlen(perm)<4) {
-            if (strchr(perm,'r')!=NULL) protection|=PROT_READ;
-            if (strchr(perm,'w')!=NULL) protection|=PROT_WRITE;
-            if (strchr(perm,'x')!=NULL) protection|=PROT_EXEC;
-     }
-     if ((p=MapearFichero(arg[0],protection))==NULL)
-             perror ("Imposible mapear fichero");
-     else
-             printf ("fichero %s mapeado en %p\n", arg[0], p);
 }
 
 void do_DeallocateDelkey (char *args[])
