@@ -17,6 +17,8 @@ long getSize(char *size);
 // Free me
 char* auxPrintMenList(tItemM item);
 
+void printHead(byte type);
+
 void cmdAllocate(tArgs args, tLists *L)
 {
    switch (args.len)
@@ -90,11 +92,37 @@ char* auxPrintMenList(tItemM item)
    }
 }
 
+void printHead(byte type)
+{
+   switch (type)
+   {
+   case M_ALL:
+      printf("******List of blocks allocated for process "BLUE"%d\n"RST,
+             getpid());
+      break;
+   case M_MALLOC:
+      printf("******List of malloc allocated blocks for process "BLUE"%d\n"RST,
+             getpid());
+      break;
+   case M_MMAP:
+      printf("******List of mmap allocated blocks for the process "BLUE"%d\n"RST,
+             getpid());
+      break;
+   case M_SHARED:
+      printf("******List of blocks allocated shared for the process "BLUE"%d\n"RST,
+            getpid());
+      break;
+   default:
+      printError("printHead", "Head table error");
+      break;
+   }
+}
+
 void printMenList(tListM L, byte type)
 {
    tPosM p = firstM(L); tItemM item; char* msg;
 
-   printf("******List of blocks allocated for process "BLUE"%d\n"RST, getpid());
+   printHead(type);
 
    for (; p != MNULL; p = nextM(p, L))
    {
@@ -160,15 +188,15 @@ void allocateShared(tArgs args, tListM *L)
 
 /******************************************************************************/
 // deallocate
-deallocateMalloc(tArgs args, tListM *L);
+void deallocateMalloc(tArgs args, tListM *L);
 
-deallocateMMap(tArgs args, tListM *L);
+void deallocateMMap(tArgs args, tListM *L);
 
-deallocateShared(tArgs args, tListM *L);
+void deallocateShared(tArgs args, tListM *L);
 
-deallocateDelKey(tArgs args, tListM *L);
+void deallocateDelKey(tArgs args, tListM *L);
 
-deallocateAddr(tArgs args, tListM *L);
+void deallocateAddr(tArgs args, tListM *L);
 
 void cmdDeallocate(tArgs args, tLists *L)
 {
@@ -212,7 +240,7 @@ void cmdDeallocate(tArgs args, tLists *L)
       }
 }
 
-deallocateMalloc(tArgs args, tListM *L)
+void deallocateMalloc(tArgs args, tListM *L)
 {  
    long size = getSize(args.array[2]);
 
@@ -233,25 +261,25 @@ deallocateMalloc(tArgs args, tListM *L)
    }
    else
    {
-      printf("There is no block of size "BLUE"%d"RST" allocated with malloc\n",
+      printf("There is no block of size "BLUE"%ld"RST" allocated with malloc\n",
              size);
    }
 }
 
-deallocateMMap(tArgs args, tListM *L)
+void deallocateMMap(tArgs args, tListM *L)
 {
    UNUSED(args); UNUSED(L);
 }
 
-deallocateShared(tArgs args, tListM *L)
+void deallocateShared(tArgs args, tListM *L)
 {
    UNUSED(args); UNUSED(L);
 }
-deallocateDelKey(tArgs args, tListM *L)
+void deallocateDelKey(tArgs args, tListM *L)
 {
    UNUSED(args); UNUSED(L);
 }
-deallocateAddr(tArgs args, tListM *L)
+void deallocateAddr(tArgs args, tListM *L)
 {
    UNUSED(args); UNUSED(L);
 }
