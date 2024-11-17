@@ -1,4 +1,5 @@
-#include"libp2.h"
+#include "libp2.h"
+
 /******************************************************************************/
 // allocate
 void printMenList(tListM L, byte type);
@@ -166,20 +167,23 @@ void allocateShared(tArgs args, tListM *L)
 // deallocate
 void cmdDeallocate(tArgs args, tLists *L)
 {
-   UNUSED(args); UNUSED(L);   
+   UNUSED(args);
+   UNUSED(L);
 }
 
 /******************************************************************************/
 // menfill
 void cmdMemfill(tArgs args, tLists *L)
 {
-   UNUSED(args); UNUSED(L);   
+   UNUSED(args);
+   UNUSED(L);
 }
 /******************************************************************************/
 // mendump
 void cmdMemdump(tArgs args, tLists *L)
 {
-   UNUSED(args); UNUSED(L);
+   UNUSED(args);
+   UNUSED(L);
 }
 /******************************************************************************/
 // memory [-blocks|-funcs|-vars|-all|-pmap]
@@ -214,7 +218,7 @@ void cmdMemory(tArgs args, tLists *L)
       else
          printError(args.array[0], "Invalid argument");
       break;
-   
+
    default:
       printError(args.array[0], "Invalid num of arguments");
       break;
@@ -231,17 +235,17 @@ void memoryFuncs()
    // program functions
    void (*pFunc1)() = pPrintError;
    void (*pFunc2)() = processInput;
-   void (*pFunc3)(tLists*) = freeLists;
+   void (*pFunc3)(tLists *) = freeLists;
 
    // library functions
-   void (*libFunc1)(int) = exit;        
+   void (*libFunc1)(int) = exit;
    void *(*libFunc2)(size_t) = malloc;
-   int (*libFunc3)(const char* restrict, ...) = printf;
+   int (*libFunc3)(const char *restrict, ...) = printf;
 
    // Print
-   printf("Program functions"GREEN"%20p"RST","GREEN"%20p"RST","GREEN"%20p"RST"\n", 
+   printf("Program functions" GREEN "%20p" RST "," GREEN "%20p" RST "," GREEN "%20p" RST "\n",
           (void *)pFunc1, (void *)pFunc2, (void *)pFunc3);
-   printf("Library functions"GREEN"%20p"RST","GREEN"%20p"RST","GREEN"%20p"RST"\n", 
+   printf("Library functions" GREEN "%20p" RST "," GREEN "%20p" RST "," GREEN "%20p" RST "\n",
           (void *)libFunc1, (void *)libFunc2, (void *)libFunc3);
 }
 
@@ -259,15 +263,15 @@ void memoryVars()
    int auto_var1 = 1, auto_var2 = 2, auto_var3 = 3;
 
    // Print
-   printf("Local variables"GREEN"%22p"RST","GREEN"%20p"RST","GREEN"%20p"RST"\n", 
+   printf("Local variables" GREEN "%22p" RST "," GREEN "%20p" RST "," GREEN "%20p" RST "\n",
           &auto_var1, &auto_var2, &auto_var3);
-   printf("Global external"GREEN"%22p"RST","GREEN"%20p"RST","GREEN"%20p"RST"\n", 
+   printf("Global external" GREEN "%22p" RST "," GREEN "%20p" RST "," GREEN "%20p" RST "\n",
           &ext_init_var1, &ext_init_var2, &ext_init_var3);
-   printf("Global external(N.I)"GREEN"%17p"RST","GREEN"%20p"RST","GREEN"%20p"RST"\n", 
+   printf("Global external(N.I)" GREEN "%17p" RST "," GREEN "%20p" RST "," GREEN "%20p" RST "\n",
           &ext_var1, &ext_var2, &ext_var3);
-   printf("Global static"GREEN"%24p"RST","GREEN"%20p"RST","GREEN"%20p"RST"\n", 
+   printf("Global static" GREEN "%24p" RST "," GREEN "%20p" RST "," GREEN "%20p" RST "\n",
           &static_init_var1, &static_init_var2, &static_init_var3);
-   printf("Global static(N.I)"GREEN"%19p"RST","GREEN"%20p"RST","GREEN"%20p"RST"\n", 
+   printf("Global static(N.I)" GREEN "%19p" RST "," GREEN "%20p" RST "," GREEN "%20p" RST "\n",
           &static_var1, &static_var2, &static_var3);
 }
 
@@ -278,36 +282,43 @@ void memoryAll(tLists L)
    memoryBlocks(L);
 }
 
-void memoryPmap() 
-{ 
-   pid_t pid;       
+void memoryPmap()
+{
+   pid_t pid;
    char elpid[32];
-   char *argv[4]={"pmap", elpid, NULL};
+   char *argv[4] = {"pmap", elpid, NULL};
 
-   sprintf(elpid,"%d", (int)getpid());
-   
-   if ((pid=fork())==-1)
+   sprintf(elpid, "%d", (int)getpid());
+
+   if ((pid = fork()) == -1)
    {
       pPrintError("Can't create process");
       return;
    }
 
-   if (pid==0)
+   if (pid == 0)
    {
-      if (execvp(argv[0], argv)==-1) // try pmap
+      if (execvp(argv[0], argv) == -1) // try pmap
          pPrintError("Cannot execute pmap (linux, solaris)");
-      
-      argv[0]="procstat"; argv[1]="vm"; argv[2]=elpid; argv[3]=NULL;   
-      if (execvp(argv[0], argv)==-1) // not pmap, try procstat FreeBSD
+
+      argv[0] = "procstat";
+      argv[1] = "vm";
+      argv[2] = elpid;
+      argv[3] = NULL;
+      if (execvp(argv[0], argv) == -1) // not pmap, try procstat FreeBSD
          pPrintError("Cannot execute procstat (FreeBSD)");
-      
-      argv[0]="procmap", argv[1]=elpid;argv[2]=NULL;    
-      if (execvp(argv[0],argv)==-1)  // try procmap OpenBSD
+
+      argv[0] = "procmap", argv[1] = elpid;
+      argv[2] = NULL;
+      if (execvp(argv[0], argv) == -1) // try procmap OpenBSD
          pPrintError("Cannot execute procmap (OpenBSD)");
-      
-      argv[0]="vmmap"; argv[1]="-interleave"; argv[2]=elpid;argv[3]=NULL;
-      if (execvp(argv[0], argv)==-1) // Try vmmap Mac-OS
-         pPrintError("Cannot execute vmmap (Mac-OS)");      
+
+      argv[0] = "vmmap";
+      argv[1] = "-interleave";
+      argv[2] = elpid;
+      argv[3] = NULL;
+      if (execvp(argv[0], argv) == -1) // Try vmmap Mac-OS
+         pPrintError("Cannot execute vmmap (Mac-OS)");
       exit(1);
    }
    waitpid(pid, NULL, 0);
@@ -317,28 +328,32 @@ void memoryPmap()
 // readfile
 void cmdReadfile(tArgs args, tLists *L)
 {
-   UNUSED(args); UNUSED(L);
+   UNUSED(args);
+   UNUSED(L);
 }
 /******************************************************************************/
 // writefile
 void cmdWritefile(tArgs args, tLists *L)
 {
-   UNUSED(args); UNUSED(L);
+   UNUSED(args);
+   UNUSED(L);
 }
 /******************************************************************************/
-// read 
+// read
 void cmdRead(tArgs args, tLists *L)
 {
-   UNUSED(args); UNUSED(L);
+   UNUSED(args);
+   UNUSED(L);
 }
 /******************************************************************************/
 // write
 void cmdWrite(tArgs args, tLists *L)
 {
-   UNUSED(args); UNUSED(L);
+   UNUSED(args);
+   UNUSED(L);
 }
 /******************************************************************************/
-// recurse 
+// recurse
 void rec(int n);
 
 void cmdRecurse(tArgs args, tLists *L)
@@ -359,7 +374,7 @@ void cmdRecurse(tArgs args, tLists *L)
       else
          printError(args.array[0], "Invalid argument");
       break;
-   
+
    default:
       printError(args.array[0], "Invalid num of arguments");
       break;
@@ -368,14 +383,15 @@ void cmdRecurse(tArgs args, tLists *L)
 
 void rec(int n)
 {
-   char autoArray[SIZE_REC]; static char staticArray[SIZE_REC];
+   char autoArray[SIZE_REC];
+   static char staticArray[SIZE_REC];
 
-   printf("param:%3d("GREEN"%p"RST") array ("GREEN"%p"RST"),"
-          " arr static ("GREEN"%p"RST")\n", 
+   printf("param:%3d(" GREEN "%p" RST ") array (" GREEN "%p" RST "),"
+          " arr static (" GREEN "%p" RST ")\n",
           n, &n, autoArray, staticArray);
 
-   if (n>0)
-      rec(n-1);
+   if (n > 0)
+      rec(n - 1);
 }
 
 /*
@@ -385,7 +401,7 @@ void LlenarMemoria (void *p, size_t cont, unsigned char byte)
   size_t i;
 
   for (i=0; i<cont;i++)
-		arr[i]=byte;
+      arr[i]=byte;
 }
 
 void * ObtenerMemoriaShmget (key_t clave, size_t tam)
@@ -418,20 +434,20 @@ void do_AllocateCreateshared (char *tr[])
    void *p;
 
    if (tr[0]==NULL || tr[1]==NULL) {
-		ImprimirListaShared(&L);
-		return;
+      ImprimirListaShared(&L);
+      return;
    }
-  
+
    cl=(key_t)  strtoul(tr[0],NULL,10);
    tam=(size_t) strtoul(tr[1],NULL,10);
    if (tam==0) {
-	printf ("No se asignan bloques de 0 bytes\n");
-	return;
+   printf ("No se asignan bloques de 0 bytes\n");
+   return;
    }
    if ((p=ObtenerMemoriaShmget(cl,tam))!=NULL)
-		printf ("Asignados %lu bytes en %p\n",(unsigned long) tam, p);
+      printf ("Asignados %lu bytes en %p\n",(unsigned long) tam, p);
    else
-		printf ("Imposible asignar memoria compartida clave %lu:%s\n",(unsigned long) cl,strerror(errno));
+      printf ("Imposible asignar memoria compartida clave %lu:%s\n",(unsigned long) cl,strerror(errno));
 }
 
 void do_AllocateShared (char *tr[])
@@ -441,16 +457,16 @@ void do_AllocateShared (char *tr[])
    void *p;
 
    if (tr[0]==NULL) {
-		ImprimirListaShared(&L);
-		return;
+      ImprimirListaShared(&L);
+      return;
    }
-  
+
    cl=(key_t)  strtoul(tr[0],NULL,10);
 
    if ((p=ObtenerMemoriaShmget(cl,0))!=NULL)
-		printf ("Asignada memoria compartida de clave %lu en %p\n",(unsigned long) cl, p);
+      printf ("Asignada memoria compartida de clave %lu en %p\n",(unsigned long) cl, p);
    else
-		printf ("Imposible asignar memoria compartida clave %lu:%s\n",(unsigned long) cl,strerror(errno));
+      printf ("Imposible asignar memoria compartida clave %lu:%s\n",(unsigned long) cl,strerror(errno));
 }
 
 void * MapearFichero (char * fichero, int protection)
@@ -471,11 +487,11 @@ void * MapearFichero (char * fichero, int protection)
 }
 
 void do_AllocateMmap(char *arg[])
-{ 
+{
      char *perm;
      void *p;
      int protection=0;
-     
+
      if (arg[0]==NULL)
             {ImprimirListaMmap(&L); return;}
      if ((perm=arg[1])!=NULL && strlen(perm)<4) {
@@ -512,18 +528,18 @@ void do_DeallocateDelkey (char *args[])
 ssize_t LeerFichero (char *f, void *p, size_t cont)
 {
    struct stat s;
-   ssize_t  n;  
+   ssize_t  n;
    int df,aux;
 
    if (stat (f,&s)==-1 || (df=open(f,O_RDONLY))==-1)
-	return -1;     
+   return -1;
    if (cont==-1)   // si pasamos -1 como bytes a leer lo leemos entero
-	cont=s.st_size;
+   cont=s.st_size;
    if ((n=read(df,p,cont))==-1){
-	aux=errno;
-	close(df);
-	errno=aux;
-	return -1;
+   aux=errno;
+   close(df);
+   errno=aux;
+   return -1;
    }
    close (df);
    return n;
@@ -532,20 +548,20 @@ ssize_t LeerFichero (char *f, void *p, size_t cont)
 void Cmd_ReadFile (char *ar[])
 {
    void *p;
-   size_t cont=-1;  // si no pasamos tamano se lee entero 
+   size_t cont=-1;  // si no pasamos tamano se lee entero
    ssize_t n;
    if (ar[0]==NULL || ar[1]==NULL){
-	printf ("faltan parametros\n");
-	return;
+   printf ("faltan parametros\n");
+   return;
    }
    p=cadtop(ar[1]);  // convertimos de cadena a puntero
    if (ar[2]!=NULL)
-	cont=(size_t) atoll(ar[2]);
+   cont=(size_t) atoll(ar[2]);
 
    if ((n=LeerFichero(ar[0],p,cont))==-1)
-	perror ("Imposible leer fichero");
+   perror ("Imposible leer fichero");
    else
-	printf ("leidos %lld bytes de %s en %p\n",(long long) n,ar[0],p);
+   printf ("leidos %lld bytes de %s en %p\n",(long long) n,ar[0],p);
 }
 
 

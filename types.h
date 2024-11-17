@@ -16,6 +16,7 @@
 #include <grp.h>
 #include <dirent.h>
 #include <sys/wait.h>
+#include <sys/mman.h>
 
 #define MAX_BUFFER_INPUT 256
 #define MAX_ARGS 30
