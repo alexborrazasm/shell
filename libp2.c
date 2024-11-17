@@ -64,7 +64,7 @@ long getSize(char *size) // Input size to int
 
    if (!stringToLong(size, &result)) { return -1; }
    
-   if (result < 0) { return -1; }
+   if (result <= 0) { return -1; }
 
    return result;
 }
@@ -119,11 +119,6 @@ void allocateMalloc(tArgs args, tListM *L)
    if (size == -1) // Invalid size
    {
       printError(args.array[0], "Invalid size");
-      return;
-   }
-   else if (size == 0)
-   {
-      printError(args.array[0], "Can't allocate 0 bytes");
       return;
    }
    
@@ -219,7 +214,28 @@ void cmdDeallocate(tArgs args, tLists *L)
 
 deallocateMalloc(tArgs args, tListM *L)
 {  
+   long size = getSize(args.array[2]);
+
+   if (size == -1) 
+   { 
+      printError(args.array[0], "Error size");
+      return; 
+   }
    
+   tPosM p = findItemM(size, M_MALLOC, *L);
+
+   if (p != MNULL)
+   {
+      tItemM item = getItemM(p, *L);
+      
+      free(item.address);
+      deleteAtPositionM(p, L);
+   }
+   else
+   {
+      printf("There is no block of size "BLUE"%d"RST" allocated with malloc\n",
+             size);
+   }
 }
 
 deallocateMMap(tArgs args, tListM *L)
@@ -235,10 +251,9 @@ deallocateDelKey(tArgs args, tListM *L)
 {
    UNUSED(args); UNUSED(L);
 }
-deallocateAddr(tArgs args, tListM *L);
+deallocateAddr(tArgs args, tListM *L)
 {
    UNUSED(args); UNUSED(L);
-}
 }
 
 /******************************************************************************/

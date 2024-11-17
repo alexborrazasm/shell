@@ -131,7 +131,7 @@ bool createNodeM(tPosM *p)
 
 tPosM findItemM(size_t size, byte type, tListM L)
 {
-    if(isEmptyList(L))
+    if(isEmptyListM(L))
         return MNULL;
     
     tPosM q = L;
@@ -150,7 +150,7 @@ tPosM findItemM(size_t size, byte type, tListM L)
 
 tPosM findByAddress(void* address, tListM L)
 {
-    if (isEmptyList(L))
+    if (isEmptyListM(L))
         return MNULL;
 
     tPosM q = L;
