@@ -1,15 +1,15 @@
 # TO DO
 
 allocate -malloc Y
-         -mmap Y revisar
+         -mmap Y
          -createshared
          -shared
 
 deallocate -malloc Y
-           -mmap
+           -mmap Y
            -shared
            -delkey
-           addr Y
+           addr Y ADD mmap shared mode TODO
 
 memfill addr 
 
