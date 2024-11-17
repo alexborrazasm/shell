@@ -48,10 +48,16 @@ void deleteAtPositionM(tPosM p, tListM *L);
 
 tItemM getItemM(tPosM p, tListM L);
 
-// Return the post of first match (size, type)
-tPosM findItemM(size_t size, byte type, tListM L);
+// Returns the position of the first match with the size
+tPosM findMalloc(size_t size, tListM L);
 
 // Find by memory address
 tPosM findByAddress(void* address, tListM L);
+
+// Returns the position of the first match with the filename
+tPosM findMMap(char* name, tListM L);
+
+// Returns the position of the first match with the shared key
+tPosM findShared(int key, tListM L);
 
 #endif // MEMORY_LIST_H

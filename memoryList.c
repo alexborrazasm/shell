@@ -129,11 +129,12 @@ bool createNodeM(tPosM *p)
         return true;
 }
 
-tPosM findItemM(size_t size, byte type, tListM L)
+tPosM findMalloc(size_t size, tListM L)
 {
     if(isEmptyListM(L))
         return MNULL;
-    
+
+    byte type = M_MALLOC;       
     tPosM q = L;
 
     while (q != MNULL)
@@ -165,4 +166,44 @@ tPosM findByAddress(void* address, tListM L)
     }
 
     return MNULL;  // Address not found
+}
+
+tPosM findMMap(char* name, tListM L)
+{
+    if(isEmptyListM(L))
+        return MNULL;
+
+    byte type = M_MMAP;       
+    tPosM q = L;
+
+    while (q != MNULL)
+    {   // Check for matching name and type
+        if ((strcmp(q->data.name, name) == 0) && (q->data.type & type))
+        {
+            return q;  // Found a match
+        }
+        q = q->next;  // Move to the next element
+    }
+
+    return MNULL;  // No match found
+}
+
+tPosM findShared(int key, tListM L)
+{
+    if(isEmptyListM(L))
+        return MNULL;
+
+    byte type = M_SHARED;       
+    tPosM q = L;
+
+    while (q != MNULL)
+    {   // Check for matching key and type
+        if (q->data.keyDF == key && (q->data.type & type))
+        {
+            return q;  // Found a match
+        }
+        q = q->next;  // Move to the next element
+    }
+
+    return MNULL;  // No match found
 }

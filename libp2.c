@@ -294,7 +294,7 @@ void deallocateMalloc(tArgs args, tListM *L)
       return; 
    }
    
-   tPosM p = findItemM(size, M_MALLOC, *L);
+   tPosM p = findMalloc(size, *L);
 
    if (p != MNULL)
    {
@@ -312,7 +312,24 @@ void deallocateMalloc(tArgs args, tListM *L)
 
 void deallocateMMap(tArgs args, tListM *L)
 {
-   UNUSED(args); UNUSED(L);
+   tPosM p = findMMap(args.array[2], *L);
+
+   if (p != MNULL)
+   {
+      tItemM item = getItemM(p, *L);
+      
+      // Unmap the file
+      if (munmap(item.address, item.size) == -1) 
+      {
+         pPrintError(args.array[0]);
+         return;
+      }
+      deleteAtPositionM(p, L);
+   }
+   else
+   {
+      printf("File "BLUE"%s"RST" was not mapped\n", args.array[2]);
+   }
 }
 
 void deallocateShared(tArgs args, tListM *L)
