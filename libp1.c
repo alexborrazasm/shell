@@ -268,7 +268,7 @@ void auxMakedir(tArgs args)
 // listfile
 void auxListfile(tArgs args, int n, byte flags, char* fullPath);
 
-void printDate(time_t date);
+void printDateFile(time_t date);
 
 void printLink(char* filepath, struct stat filestat, tArgs args);
 
@@ -294,18 +294,18 @@ void auxListfile(tArgs args, int n, byte flags, char* fullPath)
 
     if ((flags & FLAG_LONG) && (flags & FLAG_ACC))
     {
-        printDate(filestat.st_atime);
+        printDateFile(filestat.st_atime);
         printLong(filestat);
     }
     else if (flags & FLAG_LONG)
     {
-        printDate(filestat.st_mtime);
+        printDateFile(filestat.st_mtime);
         printLong(filestat);
     } 
     else if (flags & FLAG_ACC)
     {
         printf("%10ld  ", filestat.st_size);
-        printDate(filestat.st_atime);  
+        printDateFile(filestat.st_atime);  
     }
     else 
     {
@@ -324,7 +324,7 @@ void auxListfile(tArgs args, int n, byte flags, char* fullPath)
     free(path);
 }
 
-void printDate(time_t date)
+void printDateFile(time_t date)
 {
     char buffer[20];
     struct tm *tm_info;

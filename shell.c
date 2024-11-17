@@ -341,6 +341,20 @@ bool stringToInt(char *str, int *n)
     return true;
 }
 
+bool stringToLong(char *str, long *n)
+{
+    char *endptr = NULL;
+    // Convert
+    *n = strtol(str, &endptr, 10);
+
+    // Error check
+    if (*endptr != '\0') {
+        return false;
+    }
+
+    return true;
+}
+
 void cmdClear()
 {
     pid_t pid;       
@@ -359,4 +373,70 @@ void cmdClear()
         exit(1);
     }
     waitpid(pid, NULL, 0);
+}
+
+time_t getTime(tArgs args)
+{
+    time_t now;
+    time(&now);
+
+    if (now == -1)
+    {
+        pPrintError(args.array[0]);
+    }
+
+    return now;
+}
+
+void printTime(time_t now)
+{
+    int hours, minutes, seconds;
+    struct tm *local = localtime(&now);
+
+    hours = local->tm_hour;
+    minutes = local->tm_min;
+    seconds = local->tm_sec;
+
+    printf(BLUE"%02d:%02d:%02d"RST, hours, minutes, seconds);
+}
+
+void printDate(time_t now)
+{
+    int day, month, year;
+    struct tm *local = localtime(&now);
+
+    day = local->tm_mday;
+    month = local->tm_mon + 1;
+    year = local->tm_year + 1900;
+
+    printf(BLUE"%02d/%02d/%d"RST, day, month, year);
+}
+
+const char* monthToString(int month) {
+    // Array of strings with abbreviated month names
+    const char* months[] = {
+        "Jan", "Feb", "Mar", "Apr", "May", "Jun", 
+        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+    };
+
+    // Check if the month is within the valid range (1-12)
+    if (month < 1 || month > 12) {
+        return "Err"; // Return an error
+    }
+
+    // Return the corresponding month abbreviation
+    return months[month - 1]; // Index start at 0, month at 1
+}
+
+void printDateString(time_t now)
+{
+    int day, month;
+    struct tm *local = localtime(&now);
+
+    day = local->tm_mday;
+    month = local->tm_mon + 1;
+    
+
+    printf(BLUE"%s %d "RST, monthToString(month), day);
+    printTime(now);    
 }

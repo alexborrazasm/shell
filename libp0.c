@@ -179,41 +179,24 @@ void cmdDate(tArgs args, tLists *L)
 
 void date(tArgs args)
 {
-    int day, month, year;
-    time_t now;
-    time(&now);
+    time_t now = getTime(args);
+
     if (now == -1)
-    {
-        pPrintError(args.array[0]);
-    }
+        return;
 
-    struct tm *local = localtime(&now);
-
-    day = local->tm_mday;
-    month = local->tm_mon + 1;
-    year = local->tm_year + 1900;
-
-    printf(BLUE"%d/%d/%d\n"RST, day, month, year);
+    printDate(now);
+    puts("");
 }
 
 void timeC(tArgs args)
-{ // Lo nombro así para que no choque con la función time
-    int hours, minutes, seconds;
-    time_t now;
-    time(&now);
+{
+    time_t now = getTime(args);
 
-    if (now == -1)
-    {
-        pPrintError(args.array[0]);
-    }
+    if (time == -1)
+        return;
 
-    struct tm *local = localtime(&now);
-
-    hours = local->tm_hour;
-    minutes = local->tm_min;
-    seconds = local->tm_sec;
-
-    printf(BLUE"%d:%d:%d\n"RST, hours, minutes, seconds);
+    printTime(now);
+    puts("");
 }
 
 /******************************************************************************/

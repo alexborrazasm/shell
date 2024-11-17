@@ -1,10 +1,167 @@
 #include"libp2.h"
 /******************************************************************************/
 // allocate
+void printMenList(tListM L, byte type);
+
+void allocateMalloc(tArgs args, tListM *L);
+
+void allocateMMap(tArgs args, tListM *L);
+
+void allocateCreateShared(tArgs args, tListM *L);
+
+void allocateShared(tArgs args, tListM *L);
+
+long getSize(char *size);
+
+// Free me
+char* auxPrintMenList(tItemM item);
+
 void cmdAllocate(tArgs args, tLists *L)
 {
-   UNUSED(args); UNUSED(L);   
+   switch (args.len)
+   {
+   case 1: // call print list 
+      printMenList(L->memory, 0); 
+      break;
+   case 2: // check args lenght = 2, print item list if = args[1]
+      if (strcmp(args.array[1], "-malloc") == 0)
+         printMenList(L->memory, M_MALLOC);
+      else if (strcmp(args.array[1], "-mmap") == 0)
+         printMenList(L->memory, M_MMAP);
+      else if (strcmp(args.array[1], "-createshared") == 0)
+         printMenList(L->memory, M_SHARED);
+      else if (strcmp(args.array[1], "-shared") == 0)
+         printMenList(L->memory, M_SHARED);
+      else
+         printError(args.array[0], "Invalid argument");
+      break;
+   case 3: // check args lenght = 3, malloc shared
+      if (strcmp(args.array[1], "-malloc") == 0)
+         allocateMalloc(args, &L->memory);
+      else if (strcmp(args.array[1], "-shared") == 0)
+         allocateShared(args, &L->memory);
+      else
+         printError(args.array[0], "Invalid argument");
+      break;
+   case 4: // check args lenght = 4, nmap createshared
+      if (strcmp(args.array[1], "-mmap") == 0)
+         allocateMMap(args, &L->memory);
+      else if (strcmp(args.array[1], "-createshared") == 0)
+         allocateCreateShared(args, &L->memory);
+      else
+         printError(args.array[0], "Invalid argument");
+      break;
+   default:
+      printError(args.array[0], "Invalid num of arguments");
+      break;
+   }
 }
+
+long getSize(char *size) // Input size to int
+{
+   long result;
+
+   if (!stringToLong(size, &result)) { return -1; }
+   
+   if (result < 0) { return -1; }
+
+   return result;
+}
+
+char* auxPrintMenList(tItemM item)
+{
+   char* str = malloc(512 * sizeof(char));
+
+   switch (item.type)
+   {
+   case M_MALLOC:
+      strcpy(str, "malloc");
+      return str;
+   case M_MMAP:
+      sprintf(str, "%s (df %d)", item.name, item.keyDF);
+      return str;
+   case M_SHARED:
+      sprintf(str, "shared (key %d)", item.keyDF);
+      return str;
+   default:
+      strcpy(str, "error");
+      return str;
+   }
+}
+
+void printMenList(tListM L, byte type)
+{
+   tPosM p = firstM(L); tItemM item; char* msg;
+
+   printf("******List of blocks allocated for process "BLUE"%d\n"RST, getpid());
+
+   for (; p != MNULL; p = nextM(p, L))
+   {
+      item = getItemM(p, L);
+      if (item.type & type)
+      {
+         printf(GREEN"%20p %10ld ", item.address, item.size);
+         printDateString(item.date);
+         msg = auxPrintMenList(item);
+         printf(" %s\n", msg);
+         free(msg);
+      }
+   }
+}
+
+void allocateMalloc(tArgs args, tListM *L)
+{
+   long size = getSize(args.array[2]);
+   void* block = NULL;
+   tItemM item;
+
+   if (size == -1) // Invalid size
+   {
+      printError(args.array[0], "Invalid size");
+      return;
+   }
+   else if (size == 0)
+   {
+      printError(args.array[0], "Can't allocate 0 bytes");
+      return;
+   }
+   
+   block = malloc(size);
+
+   if (block == NULL) // Check malloc
+   {
+      printError(args.array[0], "Can't allocate memory");
+      return;
+   }
+
+   // Prepare item to insert
+   item.address = block;
+   item.type= M_MALLOC;
+   item.date = getTime(args);
+   item.keyDF = -1;
+   item.size = size;
+
+   // Insert then
+   insertItemM(item, MNULL, L);
+
+   printf("Allocated "BLUE"%ld bytes"RST" at "GREEN"%p\n"RST, size, block);
+}
+
+void allocateMMap(tArgs args, tListM *L)
+{
+   UNUSED(L); UNUSED(args);
+}
+
+void allocateCreateShared(tArgs args, tListM *L)
+{
+   UNUSED(L); UNUSED(args);
+}
+
+void allocateShared(tArgs args, tListM *L)
+{
+   UNUSED(L); UNUSED(args);
+}
+
 /******************************************************************************/
 // deallocate
 void cmdDeallocate(tArgs args, tLists *L)
@@ -40,12 +197,10 @@ void cmdMemory(tArgs args, tLists *L)
 {
    switch (args.len)
    {
-   case 1:
-      // call -all 
+   case 1: // call -all 
       memoryAll(*L);
       break;
-   case 2:
-      // check args
+   case 2: // check args
       if (strcmp(args.array[1], "-blocks") == 0)
          memoryBlocks(*L);
       else if (strcmp(args.array[1], "-funcs") == 0)
@@ -68,8 +223,7 @@ void cmdMemory(tArgs args, tLists *L)
 
 void memoryBlocks(tLists L)
 {
-   UNUSED(L);
-   puts("TODO");
+   printMenList(L.memory, M_ALL);
 }
 
 void memoryFuncs()

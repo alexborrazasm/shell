@@ -5,6 +5,11 @@
 
 #define MNULL NULL
 
+#define M_MALLOC  (1 << 0)  // 0001 (1)
+#define M_MMAP    (1 << 1)  // 0010 (2)
+#define M_SHARED  (1 << 2)  // 0100 (4)
+#define M_ALL     (M_MALLOC | M_MMAP | M_SHARED)  // 0111 (7)
+
 typedef struct tItemM
 {
     byte type;
@@ -12,7 +17,7 @@ typedef struct tItemM
     size_t size;
     time_t date;
     char name[MAX_BUFFER_INPUT];
-    int n; // Key or df
+    int keyDF; // Key or df
 } tItemM;
 
 

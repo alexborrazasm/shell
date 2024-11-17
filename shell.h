@@ -35,4 +35,17 @@ void initFList(tListF *L);
 
 bool stringToInt(char *str, int *n);
 
+bool stringToLong(char *str, long *n);
+
+time_t getTime(tArgs args);
+
+// 00:00
+void printTime(time_t now);
+
+// dd/mm/yyyy
+void printDate(time_t now);
+
+// Nov 31 00:00
+void printDateString(time_t now);
+
 #endif // SHELL_H
