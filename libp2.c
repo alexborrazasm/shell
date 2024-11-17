@@ -48,13 +48,13 @@ void cmdMemory(tArgs args, tLists *L)
       // check args
       if (strcmp(args.array[1], "-blocks") == 0)
          memoryBlocks(*L);
-      else if (strcmp(args.array[1], "-funcs"))
+      else if (strcmp(args.array[1], "-funcs") == 0)
          memoryFuncs();
-      else if (strcmp(args.array[1], "-vars"))
+      else if (strcmp(args.array[1], "-vars") == 0)
          memoryVars();
-      else if (strcmp(args.array[1], "-pmap"))
+      else if (strcmp(args.array[1], "-all") == 0)
          memoryAll(*L);
-      else if (strcmp(args.array[1], "-pmap"))
+      else if (strcmp(args.array[1], "-pmap") == 0)
          memoryPmap();
       else
          printError(args.array[0], "Invalid argument");
@@ -69,6 +69,7 @@ void cmdMemory(tArgs args, tLists *L)
 void memoryBlocks(tLists L)
 {
    UNUSED(L);
+   puts("TODO");
 }
 
 void memoryFuncs()
@@ -90,9 +91,30 @@ void memoryFuncs()
           (void *)libFunc1, (void *)libFunc2, (void *)libFunc3);
 }
 
+// Declaration of external variables (defined in another file)
+extern int ext_var1, ext_var2, ext_var3;
+extern int ext_init_var1, ext_init_var2, ext_init_var3;
+
+// Global static variables (accessible only within this file)
+static int static_var1, static_var2, static_var3;
+static int static_init_var1 = 10, static_init_var2 = 20, static_init_var3 = 30;
+
 void memoryVars()
 {
+   // Automatic (local) variables
+   int auto_var1 = 1, auto_var2 = 2, auto_var3 = 3;
 
+   // Print
+   printf("Local variables"GREEN"%22p"RST","GREEN"%20p"RST","GREEN"%20p"RST"\n", 
+          &auto_var1, &auto_var2, &auto_var3);
+   printf("Global external"GREEN"%22p"RST","GREEN"%20p"RST","GREEN"%20p"RST"\n", 
+          &ext_init_var1, &ext_init_var2, &ext_init_var3);
+   printf("Global external(N.I)"GREEN"%17p"RST","GREEN"%20p"RST","GREEN"%20p"RST"\n", 
+          &ext_var1, &ext_var2, &ext_var3);
+   printf("Global static"GREEN"%24p"RST","GREEN"%20p"RST","GREEN"%20p"RST"\n", 
+          &static_init_var1, &static_init_var2, &static_init_var3);
+   printf("Global static(N.I)"GREEN"%19p"RST","GREEN"%20p"RST","GREEN"%20p"RST"\n", 
+          &static_var1, &static_var2, &static_var3);
 }
 
 void memoryAll(tLists L)
