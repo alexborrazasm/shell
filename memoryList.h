@@ -48,4 +48,10 @@ void deleteAtPositionM(tPosM p, tListM *L);
 
 tItemM getItemM(tPosM p, tListM L);
 
+// Return the post of first match (size, type)
+tPosM findItemM(size_t size, byte type, tListM L);
+
+// Find by memory address
+tPosM findByAddress(void* address, tListM L)
+
 #endif // MEMORY_LIST_H

@@ -218,8 +218,8 @@ void cmdDeallocate(tArgs args, tLists *L)
 }
 
 deallocateMalloc(tArgs args, tListM *L)
-{
-   UNUSED(args); UNUSED(L);
+{  
+   
 }
 
 deallocateMMap(tArgs args, tListM *L)

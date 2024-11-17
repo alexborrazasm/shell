@@ -128,3 +128,41 @@ bool createNodeM(tPosM *p)
     else
         return true;
 }
+
+tPosM findItemM(size_t size, byte type, tListM L)
+{
+    if(isEmptyList(L))
+        return MNULL;
+    
+    tPosM q = L;
+
+    while (q != MNULL)
+    {   // Check for matching size and type
+        if (q->data.size == size && (q->data.type & type))
+        {
+            return q;  // Found a match
+        }
+        q = q->next;  // Move to the next element
+    }
+
+    return MNULL;  // No match found
+}
+
+tPosM findByAddress(void* address, tListM L)
+{
+    if (isEmptyList(L))
+        return MNULL;
+
+    tPosM q = L;
+
+    while (q != MNULL)
+    {
+        if (q->data.address == address)
+        {
+            return q;  // Address found
+        }
+        q = q->next;  // Move to the next node
+    }
+
+    return MNULL;  // Address not found
+}
