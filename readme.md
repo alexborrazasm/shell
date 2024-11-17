@@ -5,11 +5,11 @@ allocate -malloc Y
          -createshared
          -shared
 
-deallocate -malloc
+deallocate -malloc Y
            -mmap
            -shared
            -delkey
-           addr
+           addr Y
 
 memfill addr 
 

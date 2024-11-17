@@ -24,7 +24,7 @@ void cmdAllocate(tArgs args, tLists *L)
    switch (args.len)
    {
    case 1: // call print list 
-      printMenList(L->memory, 0); 
+      printMenList(L->memory, M_ALL); 
       break;
    case 2: // check args lenght = 2, print item list if = args[1]
       if (strcmp(args.array[1], "-malloc") == 0)
@@ -198,12 +198,14 @@ void deallocateDelKey(tArgs args, tListM *L);
 
 void deallocateAddr(tArgs args, tListM *L);
 
+void* stringToVoidPointer(char* str);
+
 void cmdDeallocate(tArgs args, tLists *L)
 {
    switch (args.len)
       {
       case 1: // call print list 
-         printMenList(L->memory, 0); 
+         printMenList(L->memory, M_ALL); 
          break;
       case 2: // check args lenght = 2, print item list if = args[1]
          if (args.array[1][0] == '-')
@@ -275,13 +277,37 @@ void deallocateShared(tArgs args, tListM *L)
 {
    UNUSED(args); UNUSED(L);
 }
+
 void deallocateDelKey(tArgs args, tListM *L)
 {
    UNUSED(args); UNUSED(L);
 }
+
+void* stringToVoidPointer(char* str) 
+{   
+   // Convert the string to an unsigned long using base 16 (hexadecimal)
+   unsigned long address = strtoul(str, NULL, 16);  
+   
+   return (void*)address;  // Cast the result to void*
+}
+
 void deallocateAddr(tArgs args, tListM *L)
 {
-   UNUSED(args); UNUSED(L);
+   void* ptr = stringToVoidPointer(args.array[1]);
+   tPosM p = findByAddress(ptr, *L);
+
+   if (p != MNULL)
+   {
+      tItemM item = getItemM(p, *L);
+      
+      free(item.address);
+      deleteAtPositionM(p, L);
+   }
+   else
+   {
+      printf("Address "GREEN"%p"RST" not allocated with malloc, shared or mmap\n",
+      ptr);
+   }
 }
 
 /******************************************************************************/
@@ -636,8 +662,6 @@ void do_DeallocateDelkey (char *args[])
         perror ("shmctl: imposible eliminar memoria compartida\n");
 }
 
-
-
 ssize_t LeerFichero (char *f, void *p, size_t cont)
 {
    struct stat s;
@@ -676,7 +700,4 @@ void Cmd_ReadFile (char *ar[])
    else
    printf ("leidos %lld bytes de %s en %p\n",(long long) n,ar[0],p);
 }
-
-
-
 */
