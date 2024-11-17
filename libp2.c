@@ -358,8 +358,27 @@ void deallocateAddr(tArgs args, tListM *L)
    if (p != MNULL)
    {
       tItemM item = getItemM(p, *L);
-      
-      free(item.address);
+
+      switch (item.type)
+      {
+      case M_MALLOC:
+         free(item.address);
+         break;
+      case M_MMAP:
+         // Unmap the file
+         if (munmap(item.address, item.size) == -1) 
+         {
+            pPrintError(args.array[0]);
+            return;
+         }
+         break;
+      case M_SHARED:
+         puts("TO DO");
+         break;
+      default:
+         printError(args.array[0], "Unknown block type");
+         return;
+      }
       deleteAtPositionM(p, L);
    }
    else
