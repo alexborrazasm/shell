@@ -42,7 +42,7 @@ void cmdAllocate(tArgs args, tLists *L)
       else
          printError(args.array[0], "Invalid argument");
       break;
-   case 3: // check args length = 3, malloc shared
+   case 3: // check args length = 3, malloc shared mmap
       if (strcmp(args.array[1], "-malloc") == 0)
          allocateMalloc(args, &L->memory);
       else if (strcmp(args.array[1], "-shared") == 0)
@@ -198,9 +198,15 @@ void* getMemShmget(key_t key, size_t size, tArgs args, tListM *L)
    // If not create, we need the size, which is s.shm_segsz
    shmctl(id, IPC_STAT, &s);
    
-   // Guardar en la lista
+   // Save to list
+   tItemM item;
+   item.address = p;
+   item.type = M_SHARED;
+   item.date = getTime(args);
+   item.keyDF = key;
+   item.size = s.shm_segsz; // size
 
-   //TODO
+   insertItemM(item, MNULL, L);
    
    return (p);
 }
@@ -269,24 +275,24 @@ void allocateCreateShared(tArgs args, tListM *L)
    }
 
    if ((p = getMemShmget(cl, size, args, L)) != NULL)
-      printf("Asignados %lu bytes en %p\n",(unsigned long) size, p);
+      printf("Allocated "BLUE"%lu"RST" bytes in "GREEN"%p\n"RST,
+             (unsigned long)size, p);
    else
-      printf("Imposible asignar memoria compartida clave %lu:%s\n",
-               (unsigned long) cl,strerror(errno));
+      printf("Unable to allocate shared memory key "YELLOW"%lu"RST":"RED"%s\n"RST,
+              (unsigned long)cl, strerror(errno));
 }
 
 void allocateShared(tArgs args, tListM *L)
 {
-   key_t cl; size_t size; void *p;
+   key_t cl; void *p;
 
    cl  = (key_t)strtoul(args.array[2] , NULL, 10);
-   size = (size_t)strtoul(args.array[3], NULL, 10);
 
    if ((p = getMemShmget(cl, 0, args, L)) != NULL)
-      printf("Asignada memoria compartida de clave %lu en %p\n",
+      printf("Shared memory allocated for key "YELLOW"%lu"RST" on "GREEN"%p\n"RST,
               (unsigned long)cl, p);
    else
-      printf("Imposible asignar memoria compartida clave %lu:%s\n",
+      printf("Unable to allocate shared memory key "YELLOW"%lu"RST":"RED"%s\n"RST,
               (unsigned long)cl, strerror(errno));
 }
 
