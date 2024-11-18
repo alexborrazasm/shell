@@ -222,11 +222,79 @@ void allocateCreateShared(tArgs args, tListM *L)
 {
    UNUSED(L); UNUSED(args);
 }
+/*
+void * ObtenerMemoriaShmget (key_t clave, size_t tam)
+{
+    void * p;
+    int aux,id,flags=0777;
+    struct shmid_ds s;
+
+    if (tam)     // tam distito de 0 indica crear
+        flags=flags | IPC_CREAT | IPC_EXCL; // cuando no es crear pasamos de tamano 0
+    if (clave==IPC_PRIVATE)  //no nos vale
+        {errno=EINVAL; return NULL;}
+    if ((id=shmget(clave, tam, flags))==-1)
+        return (NULL);
+    if ((p=shmat(id,NULL,0))==(void*) -1){
+        aux=errno;
+        if (tam)
+             shmctl(id,IPC_RMID,NULL);
+        errno=aux;
+        return (NULL);
+    }
+    shmctl (id,IPC_STAT,&s); // si no es crear, necesitamos el tamano, que es s.shm_segsz
+ // Guardar en la lista   InsertarNodoShared (&L, p, s.shm_segsz, clave);
+    return (p);
+}
+void do_AllocateCreateshared (char *tr[])
+{
+   key_t cl;
+   size_t tam;
+   void *p;
+
+   if (tr[0]==NULL || tr[1]==NULL) {
+      ImprimirListaShared(&L);
+      return;
+   }
+
+   cl=(key_t)  strtoul(tr[0],NULL,10);
+   tam=(size_t) strtoul(tr[1],NULL,10);
+   if (tam==0) {
+   printf ("No se asignan bloques de 0 bytes\n");
+   return;
+   }
+   if ((p=ObtenerMemoriaShmget(cl,tam))!=NULL)
+      printf ("Asignados %lu bytes en %p\n",(unsigned long) tam, p);
+   else
+      printf ("Imposible asignar memoria compartida clave %lu:%s\n",(unsigned long) cl,strerror(errno));
+}
+*/
 
 void allocateShared(tArgs args, tListM *L)
 {
    UNUSED(L); UNUSED(args);
 }
+
+/*
+void do_AllocateShared (char *tr[])
+{
+   key_t cl;
+   size_t tam;
+   void *p;
+
+   if (tr[0]==NULL) {
+      ImprimirListaShared(&L);
+      return;
+   }
+
+   cl=(key_t)  strtoul(tr[0],NULL,10);
+
+   if ((p=ObtenerMemoriaShmget(cl,0))!=NULL)
+      printf ("Asignada memoria compartida de clave %lu en %p\n",(unsigned long) cl, p);
+   else
+      printf ("Imposible asignar memoria compartida clave %lu:%s\n",(unsigned long) cl,strerror(errno));
+} 
+*/
 
 /******************************************************************************/
 // deallocate
@@ -249,7 +317,7 @@ void cmdDeallocate(tArgs args, tLists *L)
       case 1: // call print list 
          printMenList(L->memory, M_ALL); 
          break;
-      case 2: // check args lenght = 2, print item list if = args[1]
+      case 2: // check args length = 2, print item list if = args[1]
          if (args.array[1][0] == '-')
          {
             if (strcmp(args.array[1], "-malloc") == 0)
@@ -266,7 +334,7 @@ void cmdDeallocate(tArgs args, tLists *L)
          else // deallocate addr
             deallocateAddr(args, &L->memory);
          break;
-      case 3: // check args lenght = 3
+      case 3: // check args length = 3
          if (strcmp(args.array[1], "-malloc") == 0)
             deallocateMalloc(args, &L->memory);
          else if (strcmp(args.array[1], "-mmap") == 0)
@@ -341,6 +409,25 @@ void deallocateDelKey(tArgs args, tListM *L)
 {
    UNUSED(args); UNUSED(L);
 }
+/* 
+void do_DeallocateDelkey (char *args[])
+{
+   key_t clave;
+   int id;
+   char *key=args[0];
+
+   if (key==NULL || (clave=(key_t) strtoul(key,NULL,10))==IPC_PRIVATE){
+        printf ("      delkey necesita clave_valida\n");
+        return;
+   }
+   if ((id=shmget(clave,0,0666))==-1){
+        perror ("shmget: imposible obtener memoria compartida");
+        return;
+   }
+   if (shmctl(id,IPC_RMID,NULL)==-1)
+        perror ("shmctl: imposible eliminar memoria compartida\n");
+}
+ */
 
 void* stringToVoidPointer(char* str) 
 {   
@@ -480,16 +567,16 @@ void memoryVars()
    int auto_var1 = 1, auto_var2 = 2, auto_var3 = 3;
 
    // Print
-   printf("Local variables" GREEN "%22p" RST "," GREEN "%20p" RST "," GREEN "%20p" RST "\n",
-          &auto_var1, &auto_var2, &auto_var3);
-   printf("Global external" GREEN "%22p" RST "," GREEN "%20p" RST "," GREEN "%20p" RST "\n",
-          &ext_init_var1, &ext_init_var2, &ext_init_var3);
-   printf("Global external(N.I)" GREEN "%17p" RST "," GREEN "%20p" RST "," GREEN "%20p" RST "\n",
-          &ext_var1, &ext_var2, &ext_var3);
-   printf("Global static" GREEN "%24p" RST "," GREEN "%20p" RST "," GREEN "%20p" RST "\n",
-          &static_init_var1, &static_init_var2, &static_init_var3);
-   printf("Global static(N.I)" GREEN "%19p" RST "," GREEN "%20p" RST "," GREEN "%20p" RST "\n",
-          &static_var1, &static_var2, &static_var3);
+   printf("Local variables"GREEN"%22p" RST "," GREEN "%20p" RST "," GREEN "%20p"
+          RST "\n", &auto_var1, &auto_var2, &auto_var3);
+   printf("Global external" GREEN "%22p" RST "," GREEN "%20p" RST "," GREEN 
+          "%20p" RST "\n", &ext_init_var1, &ext_init_var2, &ext_init_var3);
+   printf("Global external(N.I)" GREEN "%17p" RST "," GREEN "%20p" RST "," GREEN
+          "%20p" RST "\n", &ext_var1, &ext_var2, &ext_var3);
+   printf("Global static" GREEN "%24p" RST "," GREEN "%20p" RST "," GREEN "%20p"
+          RST "\n", &static_init_var1, &static_init_var2, &static_init_var3);
+   printf("Global static(N.I)" GREEN "%19p" RST "," GREEN "%20p" RST "," GREEN 
+          "%20p" RST "\n", &static_var1, &static_var2, &static_var3);
 }
 
 void memoryAll(tLists L)
@@ -548,6 +635,48 @@ void cmdReadfile(tArgs args, tLists *L)
    UNUSED(args);
    UNUSED(L);
 }
+
+/*
+ssize_t LeerFichero (char *f, void *p, size_t cont)
+{
+   struct stat s;
+   ssize_t  n;
+   int df,aux;
+
+   if (stat (f,&s)==-1 || (df=open(f,O_RDONLY))==-1)
+   return -1;
+   if (cont==-1)   // si pasamos -1 como bytes a leer lo leemos entero
+   cont=s.st_size;
+   if ((n=read(df,p,cont))==-1){
+   aux=errno;
+   close(df);
+   errno=aux;
+   return -1;
+   }
+   close (df);
+   return n;
+}
+
+void Cmd_ReadFile (char *ar[])
+{
+   void *p;
+   size_t cont=-1;  // si no pasamos tamano se lee entero
+   ssize_t n;
+   if (ar[0]==NULL || ar[1]==NULL){
+   printf ("faltan parametros\n");
+   return;
+   }
+   p=cadtop(ar[1]);  // convertimos de cadena a puntero
+   if (ar[2]!=NULL)
+   cont=(size_t) atoll(ar[2]);
+
+   if ((n=LeerFichero(ar[0],p,cont))==-1)
+   perror ("Imposible leer fichero");
+   else
+   printf ("leidos %lld bytes de %s en %p\n",(long long) n,ar[0],p);
+}
+*/
+
 /******************************************************************************/
 // writefile
 void cmdWritefile(tArgs args, tLists *L)
@@ -621,125 +750,4 @@ void LlenarMemoria (void *p, size_t cont, unsigned char byte)
       arr[i]=byte;
 }
 
-void * ObtenerMemoriaShmget (key_t clave, size_t tam)
-{
-    void * p;
-    int aux,id,flags=0777;
-    struct shmid_ds s;
-
-    if (tam)     // tam distito de 0 indica crear
-        flags=flags | IPC_CREAT | IPC_EXCL; // cuando no es crear pasamos de tamano 0
-    if (clave==IPC_PRIVATE)  //no nos vale
-        {errno=EINVAL; return NULL;}
-    if ((id=shmget(clave, tam, flags))==-1)
-        return (NULL);
-    if ((p=shmat(id,NULL,0))==(void*) -1){
-        aux=errno;
-        if (tam)
-             shmctl(id,IPC_RMID,NULL);
-        errno=aux;
-        return (NULL);
-    }
-    shmctl (id,IPC_STAT,&s); // si no es crear, necesitamos el tamano, que es s.shm_segsz
- // Guardar en la lista   InsertarNodoShared (&L, p, s.shm_segsz, clave);
-    return (p);
-}
-void do_AllocateCreateshared (char *tr[])
-{
-   key_t cl;
-   size_t tam;
-   void *p;
-
-   if (tr[0]==NULL || tr[1]==NULL) {
-      ImprimirListaShared(&L);
-      return;
-   }
-
-   cl=(key_t)  strtoul(tr[0],NULL,10);
-   tam=(size_t) strtoul(tr[1],NULL,10);
-   if (tam==0) {
-   printf ("No se asignan bloques de 0 bytes\n");
-   return;
-   }
-   if ((p=ObtenerMemoriaShmget(cl,tam))!=NULL)
-      printf ("Asignados %lu bytes en %p\n",(unsigned long) tam, p);
-   else
-      printf ("Imposible asignar memoria compartida clave %lu:%s\n",(unsigned long) cl,strerror(errno));
-}
-
-void do_AllocateShared (char *tr[])
-{
-   key_t cl;
-   size_t tam;
-   void *p;
-
-   if (tr[0]==NULL) {
-      ImprimirListaShared(&L);
-      return;
-   }
-
-   cl=(key_t)  strtoul(tr[0],NULL,10);
-
-   if ((p=ObtenerMemoriaShmget(cl,0))!=NULL)
-      printf ("Asignada memoria compartida de clave %lu en %p\n",(unsigned long) cl, p);
-   else
-      printf ("Imposible asignar memoria compartida clave %lu:%s\n",(unsigned long) cl,strerror(errno));
-}
-
-void do_DeallocateDelkey (char *args[])
-{
-   key_t clave;
-   int id;
-   char *key=args[0];
-
-   if (key==NULL || (clave=(key_t) strtoul(key,NULL,10))==IPC_PRIVATE){
-        printf ("      delkey necesita clave_valida\n");
-        return;
-   }
-   if ((id=shmget(clave,0,0666))==-1){
-        perror ("shmget: imposible obtener memoria compartida");
-        return;
-   }
-   if (shmctl(id,IPC_RMID,NULL)==-1)
-        perror ("shmctl: imposible eliminar memoria compartida\n");
-}
-
-ssize_t LeerFichero (char *f, void *p, size_t cont)
-{
-   struct stat s;
-   ssize_t  n;
-   int df,aux;
-
-   if (stat (f,&s)==-1 || (df=open(f,O_RDONLY))==-1)
-   return -1;
-   if (cont==-1)   // si pasamos -1 como bytes a leer lo leemos entero
-   cont=s.st_size;
-   if ((n=read(df,p,cont))==-1){
-   aux=errno;
-   close(df);
-   errno=aux;
-   return -1;
-   }
-   close (df);
-   return n;
-}
-
-void Cmd_ReadFile (char *ar[])
-{
-   void *p;
-   size_t cont=-1;  // si no pasamos tamano se lee entero
-   ssize_t n;
-   if (ar[0]==NULL || ar[1]==NULL){
-   printf ("faltan parametros\n");
-   return;
-   }
-   p=cadtop(ar[1]);  // convertimos de cadena a puntero
-   if (ar[2]!=NULL)
-   cont=(size_t) atoll(ar[2]);
-
-   if ((n=LeerFichero(ar[0],p,cont))==-1)
-   perror ("Imposible leer fichero");
-   else
-   printf ("leidos %lld bytes de %s en %p\n",(long long) n,ar[0],p);
-}
 */
