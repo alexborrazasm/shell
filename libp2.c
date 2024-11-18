@@ -220,7 +220,20 @@ void allocateMMap(tArgs args, tListM *L)
 
 void allocateCreateShared(tArgs args, tListM *L)
 {
-   UNUSED(L); UNUSED(args);
+   key_t cl;
+   size_t tam;
+   void *p;
+
+   cl=(key_t)  strtoul(tr[0],NULL,10);
+   tam=(size_t) strtoul(tr[1],NULL,10);
+   if (tam==0) {
+   printf ("No se asignan bloques de 0 bytes\n");
+   return;
+   }
+   if ((p=ObtenerMemoriaShmget(cl,tam))!=NULL)
+      printf ("Asignados %lu bytes en %p\n",(unsigned long) tam, p);
+   else
+      printf ("Imposible asignar memoria compartida clave %lu:%s\n",(unsigned long) cl,strerror(errno));
 }
 /*
 void * ObtenerMemoriaShmget (key_t clave, size_t tam)
@@ -245,28 +258,6 @@ void * ObtenerMemoriaShmget (key_t clave, size_t tam)
     shmctl (id,IPC_STAT,&s); // si no es crear, necesitamos el tamano, que es s.shm_segsz
  // Guardar en la lista   InsertarNodoShared (&L, p, s.shm_segsz, clave);
     return (p);
-}
-void do_AllocateCreateshared (char *tr[])
-{
-   key_t cl;
-   size_t tam;
-   void *p;
-
-   if (tr[0]==NULL || tr[1]==NULL) {
-      ImprimirListaShared(&L);
-      return;
-   }
-
-   cl=(key_t)  strtoul(tr[0],NULL,10);
-   tam=(size_t) strtoul(tr[1],NULL,10);
-   if (tam==0) {
-   printf ("No se asignan bloques de 0 bytes\n");
-   return;
-   }
-   if ((p=ObtenerMemoriaShmget(cl,tam))!=NULL)
-      printf ("Asignados %lu bytes en %p\n",(unsigned long) tam, p);
-   else
-      printf ("Imposible asignar memoria compartida clave %lu:%s\n",(unsigned long) cl,strerror(errno));
 }
 */
 
@@ -547,10 +538,10 @@ void memoryFuncs()
    int (*libFunc3)(const char *restrict, ...) = printf;
 
    // Print
-   printf("Program functions" GREEN "%20p" RST "," GREEN "%20p" RST "," GREEN "%20p" RST "\n",
-          (void *)pFunc1, (void *)pFunc2, (void *)pFunc3);
-   printf("Library functions" GREEN "%20p" RST "," GREEN "%20p" RST "," GREEN "%20p" RST "\n",
-          (void *)libFunc1, (void *)libFunc2, (void *)libFunc3);
+   printf("Program functions" GREEN "%20p" RST "," GREEN "%20p" RST "," GREEN
+          "%20p" RST "\n", (void *)pFunc1, (void *)pFunc2, (void *)pFunc3);
+   printf("Library functions" GREEN "%20p" RST "," GREEN "%20p" RST "," GREEN
+          "%20p" RST "\n", (void *)libFunc1, (void *)libFunc2, (void *)libFunc3);
 }
 
 // Declaration of external variables (defined in another file)
