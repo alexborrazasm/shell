@@ -28,7 +28,7 @@ void cmdAllocate(tArgs args, tLists *L)
    case 1: // call print list 
       printMenList(L->memory, M_ALL); 
       break;
-   case 2: // check args lenght = 2, print item list if = args[1]
+   case 2: // check args length = 2, print item list if = args[1]
       if (strcmp(args.array[1], "-malloc") == 0)
          printMenList(L->memory, M_MALLOC);
       else if (strcmp(args.array[1], "-mmap") == 0)
@@ -40,7 +40,7 @@ void cmdAllocate(tArgs args, tLists *L)
       else
          printError(args.array[0], "Invalid argument");
       break;
-   case 3: // check args lenght = 3, malloc shared
+   case 3: // check args length = 3, malloc shared
       if (strcmp(args.array[1], "-malloc") == 0)
          allocateMalloc(args, &L->memory);
       else if (strcmp(args.array[1], "-shared") == 0)
@@ -50,7 +50,7 @@ void cmdAllocate(tArgs args, tLists *L)
       else
          printError(args.array[0], "Invalid argument");
       break;
-   case 4: // check args lenght = 4, nmap createshared
+   case 4: // check args length = 4, nmap createshared
       if (strcmp(args.array[1], "-mmap") == 0)
          allocateMMap(args, &L->memory);
       else if (strcmp(args.array[1], "-createshared") == 0)
