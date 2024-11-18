@@ -239,11 +239,13 @@ void freeMenList(tListM *list)
    tPosM p; tItemM item;
 
     while (!isEmptyListM(*list)) {
-        // For each allocate mem, free()
+        p = lastM(*list);
+
+        // For each allocate mem, free()   
         item = getItemM(p, *list);
-        if (item.type == M_MALLOC)
+        if (item.type & M_MALLOC)
             free(item.address);
-        p = lastM(*list); 
+
         deleteAtPositionM(p, list);
     }
 }
