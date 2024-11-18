@@ -21,6 +21,8 @@ void printHead(byte type);
 
 void* mapFile(char* file, int protection, tArgs args, tListM *L);
 
+void* getMemShmget(key_t clave, size_t tam, tArgs args, tListM *L);
+
 void cmdAllocate(tArgs args, tLists *L)
 {
    switch (args.len)
@@ -168,6 +170,41 @@ void* mapFile(char* file, int protection, tArgs args, tListM *L)
    return p;
 }
 
+void* getMemShmget(key_t key, size_t size, tArgs args, tListM *L)
+{
+   void *p; int aux, id, flags = 0777; struct shmid_ds s;
+
+   if (size) // size other than 0 indicates create
+   {  // When it is not create, pass size 0
+      flags = flags | IPC_CREAT | IPC_EXCL; 
+   }
+   if (key == IPC_PRIVATE) 
+   {  // It is not worth it to us
+      errno = EINVAL; return NULL; 
+   }
+   if ((id = shmget(key, size, flags)) == -1)
+      return (NULL);
+   if ((p = shmat(id, NULL, 0)) == (void *)-1)
+   {
+      aux = errno;
+
+      if (size)
+         shmctl(id, IPC_RMID, NULL);
+
+      errno = aux;
+      return (NULL);
+   }
+
+   // If not create, we need the size, which is s.shm_segsz
+   shmctl(id, IPC_STAT, &s);
+   
+   // Guardar en la lista
+
+   //TODO
+   
+   return (p);
+}
+
 void allocateMalloc(tArgs args, tListM *L)
 {
    long size = getSize(args.array[2]);
@@ -220,81 +257,38 @@ void allocateMMap(tArgs args, tListM *L)
 
 void allocateCreateShared(tArgs args, tListM *L)
 {
-   UNUSED(L); UNUSED(args);
-}
-/*
-void * ObtenerMemoriaShmget (key_t clave, size_t tam)
-{
-    void * p;
-    int aux,id,flags=0777;
-    struct shmid_ds s;
+   key_t cl; size_t size; void *p;
 
-    if (tam)     // tam distito de 0 indica crear
-        flags=flags | IPC_CREAT | IPC_EXCL; // cuando no es crear pasamos de tamano 0
-    if (clave==IPC_PRIVATE)  //no nos vale
-        {errno=EINVAL; return NULL;}
-    if ((id=shmget(clave, tam, flags))==-1)
-        return (NULL);
-    if ((p=shmat(id,NULL,0))==(void*) -1){
-        aux=errno;
-        if (tam)
-             shmctl(id,IPC_RMID,NULL);
-        errno=aux;
-        return (NULL);
-    }
-    shmctl (id,IPC_STAT,&s); // si no es crear, necesitamos el tamano, que es s.shm_segsz
- // Guardar en la lista   InsertarNodoShared (&L, p, s.shm_segsz, clave);
-    return (p);
-}
-void do_AllocateCreateshared (char *tr[])
-{
-   key_t cl;
-   size_t tam;
-   void *p;
+   cl  = (key_t)strtoul(args.array[2] , NULL, 10);
+   size = (size_t)strtoul(args.array[3], NULL, 10);
 
-   if (tr[0]==NULL || tr[1]==NULL) {
-      ImprimirListaShared(&L);
+   if (size == 0) 
+   {
+      printError(args.array[0] ,"Invalid size");
       return;
    }
 
-   cl=(key_t)  strtoul(tr[0],NULL,10);
-   tam=(size_t) strtoul(tr[1],NULL,10);
-   if (tam==0) {
-   printf ("No se asignan bloques de 0 bytes\n");
-   return;
-   }
-   if ((p=ObtenerMemoriaShmget(cl,tam))!=NULL)
-      printf ("Asignados %lu bytes en %p\n",(unsigned long) tam, p);
+   if ((p = getMemShmget(cl, size, args, L)) != NULL)
+      printf("Asignados %lu bytes en %p\n",(unsigned long) size, p);
    else
-      printf ("Imposible asignar memoria compartida clave %lu:%s\n",(unsigned long) cl,strerror(errno));
+      printf("Imposible asignar memoria compartida clave %lu:%s\n",
+               (unsigned long) cl,strerror(errno));
 }
-*/
 
 void allocateShared(tArgs args, tListM *L)
 {
-   UNUSED(L); UNUSED(args);
-}
+   key_t cl; size_t size; void *p;
 
-/*
-void do_AllocateShared (char *tr[])
-{
-   key_t cl;
-   size_t tam;
-   void *p;
+   cl  = (key_t)strtoul(args.array[2] , NULL, 10);
+   size = (size_t)strtoul(args.array[3], NULL, 10);
 
-   if (tr[0]==NULL) {
-      ImprimirListaShared(&L);
-      return;
-   }
-
-   cl=(key_t)  strtoul(tr[0],NULL,10);
-
-   if ((p=ObtenerMemoriaShmget(cl,0))!=NULL)
-      printf ("Asignada memoria compartida de clave %lu en %p\n",(unsigned long) cl, p);
+   if ((p = getMemShmget(cl, 0, args, L)) != NULL)
+      printf("Asignada memoria compartida de clave %lu en %p\n",
+              (unsigned long)cl, p);
    else
-      printf ("Imposible asignar memoria compartida clave %lu:%s\n",(unsigned long) cl,strerror(errno));
-} 
-*/
+      printf("Imposible asignar memoria compartida clave %lu:%s\n",
+              (unsigned long)cl, strerror(errno));
+}
 
 /******************************************************************************/
 // deallocate
@@ -659,10 +653,10 @@ void memoryFuncs()
    int (*libFunc3)(const char *restrict, ...) = printf;
 
    // Print
-   printf("Program functions" GREEN "%20p" RST "," GREEN "%20p" RST "," GREEN "%20p" RST "\n",
-          (void *)pFunc1, (void *)pFunc2, (void *)pFunc3);
-   printf("Library functions" GREEN "%20p" RST "," GREEN "%20p" RST "," GREEN "%20p" RST "\n",
-          (void *)libFunc1, (void *)libFunc2, (void *)libFunc3);
+   printf("Program functions" GREEN "%20p" RST "," GREEN "%20p" RST "," GREEN
+          "%20p" RST "\n", (void *)pFunc1, (void *)pFunc2, (void *)pFunc3);
+   printf("Library functions" GREEN "%20p" RST "," GREEN "%20p" RST "," GREEN
+          "%20p" RST "\n", (void *)libFunc1, (void *)libFunc2, (void *)libFunc3);
 }
 
 // Declaration of external variables (defined in another file)
