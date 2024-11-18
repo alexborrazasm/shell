@@ -632,11 +632,39 @@ void memoryPmap()
 // readfile
 void cmdReadfile(tArgs args, tLists *L)
 {
-   UNUSED(args);
+   switch (args.len)
+   {
+   case 3:
+      //LeerFichero();
+      break;
+   case 4:
+      //   
+   
+   default:
+      printError(args.array[0],"");//TODO
+      break;
+   }
    UNUSED(L);
 }
 
-/*
+
+void Cmd_ReadFile (tArgs args)
+{
+   void *p;
+   size_t cont=-1;  // si no pasamos tamano se lee entero
+   ssize_t n;
+   
+   p=cadtop(args.array[2]);  // convertimos de cadena a puntero
+   if (args.array[3]!=NULL)
+   cont=(size_t) atoll(args.array[3]);
+
+   if ((n=LeerFichero(args.array[1],p,cont))==-1)
+   pPrintError(args.array[0]);
+   else
+   printf ("leidos %lld bytes de %s en %p\n",(long long) n,args.array[1],p);
+}
+
+
 ssize_t LeerFichero (char *f, void *p, size_t cont)
 {
    struct stat s;
@@ -657,25 +685,8 @@ ssize_t LeerFichero (char *f, void *p, size_t cont)
    return n;
 }
 
-void Cmd_ReadFile (char *ar[])
-{
-   void *p;
-   size_t cont=-1;  // si no pasamos tamano se lee entero
-   ssize_t n;
-   if (ar[0]==NULL || ar[1]==NULL){
-   printf ("faltan parametros\n");
-   return;
-   }
-   p=cadtop(ar[1]);  // convertimos de cadena a puntero
-   if (ar[2]!=NULL)
-   cont=(size_t) atoll(ar[2]);
 
-   if ((n=LeerFichero(ar[0],p,cont))==-1)
-   perror ("Imposible leer fichero");
-   else
-   printf ("leidos %lld bytes de %s en %p\n",(long long) n,ar[0],p);
-}
-*/
+
 
 /******************************************************************************/
 // writefile
