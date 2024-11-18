@@ -621,6 +621,10 @@ void memoryPmap()
 
 /******************************************************************************/
 // readfile
+
+void Cmd_ReadFile (tArgs args);
+ssize_t LeerFichero (char *f, void *p, size_t cont);
+
 void cmdReadfile(tArgs args, tLists *L)
 {
    switch (args.len)
@@ -629,10 +633,11 @@ void cmdReadfile(tArgs args, tLists *L)
       //LeerFichero();
       break;
    case 4:
-      //   
+      Cmd_ReadFile(args);
+      break;
    
    default:
-      printError(args.array[0],"");//TODO
+      printError(args.array[0],"Invalid argument");//TODO
       break;
    }
    UNUSED(L);
@@ -645,7 +650,7 @@ void Cmd_ReadFile (tArgs args)
    size_t cont=-1;  // si no pasamos tamano se lee entero
    ssize_t n;
    
-   p=cadtop(args.array[2]);  // convertimos de cadena a puntero
+   p=stringToVoidPointer(args.array[2]);  // convertimos de cadena a puntero
    if (args.array[3]!=NULL)
    cont=(size_t) atoll(args.array[3]);
 
@@ -664,7 +669,7 @@ ssize_t LeerFichero (char *f, void *p, size_t cont)
 
    if (stat (f,&s)==-1 || (df=open(f,O_RDONLY))==-1)
    return -1;
-   if (cont==-1)   // si pasamos -1 como bytes a leer lo leemos entero
+   if (cont==(size_t)-1)   // si pasamos -1 como bytes a leer lo leemos entero
    cont=s.st_size;
    if ((n=read(df,p,cont))==-1){
    aux=errno;
@@ -675,8 +680,6 @@ ssize_t LeerFichero (char *f, void *p, size_t cont)
    close (df);
    return n;
 }
-
-
 
 
 /******************************************************************************/
