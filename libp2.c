@@ -286,7 +286,7 @@ void allocateShared(tArgs args, tListM *L)
 {
    key_t cl; void *p;
 
-   cl  = (key_t)strtoul(args.array[2] , NULL, 10);
+   cl = (key_t)strtoul(args.array[2] , NULL, 10);
 
    if ((p = getMemShmget(cl, 0, args, L)) != NULL)
       printf("Shared memory allocated for key "YELLOW"%lu"RST" on "GREEN"%p\n"RST,
@@ -387,7 +387,7 @@ void deallocateMMap(tArgs args, tListM *L)
       tItemM item = getItemM(p, *L);
       
       // Unmap the file
-      if (munmap(item.address, item.size) == -1) 
+      if (munmap(item.address, item.size) == -1)
       {
          pPrintError(args.array[0]);
          return;
@@ -477,7 +477,11 @@ void deallocateAddr(tArgs args, tListM *L)
          }
          break;
       case M_SHARED:
-         puts("TO DO");
+         // Try to detach the memory block
+         if (shmdt(item.address) != 0) 
+         {
+            pPrintError(args.array[0]);
+         }
          break;
       default:
          printError(args.array[0], "Unknown block type");
@@ -502,17 +506,16 @@ void LlenarMemoria(void *p, size_t cont, unsigned char byte);
 void cmdMemfill(tArgs args, tLists *L)
 {
    UNUSED(L);
-  switch (args.len)
-  {
-  case 4:
-   memfillAux(args);
-   break;
+   switch (args.len)
+   {
+   case 4:
+      memfillAux(args);
+      break;
   
-  default:
-   printError(args.array[0],"Invalid argument");
-   break;
-  }
- 
+   default:
+      printError(args.array[0],"Invalid argument");
+      break;
+   }
 }
 
 void memfillAux(tArgs args){

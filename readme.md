@@ -2,18 +2,18 @@
 
 allocate -malloc Y
          -mmap Y
-         -createshared
-         -shared
+         -createshared Y
+         -shared Y
 
 deallocate -malloc Y
            -mmap Y
-           -shared
-           -delkey
-           addr Y but shared TODO
+           -shared Y
+           -delkey Y
+           addr Y
 
-memfill addr 
+memfill addr Y
 
-memdump addr
+memdump addr Y
 
 memory -funcs Y
        -vars Y
@@ -21,11 +21,11 @@ memory -funcs Y
        -all Y
        -pmap Y
 
-readfile 
+readfile Y
 
-writefile
+writefile Y
 
-read
+read Y
 
 write
 
