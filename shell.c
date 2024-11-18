@@ -241,7 +241,7 @@ void freeMenList(tListM *list)
     while (!isEmptyListM(*list)) {
         // For each allocate mem, free()
         item = getItemM(p, *list);
-        if (item.type = M_MALLOC)
+        if (item.type == M_MALLOC)
             free(item.address);
         p = lastM(*list); 
         deleteAtPositionM(p, list);
