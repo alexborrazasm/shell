@@ -191,8 +191,8 @@ void date(tArgs args)
 void timeC(tArgs args)
 {
     time_t now = getTime(args);
-
-    if (time == -1)
+    
+    if (now == -1)
         return;
 
     printTime(now);
