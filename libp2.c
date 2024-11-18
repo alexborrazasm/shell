@@ -477,18 +477,130 @@ void deallocateAddr(tArgs args, tListM *L)
 
 /******************************************************************************/
 // menfill
+
+void memfillAux(tArgs args);
+void LlenarMemoria(void *p, size_t cont, unsigned char byte);
+
+
 void cmdMemfill(tArgs args, tLists *L)
 {
-   UNUSED(args);
    UNUSED(L);
+  switch (args.len)
+  {
+  case 4:
+   memfillAux(args);
+   break;
+  
+  default:
+   printError(args.array[0],"Invalid argument");
+   break;
+  }
+ 
+}
+
+void memfillAux(tArgs args){
+    
+   int i = 0;
+   stringToInt(args.array[2], &i);
+   size_t size = (size_t)i;
+   void *p ;
+   //TODO no se para que es esto char *endptr;
+   p = stringToVoidPointer(args.array[1]);
+   unsigned char byte = (unsigned char)atoi(args.array[3]);
+   LlenarMemoria(p, size, byte);
+
+   printf("Llenando %zu bytes de memoria con el byte (%02x) a partir de la dirección %p\n", size, byte, p);
+   
+}
+
+void LlenarMemoria(void *p, size_t cont, unsigned char byte) {
+    unsigned char *arr = (unsigned char *)p;
+    size_t i;
+
+    for (i = 0; i < cont; i++)
+        arr[i] = byte;
+
 }
 /******************************************************************************/
 // mendump
+
+void Memdump(void *addr, size_t cont);
+void dumpAux(tArgs args);
+
+
 void cmdMemdump(tArgs args, tLists *L)
 {
-   UNUSED(args);
+   
    UNUSED(L);
+
+   switch (args.len)
+   {
+   case 2:
+      dumpAux(args);
+      break;
+   case 3:
+      dumpAux(args);
+      break;
+   default:
+      break;
+   }
 }
+void dumpAux(tArgs args){
+   void *p;
+   size_t size = 0;
+   p = stringToVoidPointer(args.array[1]);
+   if (args.len == 2){
+      size = 25;
+   } else {
+      int i;
+      stringToInt(args.array[2], &i);
+     size = (size_t)i;
+
+   }
+   Memdump(p, size);
+}
+
+void Memdump(void *addr, size_t cont) {
+    unsigned char *mem = (unsigned char *)addr;
+
+    printf("Volcando %zu bytes desde la dirección %p\n\n", cont, addr);
+
+    int count = 0;
+    int j = 0;
+    for (int i = 0; i<(int)cont; i++){
+        if (i % 15 == 0 && i != 0){
+            printf("\n");
+            for (j = 0; j<(int)cont; j++){
+                if (j % 15 == 0 && j != 0) {
+                    printf("\n");
+                    break;
+                } else {
+                    printf("%02x ", mem[j]);
+                }
+            }
+
+        }
+        count++;
+        printf("%c  ", mem[i]);
+    }
+    printf("\n");
+    /*for (size_t i = 0; i < cont; i++) {
+        if (i % 15 == 0 && i != 0) {
+            printf("\n");
+        }
+        printf("%c ", mem[i]);
+    }
+    printf("\n");
+
+    for (size_t i = 0; i < cont; i++) {
+        if (i % 15 == 0 && i != 0) {
+            printf("\n");
+        }
+        printf("%02x ", mem[i]);
+    }
+    printf("\n");*/
+}
+
 /******************************************************************************/
 // memory [-blocks|-funcs|-vars|-all|-pmap]
 void memoryBlocks(tLists L);
@@ -636,20 +748,21 @@ ssize_t LeerFichero (char *f, void *p, size_t cont);
 
 void cmdReadfile(tArgs args, tLists *L)
 {
+   UNUSED(L);
    switch (args.len)
    {
    case 3:
-      //LeerFichero();
+      Cmd_ReadFile(args);
       break;
    case 4:
       Cmd_ReadFile(args);
       break;
    
    default:
-      printError(args.array[0],"Invalid argument");//TODO
+      printError(args.array[0],"Invalid argument");
       break;
    }
-   UNUSED(L);
+   
 }
 
 
@@ -681,9 +794,9 @@ ssize_t LeerFichero (char *f, void *p, size_t cont)
    if (cont==(size_t)-1)   // si pasamos -1 como bytes a leer lo leemos entero
    cont=s.st_size;
    if ((n=read(df,p,cont))==-1){
-   aux=errno;
-   close(df);
-   errno=aux;
+      aux=errno;
+      close(df);
+      errno=aux;
    return -1;
    }
    close (df);
@@ -692,19 +805,84 @@ ssize_t LeerFichero (char *f, void *p, size_t cont)
 
 
 /******************************************************************************/
-// writefile
+// read
+
+void Cmd_ReadOpenFile (tArgs args, tListF F);
+ssize_t LeerFicheroAbierto (int df, void *p, size_t cont, tListF F);
+
+void cmdRead(tArgs args, tLists *L)
+{
+   UNUSED(L);
+
+   switch (args.len)
+   {
+   case 3:
+      Cmd_ReadOpenFile(args, L->files);
+      break;
+   case 4:
+      Cmd_ReadOpenFile(args, L->files);
+      break;
+   
+   default:
+      printError(args.array[0],"Invalid argument");
+      break;
+   }
+
+}
+
+void Cmd_ReadOpenFile (tArgs args, tListF F)
+{
+   void *p;
+   size_t cont=-1;  // si no pasamos tamano se lee entero
+   ssize_t n;
+   int df=-1;
+   
+   p=stringToVoidPointer(args.array[2]);  // convertimos de cadena a puntero
+   if (args.array[3]!=NULL)
+   cont=(size_t) atoll(args.array[3]);
+
+   stringToInt(args.array[1], &df);
+   if ((n=LeerFicheroAbierto(df,p,cont, F))==-1)
+   pPrintError(args.array[0]);
+   else
+   
+   printf ("leidos %lld bytes del descriptor %d en %p\n",(long long) n,df,p);
+}
+
+ssize_t LeerFicheroAbierto (int df, void *p, size_t cont, tListF F)
+{
+   struct stat s;
+   ssize_t  n;
+   int aux;
+   char f[256];
+   tItemF itemF = getItemF(findItemF(df, F), F);
+   strcpy(f, itemF.info);
+
+   if (stat (f,&s)==-1 || (df=open(f,O_RDONLY))==-1)
+   return -1;
+   if (cont==(size_t)-1)   // si pasamos -1 como bytes a leer lo leemos entero
+   cont=s.st_size;
+   if ((n=read(df,p,cont))==-1){
+      aux=errno;
+      close(df);
+      errno=aux;
+   return -1;
+   }
+   close (df); //TODO Cierra automáticamente el descriptor pero no lo quita de l a lista
+   return n;
+}
+
+
+/******************************************************************************/
+// Writefile
+
+
 void cmdWritefile(tArgs args, tLists *L)
 {
    UNUSED(args);
    UNUSED(L);
 }
-/******************************************************************************/
-// read
-void cmdRead(tArgs args, tLists *L)
-{
-   UNUSED(args);
-   UNUSED(L);
-}
+
 /******************************************************************************/
 // write
 void cmdWrite(tArgs args, tLists *L)
