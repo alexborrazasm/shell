@@ -90,7 +90,7 @@ char* auxPrintMenList(tItemM item)
       sprintf(str, "%s (df %d)", item.name, item.keyDF);
       return str;
    case M_SHARED:
-      sprintf(str, "shared (key %d)", item.keyDF);
+      sprintf(str, "shared (key %s%d%s)", YELLOW, item.keyDF, RST);
       return str;
    default:
       strcpy(str, "error");
@@ -402,32 +402,49 @@ void deallocateMMap(tArgs args, tListM *L)
 
 void deallocateShared(tArgs args, tListM *L)
 {
-   UNUSED(args); UNUSED(L);
+   key_t key = (key_t)(strtoul(args.array[2], NULL, 10));
+   tPosM pos = findShared(key, *L);
+
+   if (pos != MNULL)
+   {
+      tItemM item = getItemM(pos, *L);
+
+      // Try to detach the memory block
+      if (shmdt(item.address) == 0) 
+      {
+         printf("Detached shared memory key "YELLOW"%d"RST" from address "
+                 GREEN"%p\n"RST, item.keyDF, pos);
+         // Update list
+         deleteAtPositionM(pos, L);
+      }
+      else
+         pPrintError(args.array[0]);
+   }
+   else
+      printf("There is no block with key "YELLOW"%d"RST" mapped in the process\n",
+              key);
 }
 
 void deallocateDelKey(tArgs args, tListM *L)
 {
-   UNUSED(args); UNUSED(L);
-}
-/* 
-void do_DeallocateDelkey (char *args[])
-{
-   key_t clave;
-   int id;
-   char *key=args[0];
+   UNUSED(L); key_t key; int id; char *keyStr = args.array[2];
 
-   if (key==NULL || (clave=(key_t) strtoul(key,NULL,10))==IPC_PRIVATE){
-        printf ("      delkey necesita clave_valida\n");
-        return;
+   if ((key = (key_t)strtoul(keyStr, NULL, 10)) == IPC_PRIVATE)
+   {
+      printError(args.array[0], "");
+      printf("delkey needs valid_key\n");
+      return;
    }
-   if ((id=shmget(clave,0,0666))==-1){
-        perror ("shmget: imposible obtener memoria compartida");
-        return;
+   if ((id = shmget(key, 0, 0666)) == -1)
+   {  // Unable to get shared memory
+      pPrintError(args.array[0]);
+      return;
    }
-   if (shmctl(id,IPC_RMID,NULL)==-1)
-        perror ("shmctl: imposible eliminar memoria compartida\n");
+   if (shmctl(id, IPC_RMID, NULL) == -1)
+   {  // Unable to delete shared memory
+      pPrintError(args.array[0]);
+   }
 }
- */
 
 void* stringToVoidPointer(char* str) 
 {   
