@@ -6,7 +6,7 @@ void printMenList(tListM L, byte type);
 
 void allocateMalloc(tArgs args, tListM *L);
 
-void allocateMMap(tArgs args, tListM *L);
+void allocateMMap(tArgs args, tLists *L);
 
 void allocateCreateShared(tArgs args, tListM *L);
 
@@ -19,7 +19,7 @@ char* auxPrintMenList(tItemM item);
 
 void printHead(byte type);
 
-void* mapFile(char* file, int protection, tArgs args, tListM *L);
+void* mapFile(char* file, int protection, tArgs args, tLists *L);
 
 void* getMemShmget(key_t clave, size_t tam, tArgs args, tListM *L);
 
@@ -48,13 +48,13 @@ void cmdAllocate(tArgs args, tLists *L)
       else if (strcmp(args.array[1], "-shared") == 0)
          allocateShared(args, &L->memory);
       else if (strcmp(args.array[1], "-mmap") == 0)
-         allocateMMap(args, &L->memory);
+         allocateMMap(args, L);
       else
          printError(args.array[0], "Invalid argument");
       break;
    case 4: // check args length = 4, nmap createshared
       if (strcmp(args.array[1], "-mmap") == 0)
-         allocateMMap(args, &L->memory);
+         allocateMMap(args, L);
       else if (strcmp(args.array[1], "-createshared") == 0)
          allocateCreateShared(args, &L->memory);
       else
@@ -144,7 +144,7 @@ void printMenList(tListM L, byte type)
    }
 }
 
-void* mapFile(char* file, int protection, tArgs args, tListM *L)
+void* mapFile(char* file, int protection, tArgs args, tLists *L)
 {
    int df, map=MAP_PRIVATE, mode=O_RDONLY;
    struct stat s;
@@ -157,16 +157,25 @@ void* mapFile(char* file, int protection, tArgs args, tListM *L)
    if ((p = mmap(NULL, s.st_size, protection, map, df, 0)) == MAP_FAILED)
       return NULL;
 
-   tItemM item;
-   item.address = p;
-   strcpy(item.name, file);
-   item.type = M_MMAP;
-   item.date = getTime(args);
-   item.keyDF = df;
-   item.size = s.st_size;
+   // Add to item list
+   tItemM itemM;
+   itemM.address = p;
+   strcpy(itemM.name, file);
+   itemM.type = M_MMAP;
+   itemM.date = getTime(args);
+   itemM.keyDF = df;
+   itemM.size = s.st_size;
 
-   insertItemM(item, MNULL, L);
-   
+   insertItemM(itemM, MNULL, &L->memory);
+
+   // Add to file list
+   tItemF itemF;
+   itemF.df = df;
+   strcpy(itemF.info, file);
+   itemF.mode = mode;
+
+   insertFile(itemF, &L->files);
+
    return p;
 }
 
@@ -244,11 +253,11 @@ void allocateMalloc(tArgs args, tListM *L)
    printf("Allocated "BLUE"%ld bytes"RST" at "GREEN"%p\n"RST, size, block);
 }
 
-void allocateMMap(tArgs args, tListM *L)
+void allocateMMap(tArgs args, tLists *L)
 {
    char *perm; void *p; int protection = 0;
 
-   if ((perm=args.array[3])!=NULL && strlen(perm)<4) 
+   if ((perm=args.array[3]) != NULL && strlen(perm) < 4)
    {
       if (strchr(perm, 'r') != NULL) protection |= PROT_READ;
       if (strchr(perm, 'w') != NULL) protection |= PROT_WRITE;
@@ -300,7 +309,7 @@ void allocateShared(tArgs args, tListM *L)
 // deallocate
 void deallocateMalloc(tArgs args, tListM *L);
 
-void deallocateMMap(tArgs args, tListM *L);
+void deallocateMMap(tArgs args, tLists *L);
 
 void deallocateShared(tArgs args, tListM *L);
 
@@ -338,7 +347,7 @@ void cmdDeallocate(tArgs args, tLists *L)
          if (strcmp(args.array[1], "-malloc") == 0)
             deallocateMalloc(args, &L->memory);
          else if (strcmp(args.array[1], "-mmap") == 0)
-            deallocateMMap(args, &L->memory);
+            deallocateMMap(args, L);
          else if (strcmp(args.array[1], "-shared") == 0)
             deallocateShared(args, &L->memory);
          else if (strcmp(args.array[1], "-delkey") == 0)
@@ -378,13 +387,13 @@ void deallocateMalloc(tArgs args, tListM *L)
    }
 }
 
-void deallocateMMap(tArgs args, tListM *L)
+void deallocateMMap(tArgs args, tLists *L)
 {
-   tPosM p = findMMap(args.array[2], *L);
+   tPosM p = findMMap(args.array[2], L->memory);
 
    if (p != MNULL)
    {
-      tItemM item = getItemM(p, *L);
+      tItemM item = getItemM(p, L->memory);
       
       // Unmap the file
       if (munmap(item.address, item.size) == -1)
@@ -392,7 +401,10 @@ void deallocateMMap(tArgs args, tListM *L)
          pPrintError(args.array[0]);
          return;
       }
-      deleteAtPositionM(p, L);
+      // Remove memory list
+      deleteAtPositionM(p, &L->memory);
+      // Remove files list
+      removeFile(item.keyDF, &L->files);
    }
    else
    {
