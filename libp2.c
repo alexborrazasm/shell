@@ -870,11 +870,64 @@ ssize_t LeerFicheroAbierto (int df, void *p, size_t cont, tListF F)
 /******************************************************************************/
 // Writefile
 
+void Cmd_Writefile (tArgs args);
+ssize_t EscribirFichero (char *f, void *p, size_t cont);
 
 void cmdWritefile(tArgs args, tLists *L)
 {
-   UNUSED(args);
    UNUSED(L);
+   switch (args.len)
+   {
+   case 3:
+      Cmd_Writefile(args);
+      break;
+   case 4:
+      Cmd_Writefile(args);
+      break;
+   
+   default:
+      printError(args.array[0],"Invalid argument");
+      break;
+   }
+   
+}
+
+//TODO COMBINAR ESTRUCTURA EN FUNCIÓN GEN con READ
+void Cmd_Writefile (tArgs args)
+{
+   void *p;
+   size_t cont=-1;  // si no pasamos tamano se lee entero
+   ssize_t n;
+   
+   p=stringToVoidPointer(args.array[2]);  // convertimos de cadena a puntero
+   if (args.array[3]!=NULL)
+   cont=(size_t) atoll(args.array[3]);
+
+   if ((n=EscribirFichero(args.array[1],p,cont))==-1)
+   pPrintError(args.array[0]);
+   else
+   printf ("escritos %lld bytes de %s en %p\n",(long long) n,args.array[1],p);
+}
+
+
+ssize_t EscribirFichero (char *f, void *p, size_t cont)
+{
+   struct stat s;
+   ssize_t  n;
+   int df,aux;
+
+   if (stat (f,&s)==-1 || (df=open(f,O_WRONLY))==-1)
+   return -1;
+   if (cont==(size_t)-1)   // si pasamos -1 como bytes a leer lo leemos entero
+   cont=s.st_size;
+   if ((n=write(df,p,cont))==-1){
+      aux=errno;
+      close(df);
+      errno=aux;
+   return -1;
+   }
+  // close (df); TODO eliminar de la lista de dfs 
+   return n;
 }
 
 /******************************************************************************/
