@@ -6,7 +6,7 @@ void printMenList(tListM L, byte type);
 
 void allocateMalloc(tArgs args, tListM *L);
 
-void allocateMMap(tArgs args, tListM *L);
+void allocateMMap(tArgs args, tLists *L);
 
 void allocateCreateShared(tArgs args, tListM *L);
 
@@ -19,7 +19,7 @@ char* auxPrintMenList(tItemM item);
 
 void printHead(byte type);
 
-void* mapFile(char* file, int protection, tArgs args, tListM *L);
+void* mapFile(char* file, int protection, tArgs args, tLists *L);
 
 void* getMemShmget(key_t clave, size_t tam, tArgs args, tListM *L);
 
@@ -42,19 +42,19 @@ void cmdAllocate(tArgs args, tLists *L)
       else
          printError(args.array[0], "Invalid argument");
       break;
-   case 3: // check args length = 3, malloc shared
+   case 3: // check args length = 3, malloc shared mmap
       if (strcmp(args.array[1], "-malloc") == 0)
          allocateMalloc(args, &L->memory);
       else if (strcmp(args.array[1], "-shared") == 0)
          allocateShared(args, &L->memory);
       else if (strcmp(args.array[1], "-mmap") == 0)
-         allocateMMap(args, &L->memory);
+         allocateMMap(args, L);
       else
          printError(args.array[0], "Invalid argument");
       break;
    case 4: // check args length = 4, nmap createshared
       if (strcmp(args.array[1], "-mmap") == 0)
-         allocateMMap(args, &L->memory);
+         allocateMMap(args, L);
       else if (strcmp(args.array[1], "-createshared") == 0)
          allocateCreateShared(args, &L->memory);
       else
@@ -90,7 +90,7 @@ char* auxPrintMenList(tItemM item)
       sprintf(str, "%s (df %d)", item.name, item.keyDF);
       return str;
    case M_SHARED:
-      sprintf(str, "shared (key %d)", item.keyDF);
+      sprintf(str, "shared (key %s%d%s)", YELLOW, item.keyDF, RST);
       return str;
    default:
       strcpy(str, "error");
@@ -144,7 +144,7 @@ void printMenList(tListM L, byte type)
    }
 }
 
-void* mapFile(char* file, int protection, tArgs args, tListM *L)
+void* mapFile(char* file, int protection, tArgs args, tLists *L)
 {
    int df, map=MAP_PRIVATE, mode=O_RDONLY;
    struct stat s;
@@ -157,16 +157,25 @@ void* mapFile(char* file, int protection, tArgs args, tListM *L)
    if ((p = mmap(NULL, s.st_size, protection, map, df, 0)) == MAP_FAILED)
       return NULL;
 
-   tItemM item;
-   item.address = p;
-   strcpy(item.name, file);
-   item.type = M_MMAP;
-   item.date = getTime(args);
-   item.keyDF = df;
-   item.size = s.st_size;
+   // Add to item list
+   tItemM itemM;
+   itemM.address = p;
+   strcpy(itemM.name, file);
+   itemM.type = M_MMAP;
+   itemM.date = getTime(args);
+   itemM.keyDF = df;
+   itemM.size = s.st_size;
 
-   insertItemM(item, MNULL, L);
-   
+   insertItemM(itemM, MNULL, &L->memory);
+
+   // Add to file list
+   tItemF itemF;
+   itemF.df = df;
+   strcpy(itemF.info, file);
+   itemF.mode = mode;
+
+   insertFile(itemF, &L->files);
+
    return p;
 }
 
@@ -198,9 +207,15 @@ void* getMemShmget(key_t key, size_t size, tArgs args, tListM *L)
    // If not create, we need the size, which is s.shm_segsz
    shmctl(id, IPC_STAT, &s);
    
-   // Guardar en la lista
+   // Save to list
+   tItemM item;
+   item.address = p;
+   item.type = M_SHARED;
+   item.date = getTime(args);
+   item.keyDF = key;
+   item.size = s.shm_segsz; // size
 
-   //TODO
+   insertItemM(item, MNULL, L);
    
    return (p);
 }
@@ -238,11 +253,11 @@ void allocateMalloc(tArgs args, tListM *L)
    printf("Allocated "BLUE"%ld bytes"RST" at "GREEN"%p\n"RST, size, block);
 }
 
-void allocateMMap(tArgs args, tListM *L)
+void allocateMMap(tArgs args, tLists *L)
 {
    char *perm; void *p; int protection = 0;
 
-   if ((perm=args.array[3])!=NULL && strlen(perm)<4) 
+   if ((perm=args.array[3]) != NULL && strlen(perm) < 4)
    {
       if (strchr(perm, 'r') != NULL) protection |= PROT_READ;
       if (strchr(perm, 'w') != NULL) protection |= PROT_WRITE;
@@ -269,24 +284,24 @@ void allocateCreateShared(tArgs args, tListM *L)
    }
 
    if ((p = getMemShmget(cl, size, args, L)) != NULL)
-      printf("Asignados %lu bytes en %p\n",(unsigned long) size, p);
+      printf("Allocated "BLUE"%lu"RST" bytes in "GREEN"%p\n"RST,
+             (unsigned long)size, p);
    else
-      printf("Imposible asignar memoria compartida clave %lu:%s\n",
-               (unsigned long) cl,strerror(errno));
+      printf("Unable to allocate shared memory key "YELLOW"%lu"RST":"RED"%s\n"RST,
+              (unsigned long)cl, strerror(errno));
 }
 
 void allocateShared(tArgs args, tListM *L)
 {
-   key_t cl; size_t size; void *p;
+   key_t cl; void *p;
 
-   cl  = (key_t)strtoul(args.array[2] , NULL, 10);
-   size = (size_t)strtoul(args.array[3], NULL, 10);
+   cl = (key_t)strtoul(args.array[2] , NULL, 10);
 
    if ((p = getMemShmget(cl, 0, args, L)) != NULL)
-      printf("Asignada memoria compartida de clave %lu en %p\n",
+      printf("Shared memory allocated for key "YELLOW"%lu"RST" on "GREEN"%p\n"RST,
               (unsigned long)cl, p);
    else
-      printf("Imposible asignar memoria compartida clave %lu:%s\n",
+      printf("Unable to allocate shared memory key "YELLOW"%lu"RST":"RED"%s\n"RST,
               (unsigned long)cl, strerror(errno));
 }
 
@@ -294,7 +309,7 @@ void allocateShared(tArgs args, tListM *L)
 // deallocate
 void deallocateMalloc(tArgs args, tListM *L);
 
-void deallocateMMap(tArgs args, tListM *L);
+void deallocateMMap(tArgs args, tLists *L);
 
 void deallocateShared(tArgs args, tListM *L);
 
@@ -332,7 +347,7 @@ void cmdDeallocate(tArgs args, tLists *L)
          if (strcmp(args.array[1], "-malloc") == 0)
             deallocateMalloc(args, &L->memory);
          else if (strcmp(args.array[1], "-mmap") == 0)
-            deallocateMMap(args, &L->memory);
+            deallocateMMap(args, L);
          else if (strcmp(args.array[1], "-shared") == 0)
             deallocateShared(args, &L->memory);
          else if (strcmp(args.array[1], "-delkey") == 0)
@@ -372,21 +387,24 @@ void deallocateMalloc(tArgs args, tListM *L)
    }
 }
 
-void deallocateMMap(tArgs args, tListM *L)
+void deallocateMMap(tArgs args, tLists *L)
 {
-   tPosM p = findMMap(args.array[2], *L);
+   tPosM p = findMMap(args.array[2], L->memory);
 
    if (p != MNULL)
    {
-      tItemM item = getItemM(p, *L);
+      tItemM item = getItemM(p, L->memory);
       
       // Unmap the file
-      if (munmap(item.address, item.size) == -1) 
+      if (munmap(item.address, item.size) == -1)
       {
          pPrintError(args.array[0]);
          return;
       }
-      deleteAtPositionM(p, L);
+      // Remove memory list
+      deleteAtPositionM(p, &L->memory);
+      // Remove files list
+      removeFile(item.keyDF, &L->files);
    }
    else
    {
@@ -396,32 +414,49 @@ void deallocateMMap(tArgs args, tListM *L)
 
 void deallocateShared(tArgs args, tListM *L)
 {
-   UNUSED(args); UNUSED(L);
+   key_t key = (key_t)(strtoul(args.array[2], NULL, 10));
+   tPosM pos = findShared(key, *L);
+
+   if (pos != MNULL)
+   {
+      tItemM item = getItemM(pos, *L);
+
+      // Try to detach the memory block
+      if (shmdt(item.address) == 0) 
+      {
+         printf("Detached shared memory key "YELLOW"%d"RST" from address "
+                 GREEN"%p\n"RST, item.keyDF, pos);
+         // Update list
+         deleteAtPositionM(pos, L);
+      }
+      else
+         pPrintError(args.array[0]);
+   }
+   else
+      printf("There is no block with key "YELLOW"%d"RST" mapped in the process\n",
+              key);
 }
 
 void deallocateDelKey(tArgs args, tListM *L)
 {
-   UNUSED(args); UNUSED(L);
-}
-/* 
-void do_DeallocateDelkey (char *args[])
-{
-   key_t clave;
-   int id;
-   char *key=args[0];
+   UNUSED(L); key_t key; int id; char *keyStr = args.array[2];
 
-   if (key==NULL || (clave=(key_t) strtoul(key,NULL,10))==IPC_PRIVATE){
-        printf ("      delkey necesita clave_valida\n");
-        return;
+   if ((key = (key_t)strtoul(keyStr, NULL, 10)) == IPC_PRIVATE)
+   {
+      printError(args.array[0], "");
+      printf("delkey needs valid_key\n");
+      return;
    }
-   if ((id=shmget(clave,0,0666))==-1){
-        perror ("shmget: imposible obtener memoria compartida");
-        return;
+   if ((id = shmget(key, 0, 0666)) == -1)
+   {  // Unable to get shared memory
+      pPrintError(args.array[0]);
+      return;
    }
-   if (shmctl(id,IPC_RMID,NULL)==-1)
-        perror ("shmctl: imposible eliminar memoria compartida\n");
+   if (shmctl(id, IPC_RMID, NULL) == -1)
+   {  // Unable to delete shared memory
+      pPrintError(args.array[0]);
+   }
 }
- */
 
 void* stringToVoidPointer(char* str) 
 {   
@@ -454,7 +489,11 @@ void deallocateAddr(tArgs args, tListM *L)
          }
          break;
       case M_SHARED:
-         puts("TO DO");
+         // Try to detach the memory block
+         if (shmdt(item.address) != 0) 
+         {
+            pPrintError(args.array[0]);
+         }
          break;
       default:
          printError(args.array[0], "Unknown block type");
@@ -479,17 +518,16 @@ void LlenarMemoria(void *p, size_t cont, unsigned char byte);
 void cmdMemfill(tArgs args, tLists *L)
 {
    UNUSED(L);
-  switch (args.len)
-  {
-  case 4:
-   memfillAux(args);
-   break;
+   switch (args.len)
+   {
+   case 4:
+      memfillAux(args);
+      break;
   
-  default:
-   printError(args.array[0],"Invalid argument");
-   break;
-  }
- 
+   default:
+      printError(args.array[0],"Invalid argument");
+      break;
+   }
 }
 
 void memfillAux(tArgs args){

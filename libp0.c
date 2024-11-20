@@ -356,6 +356,7 @@ void Cmd_open(tArgs args, tListF *L);
 void printItemF(tItemF item);
 int getMode(tArgs args);
 const char* modeToString(int mode);
+bool insertFile(tItemF item, tListF *L);
 
 void cmdOpen(tArgs args, tLists *L)
 {
@@ -394,7 +395,6 @@ void Cmd_open(tArgs args, tListF *L)
 {
     int df, mode;
     tItemF item;
-    tPosF p;
 
     mode = getMode(args);
 
@@ -406,21 +406,25 @@ void Cmd_open(tArgs args, tListF *L)
         strcpy(item.info, args.array[1]);
         item.mode = mode;
 
-        p = findItemF(df, *L);
-
-        if (p == FNULL)
-        {
-            if (!insertItemF(item, L))
-            {
-                printError(args.array[0], "Can´t insert on filesList");
-                return;
-            }
-        }
-        else // p exits
-            updateItemF(item, p, L);
+        if (!insertFile(item, L))
+            printError(args.array[0], "Can´t insert on filesList");
 
         printf("Added %d entry to the open files table\n", df);
     }
+}
+
+bool insertFile(tItemF item, tListF *L)
+{
+    tPosF p = findItemF(item.df, *L);
+
+    if (p == FNULL)
+    {
+        if (!insertItemF(item, L))
+            return false;
+    }
+    // p exits
+    updateItemF(item, p, L);
+    return true;
 }
 
 void printItemF(tItemF item)
@@ -556,28 +560,38 @@ void auxClose(int df, tArgs args, tListF *L)
     }
     else
     {
-        tItemF item; tPosF p;
-
-        p = findItemF(df, *L);
-        
-        if (p != FNULL)
-        {
-            if (df <= 19)
-            {
-                item = getItemF(p, *L);
-                strcpy(item.info, "unused");
-                item.mode = MODE_NULL;
-                updateItemF(item, p, L);
-            }
-            else 
-            {
-                deleteAtPositionF(p, L);
-            }
-        }
-        else
+        if(!removeFile(df, L))
         {
             printError(args.array[0], "Bad file descriptor");
         }
+    }
+}
+
+bool removeFile(int df, tListF *L)
+{
+    tItemF item; tPosF p;
+
+    p = findItemF(df, *L);
+    
+    if (p != FNULL)
+    {
+        if (df <= 19)
+        {
+            item = getItemF(p, *L);
+            strcpy(item.info, "unused");
+            item.mode = MODE_NULL;
+            updateItemF(item, p, L);
+            return true;
+        }
+        else 
+        {
+            deleteAtPositionF(p, L);
+            return true;
+        }
+    }
+    else
+    {
+        return false;
     }
 }
 

@@ -243,8 +243,29 @@ void freeMenList(tListM *list)
 
         // For each allocate mem, free()   
         item = getItemM(p, *list);
-        if (item.type & M_MALLOC)
+        switch (item.type)
+        {
+        case M_MALLOC:
             free(item.address);
+            break;
+        case M_MMAP:
+            munmap(item.address, item.size);
+            break;
+        case M_SHARED:
+            int id;
+            // Detach the shared memory segment            
+            shmdt(item.address);
+
+            // Retrieve the shared memory segment's
+            if ((id = shmget(item.keyDF, 0, 0666)) != -1)
+            {
+                // Remove the shared memory segment identified
+                shmctl(id, IPC_RMID, NULL);
+            }
+            break;
+        default:
+            return;
+        }
 
         deleteAtPositionM(p, list);
     }

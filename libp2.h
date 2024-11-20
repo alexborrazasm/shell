@@ -3,6 +3,7 @@
 
 #include "types.h"
 #include "shell.h"
+#include "libp0.h"
 
 #define SIZE_REC 2048
 

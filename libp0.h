@@ -96,4 +96,8 @@ void cmdHelp(tArgs args, tLists *L);
  */
 void cmdExit(tArgs args, bool *end);
 
+bool insertFile(tItemF item, tListF *L);
+
+bool removeFile(int df, tListF *L);
+
 #endif // LIBP0_H
