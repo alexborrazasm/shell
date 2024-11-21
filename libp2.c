@@ -937,8 +937,8 @@ ssize_t writeFile(char *f, void *p, size_t cont, int mode)
 
    if ((df = open(f, mode, 0777)) == -1 || stat(f, &s) == -1)
       return -1;
-   if (cont == (size_t)-1)   // If -1 all file
-      cont=s.st_size;
+   if (cont == (size_t)-1)   // If -1 do nothing
+      cont = 0;
    if ((n = write(df, p, cont)) == -1)
    {
       aux=errno;
@@ -963,10 +963,7 @@ void cmdWrite(tArgs args, tLists *L)
 
 void doWriteOpenFile(tArgs args, tListF F)
 {
-   void *p;
-   size_t cont = -1; // If we do not pass size, read all 
-   ssize_t n;
-   int df = -1;
+   void *p; size_t cont = -1; ssize_t n; int df = -1;
    
    p = stringToVoidPointer(args.array[2]);  // get address
    if (args.array[3]!=NULL)
@@ -1001,8 +998,8 @@ ssize_t writeOpenFile(int df, void *p, size_t cont, tListF F)
       printf("%d", df);
       return -1;
    }
-   if (cont == (size_t)-1)   // if -1 read all file
-      cont = s.st_size;
+   if (cont == (size_t)-1)   // if -1 write nothing
+      cont = 0;
    if ((n = write(df, p, cont)) == -1)
    {
       return -1;
