@@ -130,14 +130,8 @@ void getcwdAux(char *path)
 
 void chdirAux(tArgs args)
 {
-    if (chdir(args.array[1]) == 0)
-    {
-        printf(BLUE"%s\n"RST, args.array[1]);
-    }
-    else
-    {
+    if (chdir(args.array[1]) != 0)
         pPrintError(args.array[0]);
-    }
 }
 
 /******************************************************************************/
