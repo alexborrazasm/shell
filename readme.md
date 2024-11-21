@@ -1,32 +1,32 @@
 # TO DO
 
-allocate -malloc Y
-         -mmap Y
-         -createshared Y
-         -shared Y
+allocate -malloc R
+         -mmap R
+         -createshared R
+         -shared R
 
-deallocate -malloc Y
-           -mmap Y
-           -shared Y
-           -delkey Y
-           addr Y
+deallocate -malloc R
+           -mmap R
+           -shared R
+           -delkey R
+           addr R
 
-memfill addr Y
+memfill addr R
 
-memdump addr Y
+memdump addr R
 
-memory -funcs Y
-       -vars Y
-       -blocks Y
-       -all Y
-       -pmap Y
+memory -funcs R
+       -vars R
+       -blocks R
+       -all R
+       -pmap R
 
-readfile Y
+readfile R
 
-writefile Y
+writefile R falta -o for overwrite
 
-read Y
+read  R 
 
-write
+write NO VA
 
-recurse Y
+recurse R

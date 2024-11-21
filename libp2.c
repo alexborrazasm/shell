@@ -315,7 +315,7 @@ void deallocateShared(tArgs args, tListM *L);
 
 void deallocateDelKey(tArgs args, tListM *L);
 
-void deallocateAddr(tArgs args, tListM *L);
+void deallocateAddr(tArgs args, tLists *L);
 
 void* stringToVoidPointer(char* str);
 
@@ -341,7 +341,7 @@ void cmdDeallocate(tArgs args, tLists *L)
                printError(args.array[0], "Invalid argument");
          }
          else // deallocate addr
-            deallocateAddr(args, &L->memory);
+            deallocateAddr(args, L);
          break;
       case 3: // check args length = 3
          if (strcmp(args.array[1], "-malloc") == 0)
@@ -466,14 +466,14 @@ void* stringToVoidPointer(char* str)
    return (void*)address;  // Cast the result to void*
 }
 
-void deallocateAddr(tArgs args, tListM *L)
+void deallocateAddr(tArgs args, tLists *L)
 {
    void* ptr = stringToVoidPointer(args.array[1]);
-   tPosM p = findByAddress(ptr, *L);
+   tPosM p = findByAddress(ptr, L->memory);
 
    if (p != MNULL)
    {
-      tItemM item = getItemM(p, *L);
+      tItemM item = getItemM(p, L->memory);
 
       switch (item.type)
       {
@@ -487,6 +487,8 @@ void deallocateAddr(tArgs args, tListM *L)
             pPrintError(args.array[0]);
             return;
          }
+         // Remove from files list
+         removeFile(item.keyDF, &L->files);
          break;
       case M_SHARED:
          // Try to detach the memory block
@@ -499,7 +501,7 @@ void deallocateAddr(tArgs args, tListM *L)
          printError(args.array[0], "Unknown block type");
          return;
       }
-      deleteAtPositionM(p, L);
+      deleteAtPositionM(p, &L->memory);
    }
    else
    {
