@@ -113,8 +113,7 @@ void getcwdAux(char *path)
 {
     long max_path_length;
 
-    // Consultar el valor de _PC_PATH_MAX para el directorio actual (tamaño máximo
-    // de un path)
+    // Get max path, _PC_PATH_MAX for current dir
     max_path_length = pathconf(".", _PC_PATH_MAX);
 
     char currentDir[max_path_length];

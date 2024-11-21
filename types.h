@@ -36,6 +36,8 @@
 #define MAGENTA     "\033[35m"
 #define CYAN        "\033[36m"
 #define WHITE       "\033[37m"
+#define GREEN_BOLD  "\033[1m\033[32m"
+#define BLUE_BOLD   "\033[1m\033[34m"
 
 typedef unsigned char byte;
 

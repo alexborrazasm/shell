@@ -106,38 +106,44 @@ void cmdClear();
 
 void printPrompt()
 {
+    
     char hostname[64];
     char *username;
-    char cwd[256];
+    long max_path = pathconf(".", _PC_PATH_MAX);
+    char cwd[max_path];
     char *home;
 
     // Get username
     username = getenv("USER");
-    if (username == NULL) {
+    if (username == NULL)
+    {
         username = "unknown";
     }
 
     // Get hostname
-    if (gethostname(hostname, sizeof(hostname)) != 0) {
+    if (gethostname(hostname, sizeof(hostname)) != 0)
+    {
         snprintf(hostname, sizeof(hostname), "unknown_host");
     }
 
     // Get working directory
-    if (getcwd(cwd, sizeof(cwd)) == NULL) {
+    if (getcwd(cwd, sizeof(cwd)) == NULL)
+    {
         snprintf(cwd, sizeof(cwd), "unknown_dir");
     }
 
     // Get $HOME
     home = getenv("HOME");
-    if (home != NULL && strncmp(cwd, home, strlen(home)) == 0) {
-        char temp[512]; // Búfer temporal para evitar solapamiento
+    if (home != NULL && strncmp(cwd, home, strlen(home)) == 0)
+    {
+        char temp[max_path]; // Temp buffer
         snprintf(temp, sizeof(temp), "~%s", cwd + strlen(home));
         strncpy(cwd, temp, sizeof(cwd));
-        cwd[sizeof(cwd) - 1] = '\0'; // Asegurar terminación nula
+        cwd[sizeof(cwd) - 1] = '\0';
     }
 
     // Print prompt
-    printf(GREEN"%s@%s"RST":"BLUE"%s"RST"$ ", username, hostname, cwd);
+    printf(GREEN_BOLD"%s@%s"RST":"BLUE_BOLD"%s"RST"$ ", username, hostname, cwd);
 }
 
 
