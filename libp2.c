@@ -510,10 +510,9 @@ void deallocateAddr(tArgs args, tListM *L)
 
 /******************************************************************************/
 // menfill
-
 void memfillAux(tArgs args);
-void LlenarMemoria(void *p, size_t cont, unsigned char byte);
 
+void doMemFill(void *p, size_t cont, unsigned char byte);
 
 void cmdMemfill(tArgs args, tLists *L)
 {
@@ -530,107 +529,88 @@ void cmdMemfill(tArgs args, tLists *L)
    }
 }
 
-void memfillAux(tArgs args){
-    
-   int i = 0;
-   stringToInt(args.array[2], &i);
-   size_t size = (size_t)i;
-   void *p ;
-   //TODO no se para que es esto char *endptr;
-   p = stringToVoidPointer(args.array[1]);
+void memfillAux(tArgs args)
+{
+   void *p = stringToVoidPointer(args.array[1]); 
+   size_t size = (size_t)strtoul(args.array[2], NULL, 10);
    unsigned char byte = (unsigned char)atoi(args.array[3]);
-   LlenarMemoria(p, size, byte);
 
-   printf("Llenando %zu bytes de memoria con el byte (%02x) a partir de la dirección %p\n", size, byte, p);
-   
+   doMemFill(p, size, byte);
+
+   printf("Filling "BLUE"%zu"RST" bytes of memory with byte ("YELLOW"%02x"RST
+          ") starting at address "GREEN"%p"RST"\n", size, byte, p);
 }
 
-void LlenarMemoria(void *p, size_t cont, unsigned char byte) {
-    unsigned char *arr = (unsigned char *)p;
-    size_t i;
+void doMemFill(void *p, size_t cont, unsigned char byte)
+{
+   unsigned char *arr = (unsigned char *)p;
 
-    for (i = 0; i < cont; i++)
-        arr[i] = byte;
+   for (size_t i = 0; i < cont; i++)
+      arr[i] = byte;
 
 }
 /******************************************************************************/
 // mendump
-
-void Memdump(void *addr, size_t cont);
-void dumpAux(tArgs args);
-
+void memdump(void *addr, size_t cont);
 
 void cmdMemdump(tArgs args, tLists *L)
 {
-   
    UNUSED(L);
 
    switch (args.len)
    {
-   case 2:
-      dumpAux(args);
+   case 2: // Size 25
+      memdump(stringToVoidPointer(args.array[1]), 25); 
       break;
-   case 3:
-      dumpAux(args);
+   case 3: // Size n
+      memdump(stringToVoidPointer(args.array[1]), 
+              (size_t)strtoul(args.array[2], NULL, 10));
       break;
    default:
+      printError(args.array[0], "Invalid num of arguments");
       break;
    }
 }
-void dumpAux(tArgs args){
-   void *p;
-   size_t size = 0;
-   p = stringToVoidPointer(args.array[1]);
-   if (args.len == 2){
-      size = 25;
-   } else {
-      int i;
-      stringToInt(args.array[2], &i);
-     size = (size_t)i;
 
+void memdump(void *addr, size_t cont) {
+   unsigned char *mem = (unsigned char *)addr;
+
+   printf("Dumping " BLUE "%zu" RST " bytes from address " GREEN "%p\n\n" RST,
+           cont, addr);
+
+    for (size_t i = 0; i < cont; i++) 
+    {
+        // Print line address
+      if (i % 16 == 0) 
+         printf(GREEN "%p: " RST, mem + i);
+      
+
+      // Prints the byte in hex format
+      printf("%02X ", mem[i]);
+
+      // Insert a separator after 8 bytes
+      if ((i % 16) == 7)
+         printf(" ");
+      
+      // If you reach the end of a line
+      if ((i % 16) == 15 || i == cont - 1)
+      {
+         // Fill in the blanks to align
+         for (size_t j = (i % 16) + 1; j < 16; j++)
+         {
+            printf("   ");
+            if (j == 8) printf(" ");
+         }
+
+         // Print ASCII chars, if is ASCII
+         printf(" |");
+         for (size_t j = i - (i % 16); j <= i; j++)
+            putchar(isprint(mem[j]) ? mem[j] : '.');
+   
+         printf("|\n");
+      }
    }
-   Memdump(p, size);
-}
-
-void Memdump(void *addr, size_t cont) {
-    unsigned char *mem = (unsigned char *)addr;
-
-    printf("Volcando %zu bytes desde la dirección %p\n\n", cont, addr);
-
-    int count = 0;
-    int j = 0;
-    for (int i = 0; i<(int)cont; i++){
-        if (i % 15 == 0 && i != 0){
-            printf("\n");
-            for (j = 0; j<(int)cont; j++){
-                if (j % 15 == 0 && j != 0) {
-                    printf("\n");
-                    break;
-                } else {
-                    printf("%02x ", mem[j]);
-                }
-            }
-
-        }
-        count++;
-        printf("%c  ", mem[i]);
-    }
-    printf("\n");
-    /*for (size_t i = 0; i < cont; i++) {
-        if (i % 15 == 0 && i != 0) {
-            printf("\n");
-        }
-        printf("%c ", mem[i]);
-    }
-    printf("\n");
-
-    for (size_t i = 0; i < cont; i++) {
-        if (i % 15 == 0 && i != 0) {
-            printf("\n");
-        }
-        printf("%02x ", mem[i]);
-    }
-    printf("\n");*/
+   printf("\n");
 }
 
 /******************************************************************************/

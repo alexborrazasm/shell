@@ -19,6 +19,7 @@
 #include <sys/mman.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
+#include <ctype.h>
 
 #define MAX_BUFFER_INPUT 256
 #define MAX_ARGS 30
