@@ -755,208 +755,261 @@ void memoryPmap()
 }
 
 /******************************************************************************/
-// readfile
+// read/write
+void auxReadWrite(tArgs args, tListF L, void fun(tArgs, tListF))
+{
+   switch (args.len)
+   {
+   case 3: case 4:
+      fun(args, L); 
+      break;
+   default:
+      printError(args.array[0], "Invalid num of arguments");
+      break;
+   }
+}
 
-void Cmd_ReadFile (tArgs args);
-ssize_t LeerFichero (char *f, void *p, size_t cont);
+/******************************************************************************/
+// readfile
+void doReadFile(tArgs args, tListF F);
+ssize_t readFile(char *f, void *p, size_t cont);
 
 void cmdReadfile(tArgs args, tLists *L)
 {
-   UNUSED(L);
-   switch (args.len)
-   {
-   case 3:
-      Cmd_ReadFile(args);
-      break;
-   case 4:
-      Cmd_ReadFile(args);
-      break;
-   
-   default:
-      printError(args.array[0],"Invalid argument");
-      break;
-   }
-   
+   auxReadWrite(args, L->files, doReadFile);
 }
 
-
-void Cmd_ReadFile (tArgs args)
+void doReadFile(tArgs args, tListF F)
 {
-   void *p;
-   size_t cont=-1;  // si no pasamos tamano se lee entero
-   ssize_t n;
+   UNUSED(F);
+   void *p; size_t cont = -1; ssize_t n;
    
-   p=stringToVoidPointer(args.array[2]);  // convertimos de cadena a puntero
-   if (args.array[3]!=NULL)
-   cont=(size_t) atoll(args.array[3]);
-
-   if ((n=LeerFichero(args.array[1],p,cont))==-1)
-   pPrintError(args.array[0]);
+   p = stringToVoidPointer(args.array[2]);  // Get address
+   
+   if (args.array[3] != NULL)
+      cont=(size_t)atoll(args.array[3]);
+   if ((n = readFile(args.array[1], p, cont)) == -1)
+      pPrintError(args.array[0]);
    else
-   printf ("leidos %lld bytes de %s en %p\n",(long long) n,args.array[1],p);
+      printf ("read "BLUE"%lld"RST" bytes from "MAGENTA"%s"RST" in "GREEN"%p\n"
+              RST, (long long)n, args.array[1], p);
 }
 
-
-ssize_t LeerFichero (char *f, void *p, size_t cont)
+ssize_t readFile(char *f, void *p, size_t cont)
 {
-   struct stat s;
-   ssize_t  n;
-   int df,aux;
+   struct stat s; ssize_t n; int df, aux;
 
-   if (stat (f,&s)==-1 || (df=open(f,O_RDONLY))==-1)
-   return -1;
-   if (cont==(size_t)-1)   // si pasamos -1 como bytes a leer lo leemos entero
-   cont=s.st_size;
-   if ((n=read(df,p,cont))==-1){
+   if (stat(f, &s) == -1 || (df = open(f, O_RDONLY)) == -1)
+      return -1;
+   if (cont == (size_t)-1)   // read all file
+      cont = s.st_size;
+   if ((n = read(df, p, cont)) == -1)
+   {
       aux=errno;
       close(df);
       errno=aux;
-   return -1;
+      return -1;
    }
    close (df);
    return n;
 }
 
-
 /******************************************************************************/
 // read
+void doReadOpenFile(tArgs args, tListF F);
 
-void Cmd_ReadOpenFile (tArgs args, tListF F);
-ssize_t LeerFicheroAbierto (int df, void *p, size_t cont, tListF F);
+ssize_t readOpenFile(int df, void *p, size_t cont, tListF F);
 
 void cmdRead(tArgs args, tLists *L)
 {
    UNUSED(L);
-
-   switch (args.len)
-   {
-   case 3:
-      Cmd_ReadOpenFile(args, L->files);
-      break;
-   case 4:
-      Cmd_ReadOpenFile(args, L->files);
-      break;
-   
-   default:
-      printError(args.array[0],"Invalid argument");
-      break;
-   }
-
+   auxReadWrite(args, L->files, doReadOpenFile);
 }
 
-void Cmd_ReadOpenFile (tArgs args, tListF F)
+void doReadOpenFile(tArgs args, tListF F)
 {
-   void *p;
-   size_t cont=-1;  // si no pasamos tamano se lee entero
-   ssize_t n;
-   int df=-1;
+   void *p; size_t cont = -1; ssize_t n; int df = -1;
    
-   p=stringToVoidPointer(args.array[2]);  // convertimos de cadena a puntero
+   p = stringToVoidPointer(args.array[2]);  // get address
    if (args.array[3]!=NULL)
-   cont=(size_t) atoll(args.array[3]);
+      cont = (size_t)atoll(args.array[3]);
 
-   stringToInt(args.array[1], &df);
-   if ((n=LeerFicheroAbierto(df,p,cont, F))==-1)
-   pPrintError(args.array[0]);
+   df = strtoul(args.array[1], NULL, 10);
+
+   if ((n = readOpenFile(df, p, cont, F)) == -1)
+      pPrintError(args.array[0]); 
+   else if (n == -2)
+      printError(args.array[0], "Invalid df");
    else
-   
-   printf ("leidos %lld bytes del descriptor %d en %p\n",(long long) n,df,p);
+      printf("read "BLUE"%lld"RST" bytes from descriptor "YELLOW"%d"RST" in "
+             GREEN"%p\n"RST,(long long)n, df, p);
 }
 
-ssize_t LeerFicheroAbierto (int df, void *p, size_t cont, tListF F)
+ssize_t readOpenFile(int df, void *p, size_t cont, tListF F)
 {
-   struct stat s;
-   ssize_t  n;
-   int aux;
-   char f[256];
-   tItemF itemF = getItemF(findItemF(df, F), F);
-   strcpy(f, itemF.info);
+   struct stat s; ssize_t  n;
 
-   if (stat (f,&s)==-1 || (df=open(f,O_RDONLY))==-1)
-   return -1;
-   if (cont==(size_t)-1)   // si pasamos -1 como bytes a leer lo leemos entero
-   cont=s.st_size;
-   if ((n=read(df,p,cont))==-1){
-      aux=errno;
-      close(df);
-      errno=aux;
-   return -1;
+   tPosF pos = findItemF(df, F);
+
+   if (pos == FNULL)
+   { 
+      return -2;
    }
-   close (df); //TODO Cierra automáticamente el descriptor pero no lo quita de l a lista
+
+   tItemF item = getItemF(pos, F);
+
+   if (stat(item.info, &s) == -1)
+      return -1;
+   if (cont == (size_t)-1)   // if -1 read all file
+      cont = s.st_size;
+   if ((n = read(df, p, cont)) == -1)
+   {
+      return -1;
+   }
    return n;
 }
 
-
 /******************************************************************************/
-// Writefile
+// Writefile [-o]
+void doWriteFile(tArgs args, bool overwrite);
 
-void Cmd_Writefile (tArgs args);
-ssize_t EscribirFichero (char *f, void *p, size_t cont);
+ssize_t writeFile(char *f, void *p, size_t cont, int mode);
 
 void cmdWritefile(tArgs args, tLists *L)
 {
    UNUSED(L);
+
    switch (args.len)
    {
-   case 3:
-      Cmd_Writefile(args);
+   case 3: // file addr
+      doWriteFile(args, false); 
       break;
-   case 4:
-      Cmd_Writefile(args);
+   case 4: // -o file addr | file addr count
+      if (strcmp(args.array[1], "-o") == 0) // -o
+         doWriteFile(args, true);
+      else // file addr count
+         doWriteFile(args, false);
       break;
-   
+   case 5: // -o file addr count
+      doWriteFile(args, true);
+      break;
    default:
-      printError(args.array[0],"Invalid argument");
+      printError(args.array[0], "Invalid num of arguments");
       break;
    }
-   
 }
 
-//TODO COMBINAR ESTRUCTURA EN FUNCIÓN GEN con READ
-void Cmd_Writefile (tArgs args)
+void doWriteFile(tArgs args, bool overwrite)
 {
-   void *p;
-   size_t cont=-1;  // si no pasamos tamano se lee entero
-   ssize_t n;
-   
-   p=stringToVoidPointer(args.array[2]);  // convertimos de cadena a puntero
-   if (args.array[3]!=NULL)
-   cont=(size_t) atoll(args.array[3]);
+   void *p; size_t cont = -1; ssize_t n; int mode;
+   char *arrFile, *arrAddr, *arrSize; 
 
-   if ((n=EscribirFichero(args.array[1],p,cont))==-1)
-   pPrintError(args.array[0]);
+   if (overwrite) 
+   {
+      arrFile = args.array[2]; 
+      arrAddr = args.array[3]; 
+      arrSize = args.array[4]; 
+      mode = O_WRONLY | O_TRUNC;
+   }
    else
-   printf ("escritos %lld bytes de %s en %p\n",(long long) n,args.array[1],p);
+   {
+      arrFile = args.array[1]; 
+      arrAddr = args.array[2]; 
+      arrSize = args.array[3];
+      mode = O_WRONLY | O_CREAT | O_EXCL;
+   }
+
+   p = stringToVoidPointer(arrAddr);
+   
+   if (arrSize != NULL) // size is provided
+      cont=(size_t)atoll(arrSize);
+
+   if ((n = writeFile(arrFile, p, cont, mode)) == -1)
+      pPrintError(args.array[0]);
+   else
+      printf("written "BLUE"%lld"RST" bytes of "MAGENTA"%s"RST" to "GREEN"%p\n"
+              RST, (long long)n, arrFile, p);
 }
 
-
-ssize_t EscribirFichero (char *f, void *p, size_t cont)
+ssize_t writeFile(char *f, void *p, size_t cont, int mode)
 {
-   struct stat s;
-   ssize_t  n;
-   int df,aux;
+   struct stat s; ssize_t n; int df, aux;
 
-   if (stat (f,&s)==-1 || (df=open(f,O_WRONLY))==-1)
-   return -1;
-   if (cont==(size_t)-1)   // si pasamos -1 como bytes a leer lo leemos entero
-   cont=s.st_size;
-   if ((n=write(df,p,cont))==-1){
+   if ((df = open(f, mode, 0777)) == -1 || stat(f, &s) == -1)
+      return -1;
+   if (cont == (size_t)-1)   // If -1 all file
+      cont=s.st_size;
+   if ((n = write(df, p, cont)) == -1)
+   {
       aux=errno;
       close(df);
-      errno=aux;
-   return -1;
+      errno = aux;
+      return -1;
    }
-  // close (df); TODO eliminar de la lista de dfs 
+   close (df); 
    return n;
 }
 
 /******************************************************************************/
 // write
+void doWriteOpenFile(tArgs args, tListF F);
+
+ssize_t writeOpenFile(int df, void *p, size_t cont, tListF F);
+
 void cmdWrite(tArgs args, tLists *L)
 {
-   UNUSED(args);
-   UNUSED(L);
+   auxReadWrite(args, L->files, doWriteOpenFile);
 }
+
+void doWriteOpenFile(tArgs args, tListF F)
+{
+   void *p;
+   size_t cont = -1; // If we do not pass size, read all 
+   ssize_t n;
+   int df = -1;
+   
+   p = stringToVoidPointer(args.array[2]);  // get address
+   if (args.array[3]!=NULL)
+      cont = (size_t)atoll(args.array[3]);
+
+   df = strtoul(args.array[1], NULL, 10);
+
+   if ((n = writeOpenFile(df, p, cont, F)) == -1)
+      pPrintError(args.array[0]);
+   else if (n == -2)
+      printError(args.array[0], "Invalid df");
+   else
+      printf("writen "BLUE"%lld"RST" bytes from descriptor "YELLOW"%d"RST" in "
+             GREEN"%p\n"RST,(long long)n, df, p);
+}
+
+ssize_t writeOpenFile(int df, void *p, size_t cont, tListF F)
+{
+   struct stat s; ssize_t  n;
+
+   tPosF pos = findItemF(df, F);
+
+   if (pos == FNULL)
+   { 
+      return -2;
+   }
+
+   tItemF item = getItemF(pos, F);
+
+   if (stat(item.info, &s) == -1){
+      puts(item.info);
+      printf("%d", df);
+      return -1;
+   }
+   if (cont == (size_t)-1)   // if -1 read all file
+      cont = s.st_size;
+   if ((n = write(df, p, cont)) == -1)
+   {
+      return -1;
+   }
+   return n;
+}
+
 /******************************************************************************/
 // recurse
 void rec(int n);
@@ -998,15 +1051,3 @@ void rec(int n)
    if (n > 0)
       rec(n - 1);
 }
-
-/*
-void LlenarMemoria (void *p, size_t cont, unsigned char byte)
-{
-  unsigned char *arr=(unsigned char *) p;
-  size_t i;
-
-  for (i=0; i<cont;i++)
-      arr[i]=byte;
-}
-
-*/

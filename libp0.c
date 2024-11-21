@@ -673,7 +673,7 @@ void auxDup(int df, tArgs args, tListF *L)
 }
 /******************************************************************************/
 // infosys
-void infosysAux();
+void infosysAux(tArgs args);
 
 void cmdInfosys(tArgs args, tLists *L)
 {
