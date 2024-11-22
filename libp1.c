@@ -524,6 +524,7 @@ void auxErase(tArgs args, int n, byte flags, char* fullPath)
     {
         pPrintErrorFile(args.array[0], path);
     }
+    free(path);
 }
 
 /******************************************************************************/
@@ -551,4 +552,6 @@ void auxDelrec(tArgs args, int n, byte flags, char* fullPath)
             pPrintErrorFile(args.array[0], path);
         }
     }
+
+    free(path);
 }
