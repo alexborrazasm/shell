@@ -79,20 +79,37 @@ long getSize(char *size) // Input size to int
 
 char* auxPrintMenList(tItemM item)
 {
-   char* str = malloc(512 * sizeof(char));
+   char *str;
+   size_t len;
 
    switch (item.type)
    {
    case M_MALLOC:
+      len = strlen("malloc") + 1; // + 1 for \0
+      str = malloc(len);
+      if (str == NULL) return NULL; // Check errors
       strcpy(str, "malloc");
       return str;
+
    case M_MMAP:
+      len = strlen(item.name) + strlen(" (df )") + 10 + 1; // 10 = any int
+      str = malloc(len);
+      if (str == NULL) return NULL; // Check errors
       sprintf(str, "%s (df %d)", item.name, item.keyDF);
       return str;
+
    case M_SHARED:
+      // 10 enough for any int
+      len = strlen("shared (key )") + strlen(YELLOW) + strlen(RST) + 10 + 1;
+      str = malloc(len);
+      if (str == NULL) return NULL; // Check errors
       sprintf(str, "shared (key %s%d%s)", YELLOW, item.keyDF, RST);
       return str;
+
    default:
+      len = strlen("error") + 1; // + 1 for \0
+      str = malloc(len);
+      if (str == NULL) return NULL; // Comprueba errores
       strcpy(str, "error");
       return str;
    }
@@ -287,8 +304,8 @@ void allocateCreateShared(tArgs args, tListM *L)
       printf("Allocated "BLUE"%lu"RST" bytes in "GREEN"%p\n"RST,
              (unsigned long)size, p);
    else
-      printf("Unable to allocate shared memory key "YELLOW"%lu"RST":"RED"%s\n"RST,
-              (unsigned long)cl, strerror(errno));
+      printf("Unable to allocate shared memory key "YELLOW"%lu"RST": "RED"%s\n"
+              RST, (unsigned long)cl, strerror(errno));
 }
 
 void allocateShared(tArgs args, tListM *L)
@@ -298,11 +315,11 @@ void allocateShared(tArgs args, tListM *L)
    cl = (key_t)strtoul(args.array[2] , NULL, 10);
 
    if ((p = getMemShmget(cl, 0, args, L)) != NULL)
-      printf("Shared memory allocated for key "YELLOW"%lu"RST" on "GREEN"%p\n"RST,
-              (unsigned long)cl, p);
+      printf("Shared memory allocated for key "YELLOW"%lu"RST" on "GREEN"%p\n"
+              RST, (unsigned long)cl, p);
    else
-      printf("Unable to allocate shared memory key "YELLOW"%lu"RST":"RED"%s\n"RST,
-              (unsigned long)cl, strerror(errno));
+      printf("Unable to allocate shared memory key "YELLOW"%lu"RST": "RED_BOLD
+             "%s\n"RST, (unsigned long)cl, strerror(errno));
 }
 
 /******************************************************************************/
