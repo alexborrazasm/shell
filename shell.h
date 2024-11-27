@@ -8,6 +8,7 @@
 #include "libp0.h"
 #include "libp1.h"
 #include "libp2.h"
+#include "libp3.h"
 
 void printPrompt();
 

@@ -97,7 +97,23 @@ tCommand commands[] =
     {"write", cmdWrite, "write df addr cont",
      "The same as writefile but we use a (already opened) file descriptor"},
     {"recurse", cmdRecurse, "recurse n",
-     "Transfer cont bytes from address addr to the file described by df"}
+     "Transfer cont bytes from address addr to the file described by df"},
+    {"getuid", cmdGetuid, "", ""},
+    {"setuid", cmdSetuid, "", ""},
+    {"showvar", cmdShowvar, "", ""},
+    {"changevar", cmdChangevar, "", ""},
+    {"subsvar", cmdSubsvar, "", ""},
+    {"environ", cmdEnviron, "", ""},
+    {"fork", cmdFork, "", ""},
+    {"search", cmdSearch, "", ""},
+    {"exec", cmdExec, "", ""},
+    {"execpri", cmdExecpri, "", ""},
+    {"fg", cmdFg, "", ""},
+    {"fgpri", cmdFgpri, "", ""},
+    {"back", cmdBack, "", ""},
+    {"backpri", cmdBackpri, "", ""},
+    {"listjobs", cmdListjobs, "", ""},
+    {"deljobs", cmdDeljobs, "", ""}
 };
 
 int getInput(char *input);
