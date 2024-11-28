@@ -98,22 +98,55 @@ tCommand commands[] =
      "The same as writefile but we use a (already opened) file descriptor"},
     {"recurse", cmdRecurse, "recurse n",
      "Transfer cont bytes from address addr to the file described by df"},
-    {"getuid", cmdGetuid, "", ""},
-    {"setuid", cmdSetuid, "", ""},
-    {"showvar", cmdShowvar, "", ""},
-    {"changevar", cmdChangevar, "", ""},
-    {"subsvar", cmdSubsvar, "", ""},
-    {"environ", cmdEnviron, "", ""},
-    {"fork", cmdFork, "", ""},
-    {"search", cmdSearch, "", ""},
-    {"exec", cmdExec, "", ""},
-    {"execpri", cmdExecpri, "", ""},
-    {"fg", cmdFg, "", ""},
-    {"fgpri", cmdFgpri, "", ""},
-    {"back", cmdBack, "", ""},
-    {"backpri", cmdBackpri, "", ""},
-    {"listjobs", cmdListjobs, "", ""},
-    {"deljobs", cmdDeljobs, "", ""}
+    {"getuid", cmdGetuid, "getuid",
+     "views the process's credentials (real and efective)"},
+    {"setuid", cmdSetuid, "setuid [-l] id",
+     "Changes the credentials of the process running the shell"
+     "\n\tid: sets the credential to the numeric value id"
+     "\n\t-l id: sets the credential to login id"},
+    {"showvar", cmdShowvar, "showvar v1 v2 ..", 
+     "shows the value and address of environment variables v1 v2 .."},
+    {"changevar", cmdChangevar, "changevar [-a|-e|-p] var val",
+     "Changes the value of an environment variable"
+     "\n\t-a: access via the third arg of main"
+     "\n\t-e: access via environ"
+     "\n\t-p: access via putenv (Can create a new variable)"},
+    {"subsvar", cmdSubsvar, "subsvar [-a|-e] v1 v2 val",
+     "Changes environment variable (v1) for other (v2 with value val)"
+     "\n\t-a: access through the third arg of main"
+     "\n\t-e: access through environ"},
+    {"environ", cmdEnviron, "environ [-environ|-addr]", 
+     "Displays the process environment"
+     "\n\t-environ: access using environ (instead of the third arg in main)"
+     "\n\t-addr: displays the value and where environ and the 3rd arg in main are stored"},
+    {"fork", cmdFork, "fork", 
+     "The shell does the fork system call and waits for its child to end"},
+    {"search", cmdSearch, "search [-add|-del|-clear|-path]..", 
+     "Shows or modifies the search list (path)"
+     "\n\t-add dir: add dir to the search path (equiv +dir)"
+     "\n\t-del dir: remove dir from the search path (equiv -dir)"
+     "\n\t-clear: clear the search path"
+     "\n\t-path: import the PATH into the search path"},
+    {"exec", cmdExec, "exec VAR1 VAR2 ..prog args....[@pri]",
+     ""},
+    {"execpri", cmdExecpri, "execpri prio prog args....", 
+     ""},
+    {"fg", cmdFg, "fg prog args...",
+     "Creates a process that runs prog in the foreground with arguments"},
+    {"fgpri", cmdFgpri, "fgpri prio prog args...",
+     "Creates a process that runs prog in the foreground "
+     "with arguments with priority changed to prio"},
+    {"back", cmdBack, "back progspec",
+     "Creates a process that runs prog in the background with arguments"},
+    {"backpri", cmdBackpri, "backpri prio prog args...",
+     "Creates a process that runs prog in the background with arguments with "
+     "the priority changed to prio"},
+    {"listjobs", cmdListjobs, "listjobs", 
+     "lists background processes (executed with back or backpri)"},
+    {"deljobs", cmdDeljobs, "deljobs [-term][-sig]",
+     "Deletes background processes from the list"
+     "\n\t-term: those terminated"
+     "\n\t-sig: those terminated by signal"}
 };
 
 int getInput(char *input);
