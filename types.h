@@ -56,15 +56,25 @@ typedef tPosH tListH;
 typedef struct tNodeF *tPosF;
 typedef tPosF tListF;
 
-// Forward declaration for tListF
+// Forward declaration for tListM
 typedef struct tNodeM *tPosM;
 typedef tPosM tListM;
+
+// Forward declaration for tListB
+typedef struct tNodeB *tPosB;
+typedef tPosB tListB;
+
+// Forward declaration for tListP
+typedef struct tNodeP *tPosP;
+typedef tPosP tListP;
 
 typedef struct tLists
 {
     tListH historic;
     tListF files;
     tListM memory;
+    tListB backgroud;
+    tListP path;
 } tLists;
 // End forward declaration for tListH
 
