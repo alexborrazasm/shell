@@ -360,11 +360,33 @@ void freeMenList(tListM *list)
     }
 }
 
+void freeBackgroundList(tListB *list)
+{
+   tPosB p;
+
+    while (!isEmptyListB(*list)) {
+        p = lastB(*list); 
+        deleteAtPositionB(p, list);
+    }
+}
+
+void freePathList(tListP *list)
+{
+   tPosP p;
+
+    while (!isEmptyListP(*list)) {
+        p = lastP(*list); 
+        deleteAtPositionP(p, list);
+    }
+}
+
 void freeLists(tLists *L)
 {
     freeHistoryList(&L->historic);
     freeFileList(&L->files);
     freeMenList(&L->memory);
+    freeMenList(&L->backgroud);
+    freeMenList(&L->path);
 }
 
 int stringCut(char *input, char *parts[])

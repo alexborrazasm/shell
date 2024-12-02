@@ -5,6 +5,8 @@
 #include "historicList.h"
 #include "filesList.h"
 #include "memoryList.h"
+#include "backgroundList.h"
+#include "pathList.h"
 #include "libp0.h"
 #include "libp1.h"
 #include "libp2.h"

@@ -21,6 +21,8 @@ void shell()
     createEmptyListH(&L.historic);
     createEmptyListF(&L.files);
     createEmptyListM(&L.memory);
+    createEmptyListB(&L.backgroud);
+    createEmptyListP(&L.path);
 
     initFList(&L.files);
 
