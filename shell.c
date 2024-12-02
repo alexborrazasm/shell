@@ -128,9 +128,11 @@ tCommand commands[] =
      "\n\t-clear: clear the search path"
      "\n\t-path: import the PATH into the search path"},
     {"exec", cmdExec, "exec VAR1 VAR2 ..prog args....[@pri]",
-     ""},
+     "Executes, without creating a process, prog with arguments"
+     "\n\t\tin an environment that contains only the variables VAR1, VAR2..."},
     {"execpri", cmdExecpri, "execpri prio prog args....", 
-     ""},
+     "Executes, without creating a process, prog with arguments with priority "
+     "changed to prio"},
     {"fg", cmdFg, "fg prog args...",
      "Creates a process that runs prog in the foreground with arguments"},
     {"fgpri", cmdFgpri, "fgpri prio prog args...",
