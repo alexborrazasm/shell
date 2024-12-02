@@ -32,5 +32,6 @@ void shell()
         if (readInput(&L))
             processInput(&L, &finished);
     }
+
     freeLists(&L);
 }
