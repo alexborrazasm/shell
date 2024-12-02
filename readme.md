@@ -1,32 +1,37 @@
 # TO DO
 
-allocate -malloc R
-         -mmap R
-         -createshared R
-         -shared R
+getuid
 
-deallocate -malloc R
-           -mmap R
-           -shared R
-           -delkey R
-           addr R
+setuid [-l] id
 
-memfill addr R
+showvar v1 v2 ..
 
-memdump addr R
+changevar [-a|-e|-p] var val
 
-memory -funcs R
-       -vars R
-       -blocks R
-       -all R
-       -pmap R
+subsvar [-a|-e] v1 v2 val
 
-readfile R
+environ [-environ|-addr]
 
-writefile R falta -o for overwrite
+fork
 
-read  R 
+search
+       -add dir
+       -del dir
+       -clear
+       -path
 
-write NO VA
+exec progspec
 
-recurse R
+execpri prio progspec
+
+fg progspec
+
+fgpri progspec
+
+back progspec
+
+backpri prio progspec
+
+listjobs
+
+deljobs -term|-sig
