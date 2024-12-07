@@ -1,6 +1,6 @@
 # TO DO
 
-getuid []
+getuid [X]
 
 setuid [-l] id []
 

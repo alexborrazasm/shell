@@ -1,9 +1,29 @@
 #include "libp3.h"
 /******************************************************************************/
 // getuid
+void doGetuid();
+
 void cmdGetuid(tArgs args, tLists *L)
 {
-    UNUSED(args); UNUSED(L);
+    UNUSED(L);
+
+    if(args.len == 1)
+        doGetuid();
+    else
+        printError(args.array[0], "Not acept arguments");
+}
+
+void doGetuid()
+{
+    uid_t realUid = getuid();
+    uid_t effectiveUid = geteuid();
+    struct passwd *realPw = getpwuid(realUid);
+    struct passwd *effectivePw = getpwuid(effectiveUid);
+
+    printf("Credencial real: "GREEN"%d"RST", ("BLUE"%s"RST")\n",
+           realUid, realPw ? realPw->pw_name : "unknown");
+    printf("Credencial efective: "GREEN"%d"RST", ("BLUE"%s"RST")\n",
+           effectiveUid, effectivePw ? effectivePw->pw_name : "unknown");
 }
 
 /******************************************************************************/
@@ -50,7 +70,7 @@ void cmdFork(tArgs args, tLists *L)
     if(args.len == 1)
         doFork(&L->backgroud);
     else
-        printError(args.array[0], "Fork not acept arguments");
+        printError(args.array[0], "Not acept arguments");
 }
 
 void doFork(tListB *L)
