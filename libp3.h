@@ -2,6 +2,7 @@
 #define LIBP3_H
 
 #include "types.h"
+#include "shell.h"
 
 // getuid
 void cmdGetuid(tArgs args, tLists *L);

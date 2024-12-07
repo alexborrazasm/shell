@@ -51,4 +51,6 @@ void printDate(time_t now);
 // Nov 31 00:00
 void printDateString(time_t now);
 
+void freeBackgroundList(tListB *list);
+
 #endif // SHELL_H

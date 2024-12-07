@@ -43,21 +43,27 @@ void cmdEnviron(tArgs args, tLists *L)
 
 /******************************************************************************/
 // fork
+void doFork(tListB *L);
+
 void cmdFork(tArgs args, tLists *L)
 {
-    UNUSED(args); UNUSED(L);
+    if(args.len == 1)
+        doFork(&L->backgroud);
+    else
+        printError(args.array[0], "Fork not acept arguments");
 }
 
-void doFork(char *tr[])
+void doFork(tListB *L)
 {
 	pid_t pid;
 	
-	if ((pid = fork()) == 0){
-/*		VaciarListaProcesos(&LP); Depende de la implementaciÃ³n de cada uno*/
-		printf ("ejecutando proceso %d\n", getpid());
+	if ((pid = fork()) == 0)
+    {
+        freeBackgroundList(L); // Remove all items of process list
+		printf("execute process "BLUE"%d\n"RST, getpid());
 	}
 	else if (pid!=-1)
-		waitpid (pid, NULL, 0);
+		waitpid(pid, NULL, 0);
 }
 
 /******************************************************************************/
@@ -127,18 +133,6 @@ void cmdDeljobs(tArgs args, tLists *L)
 
 /*
 help
-
-void Cmd_fork (char *tr[])
-{
-	pid_t pid;
-	
-	if ((pid=fork())==0){
-//		VaciarListaProcesos(&LP); Depende de la implementaciÃ³n de cada uno
-		printf ("ejecutando proceso %d\n", getpid());
-	}
-	else if (pid!=-1)
-		waitpid (pid,NULL,0);
-}
 
 int BuscarVariable (char * var, char *e[])  //busca una variable en el entorno que se le pasa como parÃ¡metro
 {                                           //devuelve la posicion de la variable en el entorno, -1 si no existe

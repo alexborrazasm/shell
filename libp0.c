@@ -61,7 +61,7 @@ void cmdPid(tArgs args, tLists *L)
     {
         int pid;
         pid = getpid();
-        printf("%d\n", pid);
+        printf(BLUE"%d\n"RST, pid);
     }
 }
 
@@ -79,7 +79,7 @@ void cmdPpid(tArgs args, tLists *L)
     {
         int ppid;
         ppid = getppid();
-        printf("%d\n", ppid);
+        printf(BLUE"%d\n"RST, ppid);
     }
 }
 

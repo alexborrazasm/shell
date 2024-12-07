@@ -1,37 +1,37 @@
 # TO DO
 
-getuid
+getuid []
 
-setuid [-l] id
+setuid [-l] id []
 
-showvar v1 v2 ..
+showvar v1 v2 .. []
 
-changevar [-a|-e|-p] var val
+changevar [-a|-e|-p] var val []
 
-subsvar [-a|-e] v1 v2 val
+subsvar [-a|-e] v1 v2 val []
 
-environ [-environ|-addr]
+environ [-environ|-addr] []
 
-fork
+fork [X]
 
-search
-       -add dir
-       -del dir
-       -clear
-       -path
+search []
+       -add dir []
+       -del dir []
+       -clear []
+       -path []
 
-exec progspec
+exec progspec []
 
-execpri prio progspec
+execpri prio progspec []
 
-fg progspec
+fg progspec []
 
-fgpri progspec
+fgpri progspec []
 
-back progspec
+back progspec []
 
-backpri prio progspec
+backpri prio progspec []
 
-listjobs
+listjobs []
 
-deljobs -term|-sig
+deljobs -term|-sig []
