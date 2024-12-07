@@ -1,4 +1,7 @@
 #include "libp3.h"
+
+extern char **environ;  // Declaration of environ
+
 /******************************************************************************/
 // getuid
 void doGetuid();
@@ -55,10 +58,51 @@ void cmdSubsvar(tArgs args, tLists *L)
 }
 
 /******************************************************************************/
-// environ [-environ|-addr] 
+// environ [-environ|-addr]
+void doEnvironAddr(tArgs args);
+
+void printEnv(char *envp[], bool environ);
+
 void cmdEnviron(tArgs args, tLists *L)
 {
-    UNUSED(args); UNUSED(L);
+    UNUSED(L);
+
+    switch (args.len)
+    {
+    case 1: // third argument of main
+        printEnv(args.main.envp, false);
+        break;
+    case 2: // -environ or -addr
+        if (strcmp(args.array[1], "-addr") == 0)
+            doEnvironAddr(args);
+        else if (strcmp(args.array[1], "-environ") == 0)
+            printEnv(environ, true);
+        else
+            printError(args.array[0], "Invalid argument");
+        break;
+    default:
+        printError(args.array[0], "Invalid num of arguments");
+        break;
+    }
+}
+
+void printEnv(char *envp[], bool environ) 
+{
+    int i = 0;
+
+    for (char **env = envp; *env != NULL; env++) {
+        printf(GREEN"%p"RST"-> %s ["YELLOW"%d"RST"]=("GREEN"%p"RST") "BLUE"%s\n"
+               RST, env, (environ)? "environ":"main arg3", i, *env, *env);
+        i++;
+    }
+}
+
+void doEnvironAddr(tArgs args)
+{
+    char **envp = args.main.envp;
+
+    printf("environ:   "GREEN"%p"RST" (stored in "GREEN"%p"RST")\n", environ, (void*)&environ);
+    printf("main arg3: "GREEN"%p"RST" (stored in "GREEN"%p"RST")\n", envp, (void*)&envp);
 }
 
 /******************************************************************************/

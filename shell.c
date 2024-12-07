@@ -258,13 +258,14 @@ int getInput(char *input)
     return len;
 }
 
-void processInput(tLists *L, bool *end)
+void processInput(tLists *L, bool *end, tArgsMain main)
 {
     if (!isEmptyListH(L->historic))
     {
         tItemH item = getItemH(lastH(L->historic), L->historic);
         tArgs args;
         args.len = stringCut(item.command, args.array);
+        args.main = main;
 
         selectCommand(args, item.command, L, end);
     }

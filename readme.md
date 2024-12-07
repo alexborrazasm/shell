@@ -10,7 +10,7 @@ changevar [-a|-e|-p] var val []
 
 subsvar [-a|-e] v1 v2 val []
 
-environ [-environ|-addr] []
+environ [-environ|-addr] [X]
 
 fork [X]
 

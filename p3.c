@@ -3,16 +3,22 @@
 */
 #include "shell.h"
 
-void shell();
+void shell(tArgsMain main);
 
-int main()
+int main(int argc, char *argv[], char *envp[])
 {
-    shell();
+    tArgsMain main;
+
+    main.argc = argc;
+    main.argv = argv;
+    main.envp = envp;
+
+    shell(main);
 
     return 0;
 }
 
-void shell()
+void shell(tArgsMain main)
 {
     bool finished = false;
     tLists L;
@@ -30,7 +36,7 @@ void shell()
     {
         printPrompt();
         if (readInput(&L))
-            processInput(&L, &finished);
+            processInput(&L, &finished, main);
     }
 
     freeLists(&L);

@@ -42,10 +42,17 @@
 
 typedef unsigned char byte;
 
+typedef struct tArgsMain
+{
+    int argc;
+    char **argv, **envp;
+} tArgsMain;
+
 typedef struct tArgs
 {
     char *array[MAX_ARGS];
     int len;
+    tArgsMain main;
 } tArgs;
 
 // Forward declaration for tListH

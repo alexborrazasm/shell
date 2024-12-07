@@ -16,7 +16,7 @@ void printPrompt();
 
 bool readInput(tLists *L);
 
-void processInput(tLists *L, bool *end);
+void processInput(tLists *L, bool *end, tArgsMain main);
 
 void selectCommand(tArgs args, char *input, tLists *L, bool *end);
 
