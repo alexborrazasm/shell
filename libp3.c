@@ -48,6 +48,18 @@ void cmdFork(tArgs args, tLists *L)
     UNUSED(args); UNUSED(L);
 }
 
+void doFork(char *tr[])
+{
+	pid_t pid;
+	
+	if ((pid = fork()) == 0){
+/*		VaciarListaProcesos(&LP); Depende de la implementaciÃ³n de cada uno*/
+		printf ("ejecutando proceso %d\n", getpid());
+	}
+	else if (pid!=-1)
+		waitpid (pid, NULL, 0);
+}
+
 /******************************************************************************/
 // search [-add dir -del dir -clear -path]
 void cmdSearch(tArgs args, tLists *L)
