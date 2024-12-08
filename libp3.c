@@ -563,6 +563,29 @@ int doExecuteFg(char **args, char **newEnv, int *pprio, tListP L)
     return 0; // All right
 }
 
+int doExecuteBg(char **args, char **newEnv, int *pprio, tListP L)
+{
+    pid_t pid = fork(); // Create a child process
+
+    if (pid == -1) { return -1; }
+
+    if (pid == 0) // Child execute 
+    {   
+        if (setsid() == -1) {
+            pPrinterror(args[0]);
+            exit(EXIT_FAILURE);
+        }
+
+        if(doExecpve(args, newEnv, pprio, L) == -1 )
+        { 
+            pPrintError(args[0]);
+            exit(EXIT_FAILURE); 
+        }
+    } 
+
+    return 0; // All right
+}
+
 // i = start
 int findEnvEnd(char *args[], int i) 
 {    
@@ -710,7 +733,7 @@ void cmdFgpri(tArgs args, tLists *L)
 
     getProgspec(&args, &pg, 2);
         
-    if(doExecuteFg(pg.commands, pg.env, NULL, L->path) == -1)
+    if(doExecuteFg(pg.commands, pg.env, &prio, L->path) == -1)
     {
         pPrintError(args.array[0]);
     }
@@ -724,7 +747,14 @@ void cmdFgpri(tArgs args, tLists *L)
 // progspec = [VAR1 VAR2 VAR3 ....] executablefile [arg1 arg2......]
 void cmdBack(tArgs args, tLists *L)
 {
-    UNUSED(args); UNUSED(L);
+    tProgspec pg; // free?  
+
+    getProgspec(&args, &pg, 1);
+        
+    if(doExecuteFg(pg.commands, pg.env, NULL, L->path) == -1)
+    {
+        pPrintError(args.array[0]);
+    }
 }
 
 /******************************************************************************/
@@ -732,7 +762,20 @@ void cmdBack(tArgs args, tLists *L)
 // progspec = [VAR1 VAR2 VAR3 ....] executablefile [arg1 arg2......]
 void cmdBackpri(tArgs args, tLists *L)
 {
-    UNUSED(args); UNUSED(L);
+    tProgspec pg; int prio; // free?
+
+    if (!stringToInt(args.array[1], &prio)) 
+    {
+        printError(args.array[0], "Invalid prio");
+        return;
+    }    
+
+    getProgspec(&args, &pg, 2);
+        
+    if(doExecuteBg(pg.commands, pg.env, &prio, L->path) == -1)
+    {
+        pPrintError(args.array[0]);
+    }
 }
 
 /******************************************************************************/

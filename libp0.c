@@ -338,7 +338,7 @@ void callHistoric(tArgs args, tLists *L, int n)
             }
         }
         // All right
-        selectCommand(args, item.command, L, false);
+        selectCommand(args, L, false);
     }
 }
 
