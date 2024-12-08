@@ -53,4 +53,6 @@ void printDateString(time_t now);
 
 void freeBackgroundList(tListB *list);
 
+void freePathList(tListP *list);
+
 #endif // SHELL_H

@@ -128,3 +128,22 @@ bool createNodeP(tPosP *p)
     else
         return true;
 }
+
+tPosP findItemP(char* path, tListP L)
+{
+    if(isEmptyListP(L))
+        return PNULL;
+
+    tPosP q = L;
+
+    while (q != PNULL)
+    {   // Check for matching name and type
+        if ((strcmp(q->data, path) == 0))
+        {
+            return q;  // Found a match
+        }
+        q = q->next;  // Move to the next element
+    }
+
+    return PNULL;  // No match found
+}

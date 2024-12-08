@@ -190,9 +190,104 @@ void doFork(tListB *L)
 
 /******************************************************************************/
 // search [-add dir -del dir -clear -path]
+void printPathList(tListP L);
+
+void searchClean(tListP *L);
+
+void searchPath(tArgs args, tListP *L);
+
+void searchAdd(tArgs args, tListP *L);
+
+void searchDel(tArgs args, tListP *L);
+
 void cmdSearch(tArgs args, tLists *L)
 {
-    UNUSED(args); UNUSED(L);
+   switch (args.len)
+   {
+    case 1: // Print path list
+        printPathList(L->path);
+        break;
+    case 2: // -clear or -path
+        if(strcmp(args.array[1], "-clear") == 0)
+            searchClean(&L->path);
+        else if(strcmp(args.array[1], "-path") == 0)
+            searchPath(args, &L->path);
+        else
+            printError(args.array[0], "Invalid argument");
+        break;
+    case 3: // -add dir or -del dir
+        if(strcmp(args.array[1], "-add") == 0)
+            searchAdd(args, &L->path);
+        else if(strcmp(args.array[1], "-del") == 0)
+            searchDel(args, &L->path);
+        else
+            printError(args.array[0], "Invalid argument");
+        break;
+    default:
+        printError(args.array[0], "Invalid num of arguments");
+        break;
+    }    
+}
+
+void printPathList(tListP L)
+{
+    tItemP item;
+
+    for (tPosP p = firstP(L); p != PNULL; p = nextP(p, L))
+    {
+        item = getItemP(p, L);
+        printf(BLUE"%s\n"RST, item);
+    }
+}
+
+void searchClean(tListP *L)
+{
+    freePathList(L);
+}
+
+void searchPath(tArgs args, tListP *L)
+{
+    const char *pathEnv = getenv("PATH");
+    if (!pathEnv) 
+    {
+        printError(args.array[0], "Can not find PATH");
+        return;
+    }
+
+    char *pathCopy = strdup(pathEnv);
+    char *token = strtok(pathCopy, ":"); // split path ':'
+    int i = 0;
+
+    while (token != NULL) 
+    {
+        insertItemP(strdup(token), PNULL, L);
+        token = strtok(NULL, ":");
+        i++;
+    }
+
+    printf("Imported "YELLOW"%d"RST" directories into the "BLUE"search path\n"
+           RST, i);
+
+    free(pathCopy);
+}
+
+void searchAdd(tArgs args, tListP *L)
+{
+    tItemP path = strdup(args.array[2]);
+
+    insertItemP(path, PNULL, L);
+}
+
+void searchDel(tArgs args, tListP *L)
+{
+    char* path = args.array[2];
+    tPosP p = findItemP(path, *L);
+
+    if (p != PNULL)
+    {
+        free(getItemP(p, *L));
+        deleteAtPositionP(p, L);
+    }
 }
 
 /******************************************************************************/

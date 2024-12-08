@@ -2,7 +2,7 @@
 
 /******************************************************************************/
 // allocate
-void printMenList(tListM L, byte type);
+void printMemList(tListM L, byte type);
 
 void allocateMalloc(tArgs args, tListM *L);
 
@@ -15,7 +15,7 @@ void allocateShared(tArgs args, tListM *L);
 long getSize(char *size);
 
 // Free me
-char* auxPrintMenList(tItemM item);
+char* auxPrintMemList(tItemM item);
 
 void printHead(byte type);
 
@@ -28,17 +28,17 @@ void cmdAllocate(tArgs args, tLists *L)
    switch (args.len)
    {
    case 1: // call print list 
-      printMenList(L->memory, M_ALL); 
+      printMemList(L->memory, M_ALL); 
       break;
    case 2: // check args length = 2, print item list if = args[1]
       if (strcmp(args.array[1], "-malloc") == 0)
-         printMenList(L->memory, M_MALLOC);
+         printMemList(L->memory, M_MALLOC);
       else if (strcmp(args.array[1], "-mmap") == 0)
-         printMenList(L->memory, M_MMAP);
+         printMemList(L->memory, M_MMAP);
       else if (strcmp(args.array[1], "-createshared") == 0)
-         printMenList(L->memory, M_SHARED);
+         printMemList(L->memory, M_SHARED);
       else if (strcmp(args.array[1], "-shared") == 0)
-         printMenList(L->memory, M_SHARED);
+         printMemList(L->memory, M_SHARED);
       else
          printError(args.array[0], "Invalid argument");
       break;
@@ -77,7 +77,7 @@ long getSize(char *size) // Input size to int
    return result;
 }
 
-char* auxPrintMenList(tItemM item)
+char* auxPrintMemList(tItemM item)
 {
    char *str;
    size_t len;
@@ -141,7 +141,7 @@ void printHead(byte type)
    }
 }
 
-void printMenList(tListM L, byte type)
+void printMemList(tListM L, byte type)
 {
    tPosM p = firstM(L); tItemM item; char* msg;
 
@@ -154,7 +154,7 @@ void printMenList(tListM L, byte type)
       {
          printf(GREEN"%20p %10ld ", item.address, item.size);
          printDateString(item.date);
-         msg = auxPrintMenList(item);
+         msg = auxPrintMemList(item);
          printf(" %s\n", msg);
          free(msg);
       }
@@ -341,19 +341,19 @@ void cmdDeallocate(tArgs args, tLists *L)
    switch (args.len)
       {
       case 1: // call print list 
-         printMenList(L->memory, M_ALL); 
+         printMemList(L->memory, M_ALL); 
          break;
       case 2: // check args length = 2, print item list if = args[1]
          if (args.array[1][0] == '-')
          {
             if (strcmp(args.array[1], "-malloc") == 0)
-               printMenList(L->memory, M_MALLOC);
+               printMemList(L->memory, M_MALLOC);
             else if (strcmp(args.array[1], "-mmap") == 0)
-               printMenList(L->memory, M_MMAP);
+               printMemList(L->memory, M_MMAP);
             else if (strcmp(args.array[1], "-shared") == 0)
-               printMenList(L->memory, M_SHARED);
+               printMemList(L->memory, M_SHARED);
             else if (strcmp(args.array[1], "-delkey") == 0)
-               printMenList(L->memory, M_SHARED);
+               printMemList(L->memory, M_SHARED);
             else
                printError(args.array[0], "Invalid argument");
          }
@@ -674,7 +674,7 @@ void cmdMemory(tArgs args, tLists *L)
 
 void memoryBlocks(tLists L)
 {
-   printMenList(L.memory, M_ALL);
+   printMemList(L.memory, M_ALL);
 }
 
 void memoryFuncs()

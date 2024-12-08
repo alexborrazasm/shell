@@ -5,10 +5,7 @@
 
 #define PNULL NULL
 
-typedef struct tItemP
-{
-    int TODO;
-} tItemP;
+typedef char* tItemP;
 
 struct tNodeP
 {
@@ -37,6 +34,6 @@ void deleteAtPositionP(tPosP p, tListP *L);
 
 tItemP getItemP(tPosP p, tListP L);
 
-// TODO FIND
+tPosP findItemP(char* path, tListP L);
 
 #endif // PATH_LIST_H

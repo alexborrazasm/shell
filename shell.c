@@ -377,6 +377,7 @@ void freePathList(tListP *list)
 
     while (!isEmptyListP(*list)) {
         p = lastP(*list); 
+        free(getItemP(p, *list));
         deleteAtPositionP(p, list);
     }
 }
