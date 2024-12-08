@@ -14,11 +14,11 @@ environ [-environ|-addr] [X]
 
 fork [X]
 
-search []
-       -add dir []
-       -del dir []
-       -clear []
-       -path []
+search [X]
+       -add dir [X]
+       -del dir [X]
+       -clear [X]
+       -path [X]
 
 exec progspec []
 
