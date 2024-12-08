@@ -157,9 +157,108 @@ void printVar(tArgs args, char* var)
 
 /******************************************************************************/
 // changevar [-a|-e|-p] var val
+int doChangeVar(char *var, char *value, char *env[]);
+
+int searchVar(char *var, char *env[]);
+
+int doPutEnv(char *var, char *value);
+
 void cmdChangevar(tArgs args, tLists *L)
 {
-    UNUSED(args); UNUSED(L);
+    UNUSED(L);
+
+    if (args.len == 4) 
+    {
+        if(args.array[1][0] == '-')
+        {
+            if(args.array[1][1] == 'a') // main arg3
+            {
+                char **envp = args.main.envp;
+                if(doChangeVar(args.array[2], args.array[3], envp) == -1)
+                    pPrintError(args.array[0]);
+                return; // all right
+            }
+            else if(args.array[1][1] == 'e') // environ
+            {
+                if(doChangeVar(args.array[2], args.array[3], environ) == -1)
+                    pPrintError(args.array[0]);
+                return; // all right
+            }
+            else if(args.array[1][1] == 'p') // putenv
+            {
+                if(doPutEnv(args.array[2], args.array[3]) == -1)
+                    pPrintError(args.array[0]);
+                return; // all right
+            }
+        }
+    }
+
+    // Error   
+    printError(args.array[0], "Use changevar [-a|-e|-p] var val");
+}
+
+
+int searchVar(char *var, char *env[])  
+{
+    int pos=0;
+    char *aux = malloc(sizeof(var) + 2); // +2 for '\0' and '='
+  
+    strcpy(aux, var);
+    strcat(aux, "=");
+  
+    while(env[pos] != NULL)
+    {
+        if (!strncmp(env[pos], aux, strlen(aux)))
+        {
+            free(aux); return (pos);
+        }
+        else 
+            pos++;
+    }
+    free(aux);
+    errno = ENOENT;   // Var not found
+    return -1;
+}
+
+int doChangeVar(char *var, char *value, char *env[]) 
+{
+    int pos;
+    char *aux;
+   
+    if((pos = searchVar(var, env)) == -1)
+        return -1;
+ 
+    if((aux = (char *)malloc(strlen(var)+strlen(value)+2)) == NULL)
+	    return -1;
+
+    strcpy(aux,var);
+    strcat(aux,"=");
+    strcat(aux,value);
+
+    env[pos] = aux;
+    return pos;
+
+    // NOTE: Do not free envVar because environment directly uses this pointer
+}
+
+int doPutEnv(char *var, char *value)
+{
+    size_t length = strlen(var) + strlen(value) + 2; // +2 for '=' '\0'
+    char *envVar = malloc(length);
+    
+    if (!envVar)
+        return -1;
+    
+    snprintf(envVar, length, "%s=%s", var, value); // Build var=value
+
+    // Change var
+    if (putenv(envVar) != 0) 
+    {
+        free(envVar); return -1;
+    }
+
+    return 0; // AL RIGHT
+    // NOTE: Do not free envVar because putenv directly uses this pointer
 }
 
 /******************************************************************************/
@@ -404,23 +503,6 @@ void cmdDeljobs(tArgs args, tLists *L)
 
 /*
 help
-
-int CambiarVariable(char * var, char * valor, char *e[]) //cambia una variable en el entorno que se le pasa como parÃ¡metro
-{                                                        //lo hace directamente, no usa putenv
-  int pos;
-  char *aux;
-   
-  if ((pos=BuscarVariable(var,e))==-1)
-    return(-1);
- 
-  if ((aux=(char *)malloc(strlen(var)+strlen(valor)+2))==NULL)
-	return -1;
-  strcpy(aux,var);
-  strcat(aux,"=");
-  strcat(aux,valor);
-  e[pos]=aux;
-  return (pos);
-}
 
 char * Ejecutable (char *s)
 {

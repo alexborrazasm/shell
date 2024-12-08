@@ -6,7 +6,7 @@ setuid [-l] id [X]
 
 showvar v1 v2 .. [X]
 
-changevar [-a|-e|-p] var val []
+changevar [-a|-e|-p] var val [x] QUEDA MEMORIA?
 
 subsvar [-a|-e] v1 v2 val []
 
