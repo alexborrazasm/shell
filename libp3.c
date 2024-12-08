@@ -540,6 +540,57 @@ int doExecpve(char **args, char **NewEnv, int *pprio, tListP L)
         return execve(p, args, NewEnv);
 }
 
+int doExecuteFg(char **args, char **NewEnv, int *pprio, tListP L)
+{   
+    char *p; 
+                                        
+    if(args[0] == NULL || (p = executable(args[0], L)) == NULL)
+    {
+        errno = EFAULT;
+        return -1;
+    }
+
+    if(pprio != NULL && setpriority(PRIO_PROCESS, getpid(), *pprio) == -1 
+        && errno) { return -1; }
+
+    // Create a child process
+    pid_t pid = fork();
+
+    if (pid == -1) { return -1; }
+
+    if (pid == 0) // Child execute 
+    {   
+        if (NewEnv == NULL)
+        {
+            if (execvp(p, args) == -1) {
+                perror("execvp failed"); // Si execvp falla
+                exit(1);
+            }
+        } else {
+            if (execve(p, args, NewEnv) == -1) {
+                perror("execve failed"); // Si execve falla
+                exit(1); // Salir si ocurre un error
+            }
+        }
+    } else {
+        // Proceso padre: esperar a que el hijo termine
+        int status;
+        if (waitpid(pid, &status, 0) == -1) {
+            perror("waitpid failed");
+            return -1; // Error esperando al proceso hijo
+        }
+
+        // Comprobar el estado de terminación del hijo
+        if (WIFEXITED(status)) {
+            printf("El proceso hijo terminó con el código de salida %d\n", WEXITSTATUS(status));
+        } else {
+            printf("El proceso hijo terminó de manera anormal\n");
+        }
+    }
+
+    return 0; // Ejecución exitosa
+}
+
 // i = start
 int findEnvEnd(char *args[], int i) 
 {    
@@ -627,7 +678,10 @@ void cmdExec(tArgs args, tLists *L)
     
     getProgspec(&args, &pg, 1);
     
-    doExecpve(pg.commands, pg.env, NULL, L->path);
+    if (doExecpve(pg.commands, pg.env, NULL, L->path) == -1)
+    {
+        pPrintError(args.array[0]);
+    }
 }
 
 /******************************************************************************/
@@ -641,11 +695,15 @@ void cmdExecpri(tArgs args, tLists *L)
     if (!stringToInt(args.array[1], &prio)) 
     {
         printError(args.array[0], "Invalid prio");
+        return;
     }
 
     getProgspec(&args, &pg, 2);
         
-    doExecpve(pg.commands, pg.env, &prio, L->path);
+    if(doExecpve(pg.commands, pg.env, &prio, L->path) == -1)
+    {
+        pPrintError(args.array[0]);
+    }
 }
 
 /******************************************************************************/

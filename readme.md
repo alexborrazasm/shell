@@ -20,9 +20,9 @@ search [X]
        -clear [X]
        -path [X]
 
-exec progspec [X]
+exec progspec [X] queda memoria, PERO EL PROCESO REMPLAZA MI SHELL? no se
 
-execpri prio progspec [X] revisar prio
+execpri prio progspec [X] revisar prio y queda memoría mismo arriba
 
 fg progspec []
 
