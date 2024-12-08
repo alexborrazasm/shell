@@ -24,9 +24,9 @@ exec progspec [X] queda memoria, PERO EL PROCESO REMPLAZA MI SHELL? no se
 
 execpri prio progspec [X] revisar prio y queda memoría mismo arriba
 
-fg progspec []
+fg progspec [X]
 
-fgpri progspec []
+fgpri progspec [X]
 
 back progspec []
 

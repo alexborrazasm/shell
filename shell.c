@@ -271,11 +271,11 @@ void processInput(tLists *L, bool *end, tArgsMain main)
         args.len = stringCut(item.command, args.array);
         args.main = main;
 
-        selectCommand(args, item.command, L, end);
+        selectCommand(args, L, end);
     }
 }
 
-void selectCommand(tArgs args, char *input, tLists *L, bool *end)
+void selectCommand(tArgs args, tLists *L, bool *end)
 {
     const int nCommands = getCommandsLen();
 
@@ -307,7 +307,13 @@ void selectCommand(tArgs args, char *input, tLists *L, bool *end)
         tProgspec pg;
         getProgspec(&args, &pg, 0);
         
-        doExecpve(pg.commands, pg.env, NULL, L->path); // TODO poner fg
+        if(doExecuteFg(pg.commands, pg.env, NULL, L->path) == -1)
+        {
+            pPrintError(args.array[0]);
+        }
+
+        if (pg.env != NULL)
+            freeEnv(pg.env);
     }
 }
 

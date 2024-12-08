@@ -518,7 +518,7 @@ char *executable(char *s, tListP L)
 /*  NewEnv contains the address of the new environment
     pprio the address of the new priority
     NULL indicates no change in environment and/or priority */
-int doExecpve(char **args, char **NewEnv, int *pprio, tListP L)
+int doExecpve(char **args, char **newEnv, int *pprio, tListP L)
 {   
     char *p; 
                                         
@@ -534,61 +534,33 @@ int doExecpve(char **args, char **NewEnv, int *pprio, tListP L)
         return -1;
     }
 
-    if(NewEnv == NULL)
+    if(newEnv == NULL)
         return execv(p, args);
     else
-        return execve(p, args, NewEnv);
+        return execve(p, args, newEnv);
 }
 
-int doExecuteFg(char **args, char **NewEnv, int *pprio, tListP L)
+int doExecuteFg(char **args, char **newEnv, int *pprio, tListP L)
 {   
-    char *p; 
-                                        
-    if(args[0] == NULL || (p = executable(args[0], L)) == NULL)
-    {
-        errno = EFAULT;
-        return -1;
-    }
-
-    if(pprio != NULL && setpriority(PRIO_PROCESS, getpid(), *pprio) == -1 
-        && errno) { return -1; }
-
-    // Create a child process
-    pid_t pid = fork();
+    pid_t pid = fork(); // Create a child process
 
     if (pid == -1) { return -1; }
 
     if (pid == 0) // Child execute 
     {   
-        if (NewEnv == NULL)
-        {
-            if (execvp(p, args) == -1) {
-                perror("execvp failed"); // Si execvp falla
-                exit(1);
-            }
-        } else {
-            if (execve(p, args, NewEnv) == -1) {
-                perror("execve failed"); // Si execve falla
-                exit(1); // Salir si ocurre un error
-            }
+        if(doExecpve(args, newEnv, pprio, L) == -1 )
+        { 
+            pPrintError(args[0]);
+            exit(EXIT_FAILURE); 
         }
-    } else {
-        // Proceso padre: esperar a que el hijo termine
+    } 
+    else 
+    {   // Father wait
         int status;
-        if (waitpid(pid, &status, 0) == -1) {
-            perror("waitpid failed");
-            return -1; // Error esperando al proceso hijo
-        }
-
-        // Comprobar el estado de terminación del hijo
-        if (WIFEXITED(status)) {
-            printf("El proceso hijo terminó con el código de salida %d\n", WEXITSTATUS(status));
-        } else {
-            printf("El proceso hijo terminó de manera anormal\n");
-        }
+        if (waitpid(pid, &status, 0) == -1) { return -1; }
     }
 
-    return 0; // Ejecución exitosa
+    return 0; // All right
 }
 
 // i = start
@@ -711,7 +683,16 @@ void cmdExecpri(tArgs args, tLists *L)
 // progspec = [VAR1 VAR2 VAR3 ....] executablefile [arg1 arg2......]
 void cmdFg(tArgs args, tLists *L)
 {
-    UNUSED(args); UNUSED(L);
+    tProgspec pg;
+    getProgspec(&args, &pg, 1);
+        
+    if(doExecuteFg(pg.commands, pg.env, NULL, L->path) == -1)
+    {
+        pPrintError(args.array[0]);
+    }
+
+    if (pg.env != NULL)
+        freeEnv(pg.env);
 }
 
 /******************************************************************************/
@@ -719,7 +700,23 @@ void cmdFg(tArgs args, tLists *L)
 // progspec = [VAR1 VAR2 VAR3 ....] executablefile [arg1 arg2......]
 void cmdFgpri(tArgs args, tLists *L)
 {
-    UNUSED(args); UNUSED(L);
+    tProgspec pg; int prio;
+
+    if (!stringToInt(args.array[1], &prio)) 
+    {
+        printError(args.array[0], "Invalid prio");
+        return;
+    }    
+
+    getProgspec(&args, &pg, 2);
+        
+    if(doExecuteFg(pg.commands, pg.env, NULL, L->path) == -1)
+    {
+        pPrintError(args.array[0]);
+    }
+
+    if (pg.env != NULL)
+        freeEnv(pg.env);
 }
 
 /******************************************************************************/

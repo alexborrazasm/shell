@@ -18,7 +18,7 @@ bool readInput(tLists *L);
 
 void processInput(tLists *L, bool *end, tArgsMain main);
 
-void selectCommand(tArgs args, char *input, tLists *L, bool *end);
+void selectCommand(tArgs args, tLists *L, bool *end);
 
 void freeLists(tLists *L);
 

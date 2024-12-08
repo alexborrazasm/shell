@@ -52,8 +52,10 @@ void cmdListjobs(tArgs args, tLists *L);
 // deljobs -term|-sig 
 void cmdDeljobs(tArgs args, tLists *L);
 
-int doExecpve(char **args, char **NewEnv, int *pprio, tListP L);
-
 void getProgspec(tArgs *args, tProgspec *pg, int start);
+
+int doExecuteFg(char **args, char **newEnv, int *pprio, tListP L);
+
+void freeEnv(char **envp);
 
 #endif // LIBP3_H
