@@ -20,9 +20,9 @@ search [X]
        -clear [X]
        -path [X]
 
-exec progspec []
+exec progspec [X]
 
-execpri prio progspec []
+execpri prio progspec [X] revisar prio
 
 fg progspec []
 

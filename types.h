@@ -20,9 +20,11 @@
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include <ctype.h>
+#include <sys/resource.h>
 
 #define MAX_BUFFER_INPUT 256
-#define MAX_ARGS 30
+#define MAX_PATH 1024
+#define MAX_ARGS 64
 #define UNUSED(expr) do { (void)(expr); } while (0)
 #define MODE_NULL -1
 
@@ -47,6 +49,14 @@ typedef struct tArgsMain
     int argc;
     char **argv, **envp;
 } tArgsMain;
+
+typedef struct tProgspec
+{
+    char **env;
+    char **commands;
+    int len;
+} tProgspec;
+
 
 typedef struct tArgs
 {

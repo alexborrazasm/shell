@@ -303,7 +303,11 @@ void selectCommand(tArgs args, char *input, tLists *L, bool *end)
             cmdClear();
             return;
         }
-        printError(input, "command not found...");
+
+        tProgspec pg;
+        getProgspec(&args, &pg, 0);
+        
+        doExecpve(pg.commands, pg.env, NULL, L->path); // TODO poner fg
     }
 }
 
