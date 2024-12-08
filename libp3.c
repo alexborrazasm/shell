@@ -15,7 +15,7 @@ void cmdGetuid(tArgs args, tLists *L)
     if(args.len == 1)
         doGetuid();
     else
-        printError(args.array[0], "Not acept arguments");
+        printError(args.array[0], "Not accept arguments");
 }
 
 void doGetuid()
@@ -368,9 +368,9 @@ void doFork(tListB *L);
 void cmdFork(tArgs args, tLists *L)
 {
     if(args.len == 1)
-        doFork(&L->backgroud);
+        doFork(&L->background);
     else
-        printError(args.array[0], "Not acept arguments");
+        printError(args.array[0], "Not accept arguments");
 }
 
 void doFork(tListB *L)
@@ -572,7 +572,7 @@ int doExecuteBg(char **args, char **newEnv, int *pprio, tListP L)
     if (pid == 0) // Child execute 
     {   
         if (setsid() == -1) {
-            pPrinterror(args[0]);
+            pPrintError(args[0]);
             exit(EXIT_FAILURE);
         }
 
@@ -632,7 +632,7 @@ void freeEnv(char **envp)
     }
 }
 
-// Remenver free pg.env
+// Remember free pg.env
 void getProgspec(tArgs *args, tProgspec *pg, int start)
 {
     int endVars = findEnvEnd(args->array, start);

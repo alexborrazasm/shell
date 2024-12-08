@@ -401,7 +401,7 @@ void freeLists(tLists *L)
     freeHistoryList(&L->historic);
     freeFileList(&L->files);
     freeMenList(&L->memory);
-    freeBackgroundList(&L->backgroud);
+    freeBackgroundList(&L->background);
     freePathList(&L->path);
 }
 

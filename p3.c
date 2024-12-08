@@ -27,7 +27,7 @@ void shell(tArgsMain main)
     createEmptyListH(&L.historic);
     createEmptyListF(&L.files);
     createEmptyListM(&L.memory);
-    createEmptyListB(&L.backgroud);
+    createEmptyListB(&L.background);
     createEmptyListP(&L.path);
 
     initFList(&L.files);

@@ -90,7 +90,7 @@ typedef struct tLists
     tListH historic;
     tListF files;
     tListM memory;
-    tListB backgroud;
+    tListB background;
     tListP path;
 } tLists;
 // End forward declaration for tListH
