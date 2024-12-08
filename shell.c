@@ -165,7 +165,11 @@ void printPrompt()
     char *home;
 
     // Get username
-    username = getenv("USER");
+    uid_t effectiveUid = geteuid();
+    struct passwd *pw = getpwuid(effectiveUid);
+
+    username = pw->pw_name;
+     
     if (username == NULL)
     {
         username = "unknown";
@@ -184,7 +188,7 @@ void printPrompt()
     }
 
     // Get $HOME
-    home = getenv("HOME");
+    home = pw->pw_dir;
     if (home != NULL && strncmp(cwd, home, strlen(home)) == 0)
     {
         char temp[max_path]; // Temp buffer

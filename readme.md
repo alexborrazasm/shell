@@ -2,7 +2,7 @@
 
 getuid [X]
 
-setuid [-l] id []
+setuid [-l] id [X]
 
 showvar v1 v2 .. [X]
 

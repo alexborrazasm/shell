@@ -22,20 +22,74 @@ void doGetuid()
 {
     uid_t realUid = getuid();
     uid_t effectiveUid = geteuid();
-    struct passwd *realPw = getpwuid(realUid);
-    struct passwd *effectivePw = getpwuid(effectiveUid);
+    struct passwd *passwd = getpwuid(realUid);
 
-    printf("Credencial real: "GREEN"%d"RST", ("BLUE"%s"RST")\n",
-           realUid, realPw ? realPw->pw_name : "unknown");
-    printf("Credencial efective: "GREEN"%d"RST", ("BLUE"%s"RST")\n",
-           effectiveUid, effectivePw ? effectivePw->pw_name : "unknown");
+    printf("Credencial real: "YELLOW"%d"RST", ("BLUE"%s"RST")\n",
+           realUid, passwd ? passwd->pw_name : "unknown");
+
+    passwd = getpwuid(effectiveUid);
+           
+    printf("Credencial efective: "YELLOW"%d"RST", ("BLUE"%s"RST")\n",
+           effectiveUid, passwd ? passwd->pw_name : "unknown");
 }
 
 /******************************************************************************/
 // setuid [-l] id
+void setuidLogin(tArgs args);
+
+void setuidInt(int n);
+
 void cmdSetuid(tArgs args, tLists *L)
 {
-    UNUSED(args); UNUSED(L);
+    UNUSED(L);
+
+    switch (args.len)
+    {
+    case 1:
+        doGetuid();
+        break;
+    case 2:
+        if (args.array[1][0] != '-') // -l
+        {
+            int n;
+            if (stringToInt(args.array[1], &n))
+            {
+                setuidInt(n);
+            }
+        }
+        else
+            doGetuid();        
+        break;
+    case 3:
+        if (args.array[1][0] == '-' && args.array[1][1] == 'l') // -l login
+            setuidLogin(args);
+        else
+            printError(args.array[0], "Invalid argument");
+        break;
+    default:
+        printError(args.array[0], "Invalid num of arguments");
+        break;
+    }
+}
+
+void setuidLogin(tArgs args)
+{
+    char *login = args.array[2]; struct passwd *pw = getpwnam(login);
+    
+    if (pw == NULL)
+    {
+        printError(args.array[0], "User not found");
+        return;
+    }
+
+    setuidInt(pw->pw_uid);
+}
+
+void setuidInt(int n)
+{
+    // Try to change UID
+    if (seteuid((uid_t)n) == -1) 
+        pPrintError("Can not change uid");
 }
 
 /******************************************************************************/
@@ -350,24 +404,6 @@ void cmdDeljobs(tArgs args, tLists *L)
 
 /*
 help
-
-int BuscarVariable (char * var, char *e[])  //busca una variable en el entorno que se le pasa como parÃ¡metro
-{                                           //devuelve la posicion de la variable en el entorno, -1 si no existe
-  int pos=0;
-  char aux[MAXVAR];
-  
-  strcpy (aux,var);
-  strcat (aux,"=");
-  
-  while (e[pos]!=NULL)
-    if (!strncmp(e[pos],aux,strlen(aux)))
-      return (pos);
-    else 
-      pos++;
-  errno=ENOENT;   //no hay tal variable
-  return(-1);
-}
-
 
 int CambiarVariable(char * var, char * valor, char *e[]) //cambia una variable en el entorno que se le pasa como parÃ¡metro
 {                                                        //lo hace directamente, no usa putenv
