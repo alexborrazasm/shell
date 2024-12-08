@@ -21,6 +21,7 @@
 #include <sys/shm.h>
 #include <ctype.h>
 #include <sys/resource.h>
+#include <signal.h>
 
 #define MAX_BUFFER_INPUT 256
 #define MAX_PATH 1024

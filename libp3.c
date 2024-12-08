@@ -4,6 +4,99 @@ extern char **environ;  // Declaration of environ
 
 void printEnv(char *envp[], bool environ);
 
+struct SIN {
+    char *name;
+    int num;
+};
+
+static struct SIN sigstrnum[] = {   
+	{"HUP", SIGHUP},
+	{"INT", SIGINT},
+	{"QUIT", SIGQUIT},
+	{"ILL", SIGILL}, 
+	{"TRAP", SIGTRAP},
+	{"ABRT", SIGABRT},
+	{"IOT", SIGIOT},
+	{"BUS", SIGBUS},
+	{"FPE", SIGFPE},
+	{"KILL", SIGKILL},
+	{"USR1", SIGUSR1},
+	{"SEGV", SIGSEGV},
+	{"USR2", SIGUSR2}, 
+	{"PIPE", SIGPIPE},
+	{"ALRM", SIGALRM},
+	{"TERM", SIGTERM},
+	{"CHLD", SIGCHLD},
+	{"CONT", SIGCONT},
+	{"STOP", SIGSTOP},
+	{"TSTP", SIGTSTP}, 
+	{"TTIN", SIGTTIN},
+	{"TTOU", SIGTTOU},
+	{"URG", SIGURG},
+	{"XCPU", SIGXCPU},
+	{"XFSZ", SIGXFSZ},
+	{"VTALRM", SIGVTALRM},
+	{"PROF", SIGPROF},
+	{"WINCH", SIGWINCH}, 
+	{"IO", SIGIO},
+	{"SYS", SIGSYS},
+#ifdef SIGPOLL
+	{"POLL", SIGPOLL},
+#endif
+#ifdef SIGPWR
+	{"PWR", SIGPWR},
+#endif
+#ifdef SIGEMT
+	{"EMT", SIGEMT},
+#endif
+#ifdef SIGINFO
+	{"INFO", SIGINFO},
+#endif
+#ifdef SIGSTKFLT
+	{"STKFLT", SIGSTKFLT},
+#endif
+#ifdef SIGCLD
+	{"CLD", SIGCLD},
+#endif
+#ifdef SIGLOST
+	{"LOST", SIGLOST},
+#endif
+#ifdef SIGCANCEL
+	{"CANCEL", SIGCANCEL},
+#endif
+#ifdef SIGTHAW
+	{"THAW", SIGTHAW},
+#endif
+#ifdef SIGFREEZE
+	{"FREEZE", SIGFREEZE},
+#endif
+#ifdef SIGLWP
+	{"LWP", SIGLWP},
+#endif
+#ifdef SIGWAITING
+	{"WAITING", SIGWAITING},
+#endif
+ 	{NULL,-1},
+	};
+
+
+int getNumSin(char *sin) 
+{ 
+  for (int i = 0; sigstrnum[i].name != NULL; i++)
+  	if (!strcmp(sin, sigstrnum[i].name))
+		return sigstrnum[i].num;
+  return -1;
+}
+
+
+char *getNameSin(int sin)
+{
+  for (int i = 0; sigstrnum[i].name != NULL; i++)
+  	if (sin == sigstrnum[i].num)
+		return sigstrnum[i].name;
+ return ("SIGUNKNOWN");
+}
+
 /******************************************************************************/
 // getuid
 void doGetuid();
@@ -563,7 +656,7 @@ int doExecuteFg(char **args, char **newEnv, int *pprio, tListP L)
     return 0; // All right
 }
 
-int doExecuteBg(char **args, char **newEnv, int *pprio, tListP L)
+int doExecuteBg(tArgs args, char **command, char **newEnv, int *pprio, tLists *L)
 {
     pid_t pid = fork(); // Create a child process
 
@@ -572,16 +665,23 @@ int doExecuteBg(char **args, char **newEnv, int *pprio, tListP L)
     if (pid == 0) // Child execute 
     {   
         if (setsid() == -1) {
-            pPrintError(args[0]);
+            pPrintError(command[0]);
             exit(EXIT_FAILURE);
         }
 
-        if(doExecpve(args, newEnv, pprio, L) == -1 )
+        if(doExecpve(command, newEnv, pprio, L->path) == -1 )
         { 
-            pPrintError(args[0]);
+            pPrintError(command[0]);
             exit(EXIT_FAILURE); 
         }
-    } 
+    }
+    else // Father
+    {
+        tItemB item;
+        item.pid = 10; // TODO
+    }
+
+    
 
     return 0; // All right
 }
@@ -683,22 +783,29 @@ void cmdExec(tArgs args, tLists *L)
 // execpri prio progspec 
 // progspec = [VAR1 VAR2 VAR3 ....] executablefile [arg1 arg2......]
 void cmdExecpri(tArgs args, tLists *L)
-{
-    tProgspec pg; // free?
-    int prio;
-
-    if (!stringToInt(args.array[1], &prio)) 
+{   
+    if (args.len > 1)
     {
-        printError(args.array[0], "Invalid prio");
-        return;
-    }
+        tProgspec pg; // free?
+        int prio;
 
-    getProgspec(&args, &pg, 2);
-        
-    if(doExecpve(pg.commands, pg.env, &prio, L->path) == -1)
-    {
-        pPrintError(args.array[0]);
+        if (!stringToInt(args.array[1], &prio)) 
+        {
+            printError(args.array[0], "Invalid prio");
+            return;
+        }
+
+        getProgspec(&args, &pg, 2);
+            
+        if(doExecpve(pg.commands, pg.env, &prio, L->path) == -1)
+        {
+            pPrintError(args.array[0]);
+        }
     }
+    else
+    {
+        printError(args.array[0], "Invalid argument");
+    } 
 }
 
 /******************************************************************************/
@@ -723,23 +830,30 @@ void cmdFg(tArgs args, tLists *L)
 // progspec = [VAR1 VAR2 VAR3 ....] executablefile [arg1 arg2......]
 void cmdFgpri(tArgs args, tLists *L)
 {
-    tProgspec pg; int prio;
-
-    if (!stringToInt(args.array[1], &prio)) 
+    if (args.len > 1)
     {
-        printError(args.array[0], "Invalid prio");
-        return;
-    }    
+        tProgspec pg; int prio;
 
-    getProgspec(&args, &pg, 2);
+        if (!stringToInt(args.array[1], &prio)) 
+        {
+            printError(args.array[0], "Invalid prio");
+            return;
+        }    
+
+        getProgspec(&args, &pg, 2);
         
-    if(doExecuteFg(pg.commands, pg.env, &prio, L->path) == -1)
-    {
-        pPrintError(args.array[0]);
-    }
+        if(doExecuteFg(pg.commands, pg.env, &prio, L->path) == -1)
+        {
+            pPrintError(args.array[0]);
+        }
 
-    if (pg.env != NULL)
-        freeEnv(pg.env);
+        if (pg.env != NULL)
+            freeEnv(pg.env);
+    }
+    else
+    {
+        printError(args.array[0], "Invalid argument");
+    }
 }
 
 /******************************************************************************/
@@ -751,7 +865,7 @@ void cmdBack(tArgs args, tLists *L)
 
     getProgspec(&args, &pg, 1);
         
-    if(doExecuteFg(pg.commands, pg.env, NULL, L->path) == -1)
+    if(doExecuteBg(args, pg.commands, pg.env, NULL, L) == -1)
     {
         pPrintError(args.array[0]);
     }
@@ -762,19 +876,26 @@ void cmdBack(tArgs args, tLists *L)
 // progspec = [VAR1 VAR2 VAR3 ....] executablefile [arg1 arg2......]
 void cmdBackpri(tArgs args, tLists *L)
 {
-    tProgspec pg; int prio; // free?
-
-    if (!stringToInt(args.array[1], &prio)) 
+    if (args.len > 1)
     {
-        printError(args.array[0], "Invalid prio");
-        return;
-    }    
+        tProgspec pg; int prio; // free?
 
-    getProgspec(&args, &pg, 2);
+        if (!stringToInt(args.array[1], &prio)) 
+        {
+            printError(args.array[0], "Invalid prio");
+            return;
+        }    
+
+        getProgspec(&args, &pg, 2);
         
-    if(doExecuteBg(pg.commands, pg.env, &prio, L->path) == -1)
+        if(doExecuteBg(args, pg.commands, pg.env, &prio, L) == -1)
+        {
+            pPrintError(args.array[0]);
+        }
+    }
+    else
     {
-        pPrintError(args.array[0]);
+        printError(args.array[0], "Invalid argument");
     }
 }
 

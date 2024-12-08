@@ -424,7 +424,8 @@ void printError(char *name, char *msg)
 
 void pPrintError(char *name)
 {
-    fprintf(stderr, RED_BOLD"Error: %s: %s\n"RST, (name) ? name:"NULL", strerror(errno));
+    fprintf(stderr, RED_BOLD"Error: %s: %s\n"RST,
+           (name) ? name:"NULL", strerror(errno));
 }
 
 void pPrintErrorFile(char *name, char *filename)

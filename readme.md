@@ -28,9 +28,9 @@ fg progspec [X]
 
 fgpri progspec [X]
 
-back progspec []
+back progspec [] queda men, falta añadir a lista
 
-backpri prio progspec []
+backpri prio progspec [] queda men, falta añadir a lista
 
 listjobs []
 

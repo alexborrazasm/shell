@@ -7,7 +7,10 @@
 
 typedef struct tItemB
 {
-    int TODO;
+    int pid;
+    time_t time;
+    int status; // TODO?
+    char commandLine[MAX_BUFFER_INPUT];
 } tItemB;
 
 struct tNodeB
