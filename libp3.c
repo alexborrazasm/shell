@@ -222,8 +222,7 @@ int searchVar(char *var, char *env[])
 
 int doChangeVar(char *var, char *value, char *env[]) 
 {
-    int pos;
-    char *aux;
+    int pos; char *aux;
    
     if((pos = searchVar(var, env)) == -1)
         return -1;
@@ -231,9 +230,9 @@ int doChangeVar(char *var, char *value, char *env[])
     if((aux = (char *)malloc(strlen(var)+strlen(value)+2)) == NULL)
 	    return -1;
 
-    strcpy(aux,var);
-    strcat(aux,"=");
-    strcat(aux,value);
+    strcpy(aux, var);
+    strcat(aux, "=");
+    strcat(aux, value);
 
     env[pos] = aux;
     return pos;
@@ -263,9 +262,55 @@ int doPutEnv(char *var, char *value)
 
 /******************************************************************************/
 // subsvar [-a|-e] v1 v2 val
+int doSubsVar(char *v1, char *v2, char *value, char *env[]);
+
 void cmdSubsvar(tArgs args, tLists *L)
 {
-    UNUSED(args); UNUSED(L);
+    UNUSED(L);
+
+    if (args.len == 5) 
+    {
+        char** array = args.array;
+        if(args.array[1][0] == '-')
+        {
+            if(args.array[1][1] == 'a') // main arg3
+            {
+                char **envp = args.main.envp;
+                if(doSubsVar(array[2], array[3], array[4], envp) == -1)
+                    pPrintError(args.array[0]);
+                return; // all right
+            }
+            else if(args.array[1][1] == 'e') // environ
+            {
+                if(doSubsVar(array[2], array[3], array[4], environ) == -1)
+                    pPrintError(args.array[0]);
+                return; // all right
+            }
+        }
+    }
+
+    // Error   
+    printError(args.array[0], "Subsvar [-a|-e] v1 v2 val");
+}
+
+int doSubsVar(char *v1, char *v2, char *value, char *env[])
+{
+    int pos; char *aux;
+   
+    if((pos = searchVar(v1, env)) == -1)
+        return -1;
+ 
+    if((aux = (char *)malloc(strlen(v2) + strlen(value) + 2)) == NULL)
+	    return -1;
+
+    strcpy(aux, v2);
+    strcat(aux, "=");
+    strcat(aux, value);
+
+    env[pos] = aux;
+    return pos;
+
+    // NOTE: Do not free envVar because environment directly uses this pointer   
 }
 
 /******************************************************************************/

@@ -8,7 +8,7 @@ showvar v1 v2 .. [X]
 
 changevar [-a|-e|-p] var val [x] QUEDA MEMORIA?
 
-subsvar [-a|-e] v1 v2 val []
+subsvar [-a|-e] v1 v2 val [X] TB QUEDA MEMORIA
 
 environ [-environ|-addr] [X]
 
