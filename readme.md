@@ -4,7 +4,7 @@ getuid [X]
 
 setuid [-l] id []
 
-showvar v1 v2 .. []
+showvar v1 v2 .. [X]
 
 changevar [-a|-e|-p] var val []
 

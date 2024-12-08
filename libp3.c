@@ -2,6 +2,8 @@
 
 extern char **environ;  // Declaration of environ
 
+void printEnv(char *envp[], bool environ);
+
 /******************************************************************************/
 // getuid
 void doGetuid();
@@ -38,9 +40,65 @@ void cmdSetuid(tArgs args, tLists *L)
 
 /******************************************************************************/
 // showvar v1 v2 ...
+void printVar(tArgs args, char* var);
+
 void cmdShowvar(tArgs args, tLists *L)
 {
-    UNUSED(args); UNUSED(L);
+    UNUSED(L);
+
+    if(args.len == 1) // Print environ
+    {
+        printEnv(args.main.envp, false);
+    }
+    else
+    {
+        for(int i = 1; i < args.len; i++)
+        {
+            printVar(args, args.array[i]);
+        }
+    }
+}
+
+void printVar(tArgs args, char* var)
+{
+    char **envp = args.main.envp, *value = NULL, *foundEnvp = NULL;
+    char *foundEnviron = NULL, **entryAddressArg3 = NULL;
+    char **entryAddressEnviron = NULL;   
+    size_t varLen = strlen(var);
+
+    for(char **env = envp; *env != NULL; env++) // search on envp (arg3)
+    {
+        if(strncmp(*env, var, varLen) == 0 && (*env)[varLen] == '=')
+        {
+            foundEnvp = *env + varLen + 1; // value addr
+            entryAddressArg3 = env;        // save addr of pointer
+            break;
+        }
+    }
+
+    for(char **env = environ; *env != NULL; env++) // search on environ 
+    {
+        if(strncmp(*env, var, varLen) == 0 && (*env)[varLen] == '=')
+        {
+            foundEnviron = *env + varLen + 1; // value addr
+            entryAddressEnviron = env;        // save addr of pointer
+            break;
+        }
+    }
+
+    value = getenv(var);
+
+    // Print values if found
+    if(foundEnvp != NULL)
+        printf("with arg3 main: %s="BLUE"%s"RST"("GREEN"%p"RST") @"GREEN"%p\n"RST,
+               var, foundEnvp, foundEnvp, entryAddressArg3);
+
+    if(foundEnviron != NULL)
+        printf("  with environ: %s="BLUE"%s"RST"("GREEN"%p"RST") @"GREEN"%p\n"RST,
+               var, foundEnviron, foundEnviron, entryAddressEnviron);
+
+    if(value != NULL)
+        printf("    with getenv: "BLUE"%s"RST"("GREEN"%p"RST")\n", value, value);
 }
 
 /******************************************************************************/
@@ -60,8 +118,6 @@ void cmdSubsvar(tArgs args, tLists *L)
 /******************************************************************************/
 // environ [-environ|-addr]
 void doEnvironAddr(tArgs args);
-
-void printEnv(char *envp[], bool environ);
 
 void cmdEnviron(tArgs args, tLists *L)
 {
@@ -101,8 +157,10 @@ void doEnvironAddr(tArgs args)
 {
     char **envp = args.main.envp;
 
-    printf("environ:   "GREEN"%p"RST" (stored in "GREEN"%p"RST")\n", environ, (void*)&environ);
-    printf("main arg3: "GREEN"%p"RST" (stored in "GREEN"%p"RST")\n", envp, (void*)&envp);
+    printf("environ:   "GREEN"%p"RST" (stored in "GREEN"%p"RST")\n",
+           environ, (void*)&environ);
+    printf("main arg3: "GREEN"%p"RST" (stored in "GREEN"%p"RST")\n",
+           envp, (void*)&envp);
 }
 
 /******************************************************************************/
