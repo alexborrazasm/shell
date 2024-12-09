@@ -979,8 +979,6 @@ void updateItemjobs(tItemB *item, tPosB p, tListB* bL)
 
             updateItemB(*item, p, bL);
         }
-
-        
     }
 }
 
