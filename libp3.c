@@ -1,15 +1,19 @@
 #include "libp3.h"
 
+#define ACTIVE 
+
 extern char **environ;  // Declaration of environ
 
 void printEnv(char *envp[], bool environ);
 
-struct SIN {
+struct SIN 
+{
     char *name;
     int num;
 };
 
-static struct SIN sigstrnum[] = {   
+static struct SIN sigstrnum[] = 
+{   
 	{"HUP", SIGHUP},
 	{"INT", SIGINT},
 	{"QUIT", SIGQUIT},
@@ -77,8 +81,7 @@ static struct SIN sigstrnum[] = {
 	{"WAITING", SIGWAITING},
 #endif
  	{NULL,-1},
-	};
-
+};
 
 int getNumSin(char *sin) 
 { 
@@ -87,7 +90,6 @@ int getNumSin(char *sin)
 		return sigstrnum[i].num;
   return -1;
 }
-
 
 char *getNameSin(int sin)
 {
@@ -644,15 +646,13 @@ int doExecuteFg(char **args, char **newEnv, int *pprio, tListP L)
         if(doExecpve(args, newEnv, pprio, L) == -1 )
         { 
             pPrintError(args[0]);
-            exit(EXIT_FAILURE); 
+            exit(255); 
         }
     } 
-    else 
-    {   // Father wait
-        int status;
-        if (waitpid(pid, &status, 0) == -1) { return -1; }
-    }
-
+    // Father wait
+    int status;
+    if (waitpid(pid, &status, 0) == -1) { return -1; }
+    
     return 0; // All right
 }
 
@@ -664,24 +664,32 @@ int doExecuteBg(tArgs args, char **command, char **newEnv, int *pprio, tLists *L
 
     if (pid == 0) // Child execute 
     {   
-        if (setsid() == -1) {
-            pPrintError(command[0]);
-            exit(EXIT_FAILURE);
-        }
-
         if(doExecpve(command, newEnv, pprio, L->path) == -1 )
         { 
             pPrintError(command[0]);
-            exit(EXIT_FAILURE); 
+            exit(255); 
         }
     }
-    else // Father
+    // Father
+    
+    tItemB item;
+    item.pid = pid;
+    item.time = getTime(args);
+    item.status = S_ACTIVE;
+    item.sin = 0;
+
+    char buffer[MAX_BUFFER_INPUT] = "";
+
+    for (int i = 0; command[i] != NULL; i++)
     {
-        tItemB item;
-        item.pid = 10; // TODO
+        if (i > 0) 
+            strcat(buffer, " "); // Add ' '
+        strcat(buffer, command[i]);
     }
 
-    
+    strcpy(item.commandLine, buffer);
+
+    insertItemB(item, BNULL, &L->background);    
 
     return 0; // All right
 }
@@ -861,14 +869,18 @@ void cmdFgpri(tArgs args, tLists *L)
 // progspec = [VAR1 VAR2 VAR3 ....] executablefile [arg1 arg2......]
 void cmdBack(tArgs args, tLists *L)
 {
-    tProgspec pg; // free?  
+    tProgspec pg;
 
     getProgspec(&args, &pg, 1);
-        
+ 
     if(doExecuteBg(args, pg.commands, pg.env, NULL, L) == -1)
     {
         pPrintError(args.array[0]);
     }
+
+    if (pg.env != NULL)
+        freeEnv(pg.env);
+
 }
 
 /******************************************************************************/
@@ -878,7 +890,7 @@ void cmdBackpri(tArgs args, tLists *L)
 {
     if (args.len > 1)
     {
-        tProgspec pg; int prio; // free?
+        tProgspec pg; int prio;
 
         if (!stringToInt(args.array[1], &prio)) 
         {
@@ -892,6 +904,9 @@ void cmdBackpri(tArgs args, tLists *L)
         {
             pPrintError(args.array[0]);
         }
+
+        if (pg.env != NULL)
+            freeEnv(pg.env);
     }
     else
     {
@@ -901,16 +916,113 @@ void cmdBackpri(tArgs args, tLists *L)
 
 /******************************************************************************/
 // listjobs
+const char* getStateName(int state);
+
+void updateItemjobs(tItemB *item, tPosB p, tListB* bL);
+
 void cmdListjobs(tArgs args, tLists *L)
 {
-    UNUSED(args); UNUSED(L);
+    UNUSED(args);
+
+    tListB bL = L->background; tItemB item; 
+    struct passwd *pw = getpwuid(getuid());
+
+    for (tPosB p = firstB(bL); p != PNULL; p = nextB(p, bL))
+    {
+        item = getItemB(p, bL);
+
+        updateItemjobs(&item, p, &L->background);
+
+        // PID USER PRIORITY
+        printf(YELLOW"%7d"MAGENTA" %11s"RST" p=%d ", item.pid, pw->pw_name, 
+               getpriority(PRIO_PROCESS, item.pid));
+        
+        // DATE CLOCK
+        printDate(item.time); printf(" "); printTime(item.time);
+        
+        // STATUS
+        printf(" %s ", getStateName(item.status));
+
+        if (item.status & S_SIGNALED)
+            printf("(%s)", getNameSin(item.sin));
+        else
+            printf("(%03d)", item.sin);
+        
+        printf(" %s\n", item.commandLine);
+    }
+}
+
+const char* getStateName(int state)
+{
+    if (state & S_ACTIVE)   return "ACTIVE";
+    if (state & S_FINISHED) return "FINISHED";
+    if (state & S_SIGNALED) return "SIGNALED";
+    if (state & S_STOPED)   return "STOPPED";
+    return "UNKNOWN";
+}
+
+void updateItemjobs(tItemB *item, tPosB p, tListB* bL)
+{
+    if (item->status & S_ACTIVE_STOPED) // child has not finished
+    {
+        int status;
+        
+        if (waitpid(item->pid, &status, WNOHANG | WUNTRACED)) 
+        {   // child not runing
+            if (WIFEXITED(status)) // finished
+            { 
+                item->status = S_FINISHED;
+                item->sin = WEXITSTATUS(status); 
+            }
+            else if (WIFSIGNALED(status)) // signaled
+            { 
+                item->status = S_SIGNALED;
+                item->sin = WTERMSIG(status); 
+            }
+            else if (WIFSTOPPED(status))  // stoped
+            {   
+                item->status = S_STOPED;
+                item->sin = WSTOPSIG(status);
+            }
+        }
+        else // child is active
+        {
+            item->status = S_ACTIVE;
+            item->sin = 0;
+        }
+
+        updateItemB(*item, p, bL);
+    }
 }
 
 /******************************************************************************/
-// deljobs -term|-sig 
+// deljobs -term|-sig
+void doDelJobs(tListB *lB);
+
 void cmdDeljobs(tArgs args, tLists *L)
 {
-    UNUSED(args); UNUSED(L);
+    switch (args.len)
+    {
+    case 1:  // do listjobs
+        cmdListjobs(args, L);
+        break;
+    case 2: // -term or -sig
+        if (strcmp(args.array[1], "-term") == 0) // do -term
+            doDelJobs(&L->background);            
+        else if (strcmp(args.array[1], "-sig") == 0) // do -sig
+            doDelJobs(&L->background);            
+        else
+            printError(args.array[0], "Invalid argument");
+        break;
+    default:
+        printError(args.array[0], "Invalid num of arguments");
+        break;
+    }    
+}
+
+void doDelJobs(tListB *lB)
+{
+    UNUSED(lB); // todo
 }
 
 /******************************************************************************/

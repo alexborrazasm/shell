@@ -4,12 +4,18 @@
 #include "types.h"
 
 #define BNULL NULL
+#define S_ACTIVE   (1 << 0)  // 0001 (1)
+#define S_FINISHED (1 << 1)  // 0010 (2)
+#define S_SIGNALED (1 << 2)  // 0100 (4)
+#define S_STOPED   (1 << 4)  // 1000 (8)
+#define S_ACTIVE_STOPED (S_ACTIVE | S_STOPED) // 1100 (12)
 
 typedef struct tItemB
 {
     int pid;
     time_t time;
-    int status; // TODO?
+    byte status;
+    int sin;
     char commandLine[MAX_BUFFER_INPUT];
 } tItemB;
 
@@ -40,6 +46,6 @@ void deleteAtPositionB(tPosB p, tListB *L);
 
 tItemB getItemB(tPosB p, tListB L);
 
-// TODO FIND
+void updateItemB(tItemB d, tPosB p, tListB* L);
 
 #endif // BACKGROUND_LIST_H

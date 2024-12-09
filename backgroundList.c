@@ -128,3 +128,9 @@ bool createNodeB(tPosB *p)
     else
         return true;
 }
+
+void updateItemB(tItemB d, tPosB p, tListB* L)
+{
+    UNUSED(L);
+    p->data=d;
+}
