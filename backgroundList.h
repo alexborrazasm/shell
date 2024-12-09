@@ -7,8 +7,8 @@
 #define S_ACTIVE   (1 << 0)  // 0001 (1)
 #define S_FINISHED (1 << 1)  // 0010 (2)
 #define S_SIGNALED (1 << 2)  // 0100 (4)
-#define S_STOPED   (1 << 4)  // 1000 (8)
-#define S_ACTIVE_STOPED (S_ACTIVE | S_STOPED) // 1100 (12)
+#define S_STOPPED  (1 << 4)  // 1000 (8)
+#define S_ACTIVE_STOPED (S_ACTIVE | S_STOPPED) // 1100 (12)
 
 typedef struct tItemB
 {

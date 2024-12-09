@@ -920,35 +920,21 @@ const char* getStateName(int state);
 
 void updateItemjobs(tItemB *item, tPosB p, tListB* bL);
 
+void printJob(tItemB item);
+
 void cmdListjobs(tArgs args, tLists *L)
 {
     UNUSED(args);
 
     tListB bL = L->background; tItemB item; 
-    struct passwd *pw = getpwuid(getuid());
 
     for (tPosB p = firstB(bL); p != PNULL; p = nextB(p, bL))
     {
         item = getItemB(p, bL);
 
-        updateItemjobs(&item, p, &L->background);
+        updateItemjobs(&item, p, &bL);
 
-        // PID USER PRIORITY
-        printf(YELLOW"%7d"MAGENTA" %11s"RST" p=%d ", item.pid, pw->pw_name, 
-               getpriority(PRIO_PROCESS, item.pid));
-        
-        // DATE CLOCK
-        printDate(item.time); printf(" "); printTime(item.time);
-        
-        // STATUS
-        printf(" %s ", getStateName(item.status));
-
-        if (item.status & S_SIGNALED)
-            printf("(%s)", getNameSin(item.sin));
-        else
-            printf("(%03d)", item.sin);
-        
-        printf(" %s\n", item.commandLine);
+        printJob(item);
     }
 }
 
@@ -957,7 +943,7 @@ const char* getStateName(int state)
     if (state & S_ACTIVE)   return "ACTIVE";
     if (state & S_FINISHED) return "FINISHED";
     if (state & S_SIGNALED) return "SIGNALED";
-    if (state & S_STOPED)   return "STOPPED";
+    if (state & S_STOPPED)  return "STOPPED";
     return "UNKNOWN";
 }
 
@@ -965,11 +951,12 @@ void updateItemjobs(tItemB *item, tPosB p, tListB* bL)
 {
     if (item->status & S_ACTIVE_STOPED) // child has not finished
     {
-        int status;
+        int status; int pid = item->pid;
+        pid_t result = waitpid(pid, &status, WNOHANG | WUNTRACED | WCONTINUED);
         
-        if (waitpid(item->pid, &status, WNOHANG | WUNTRACED)) 
-        {   // child not runing
-            if (WIFEXITED(status)) // finished
+        if (result > 0) // State has changed
+        {   
+            if (WIFEXITED(status)) // finish
             { 
                 item->status = S_FINISHED;
                 item->sin = WEXITSTATUS(status); 
@@ -979,25 +966,52 @@ void updateItemjobs(tItemB *item, tPosB p, tListB* bL)
                 item->status = S_SIGNALED;
                 item->sin = WTERMSIG(status); 
             }
-            else if (WIFSTOPPED(status))  // stoped
+            else if (WIFSTOPPED(status)) // stopped
             {   
-                item->status = S_STOPED;
+                item->status = S_STOPPED;
                 item->sin = WSTOPSIG(status);
             }
-        }
-        else // child is active
-        {
-            item->status = S_ACTIVE;
-            item->sin = 0;
+            else if (WIFCONTINUED(status)) // continued -> active
+            {
+                item->status = S_ACTIVE;
+                item->sin = 0;
+            }
+
+            updateItemB(*item, p, bL);
         }
 
-        updateItemB(*item, p, bL);
+        
     }
+}
+
+void printJob(tItemB item)
+{
+    struct passwd *pw = getpwuid(getuid());
+
+    // PID USER PRIORITY
+    printf(YELLOW"%7d"MAGENTA" %11s"RST" p=%2d ", item.pid, pw->pw_name, 
+           getpriority(PRIO_PROCESS, item.pid));
+    
+    // DATE CLOCK
+    printDate(item.time); printf(" "); printTime(item.time);
+    
+    // STATUS
+    printf(" %s ", getStateName(item.status));
+
+    if (item.status & S_SIGNALED)
+        printf("(%s)", getNameSin(item.sin));
+    else
+        printf("(%03d)", item.sin);
+    
+    printf(" %s\n", item.commandLine);
 }
 
 /******************************************************************************/
 // deljobs -term|-sig
-void doDelJobs(tListB *lB);
+#define O_TERM (1 << 0)  // 0001 (1)
+#define O_SIG  (1 << 1)  // 0010 (2)
+
+void doDelJobs(tListB *bL, byte opt);
 
 void cmdDeljobs(tArgs args, tLists *L)
 {
@@ -1008,21 +1022,49 @@ void cmdDeljobs(tArgs args, tLists *L)
         break;
     case 2: // -term or -sig
         if (strcmp(args.array[1], "-term") == 0) // do -term
-            doDelJobs(&L->background);            
+            doDelJobs(&L->background, O_TERM);            
         else if (strcmp(args.array[1], "-sig") == 0) // do -sig
-            doDelJobs(&L->background);            
+            doDelJobs(&L->background, O_SIG);            
         else
             printError(args.array[0], "Invalid argument");
         break;
-    default:
+   default:
         printError(args.array[0], "Invalid num of arguments");
         break;
     }    
 }
 
-void doDelJobs(tListB *lB)
+void doDelJobs(tListB *bL, byte opt)
 {
-    UNUSED(lB); // todo
+    tItemB item; tPosB p = firstB(*bL);
+
+   
+    while (p != PNULL)
+    {
+        item = getItemB(p, *bL);
+
+        updateItemjobs(&item, p, bL);
+
+        if (opt & O_TERM && item.status == S_FINISHED)
+        {
+            tPosB aux = nextB(p, *bL);
+            deleteAtPositionB(p, bL);
+            p = aux;                 
+            continue;                
+        }
+
+        if (opt & O_SIG && item.status == S_SIGNALED)
+        {
+            tPosB aux = nextB(p, *bL);
+            deleteAtPositionB(p, bL); 
+            p = aux;                  
+            continue;                 
+        }
+
+        p = nextB(p, *bL);
+
+        printJob(item);
+    } 
 }
 
 /******************************************************************************/
