@@ -694,18 +694,47 @@ int doExecuteBg(tArgs args, char **command, char **newEnv, int *pprio, tLists *L
     return 0; // All right
 }
 
-// i = start
-int findEnvEnd(char *args[], int i) 
-{    
+void freeEnv(char **envp)
+{
+    if (envp) 
+    {
+        for (int i = 0; envp[i] != NULL; i++) 
+        {
+            free(envp[i]);
+        }
+        free(envp);
+    }
+}
 
-    while (args[i] != NULL && strchr(args[i], '=')) { i++; }
+int copyEnvVar(char ***envp, char *name, char *value, int i)
+{
+    if (!name) { return -1; } 
 
-    return i;
+    // +2 for '=' and '\0'
+    char *newEnvVar = malloc(strlen(name) + strlen(value) + 2);
+
+    if (!newEnvVar) { return -1; }
+
+    sprintf(newEnvVar, "%s=%s", name, value);  // "name=value"
+
+    // +1 for new variable, +1 for NULL terminator
+    *envp = realloc(*envp, (i + 2) * sizeof(char *));
+
+    if (!*envp)
+    {
+        free(newEnvVar);
+        return -1;
+    }
+
+    (*envp)[i] = newEnvVar;
+    (*envp)[i + 1] = NULL;
+   
+    return 0;
 }
 
 int addEnvVar(char ***envp, char *new, int i)
 {
-    if (!new) return -1;
+    if (!new) { return -1; }
 
     char *newEnvVar = malloc(strlen(new) + 1);  // +1 for the null terminator
 
@@ -728,44 +757,58 @@ int addEnvVar(char ***envp, char *new, int i)
     return 0;
 }
 
-void freeEnv(char **envp)
-{
-    if (envp) 
-    {
-        for (int i = 0; envp[i] != NULL; i++) 
+// i = start
+int findEnvEnd(char ***envipNew, char *args[], int i) 
+{    
+    while (args[i] != NULL)
+    { 
+        if (strchr(args[i], '='))
         {
-            free(envp[i]);
+            if (addEnvVar(envipNew, args[i], i))
+            {
+                pPrintError("New env error");
+                return -1;
+            }
+            i++;
         }
-        free(envp);
+        else
+        {
+            char * value = getenv(args[i]);
+            if (value)
+            {
+                if (copyEnvVar(envipNew, args[i], value, i))
+                {
+                    pPrintError("New env error");
+                    return -1;
+                }
+                i++;   
+            } 
+            else {
+                break;
+            }
+        }
     }
+    return i;
 }
+
 
 // Remember free pg.env
 void getProgspec(tArgs *args, tProgspec *pg, int start)
 {
-    int endVars = findEnvEnd(args->array, start);
+    char **env = NULL;
+    int endVars = findEnvEnd(&env, args->array, start);
 
-    if (endVars == start)
+    if (endVars == -1) { freeEnv(env); }
+    
+
+    if (endVars == start) // No new env
     {
         pg->env = NULL;
         pg->commands = args->array + start;
         pg->len = args->len - start;
     }
-    else
+    else // New env
     {
-        char **env = NULL;
-        int envCount = endVars - start;
-
-        for (int i = 0; i < envCount; i++) 
-        {
-            if (addEnvVar(&env, args->array[start + i], i) == -1) 
-            {
-                pPrintError(args->array[0]);
-                if (env) { freeEnv(env); }
-                return;
-            }
-        }
-    
         pg->env = env;
         pg->commands = args->array + endVars;
         pg->len = args->len - endVars;
