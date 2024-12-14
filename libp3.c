@@ -213,44 +213,50 @@ void cmdShowvar(tArgs args, tLists *L)
 
 void printVar(tArgs args, char* var)
 {
-    char **envp = args.main.envp, *value = NULL, *foundEnvp = NULL;
-    char *foundEnviron = NULL, **entryAddressArg3 = NULL;
-    char **entryAddressEnviron = NULL;   
+    char **envp = args.main.envp;
     size_t varLen = strlen(var);
+    void* entryAddress = NULL; void* dirName = NULL;
+    char* value = NULL;
 
     for(char **env = envp; *env != NULL; env++) // search on envp (arg3)
     {
         if(strncmp(*env, var, varLen) == 0 && (*env)[varLen] == '=')
         {
-            foundEnvp = *env + varLen + 1; // value addr
-            entryAddressArg3 = env;        // save addr of pointer
+            entryAddress = env;
+            dirName = *env;           
+            value = *env + varLen + 1; // +1 for =
+            
             break;
         }
     }
+
+    if(entryAddress != NULL)
+        printf("with arg3 main: %s="BLUE"%s"RST"("GREEN"%p"RST") @"GREEN"%p\n"RST,
+               var, value, dirName, entryAddress);
+
+    entryAddress = NULL; dirName = NULL; value = NULL;
 
     for(char **env = environ; *env != NULL; env++) // search on environ 
     {
         if(strncmp(*env, var, varLen) == 0 && (*env)[varLen] == '=')
         {
-            foundEnviron = *env + varLen + 1; // value addr
-            entryAddressEnviron = env;        // save addr of pointer
+            entryAddress = env;
+            dirName = *env;           
+            value = *env + varLen + 1; // +1 for =
+           
             break;
         }
     }
 
+    if(entryAddress != NULL)
+        printf("  with environ: %s="BLUE"%s"RST"("GREEN"%p"RST") @"GREEN"%p\n"RST,
+               var, value, dirName, entryAddress);
+
     value = getenv(var);
 
-    // Print values if found
-    if(foundEnvp != NULL)
-        printf("with arg3 main: %s="BLUE"%s"RST"("GREEN"%p"RST") @"GREEN"%p\n"RST,
-               var, foundEnvp, foundEnvp, entryAddressArg3);
-
-    if(foundEnviron != NULL)
-        printf("  with environ: %s="BLUE"%s"RST"("GREEN"%p"RST") @"GREEN"%p\n"RST,
-               var, foundEnviron, foundEnviron, entryAddressEnviron);
-
     if(value != NULL)
-        printf("    with getenv: "BLUE"%s"RST"("GREEN"%p"RST")\n", value, value);
+        printf("    with getenv: "BLUE"%s"RST"("GREEN"%p"RST")\n",
+               value, value);
 }
 
 /******************************************************************************/
@@ -296,7 +302,6 @@ void cmdChangevar(tArgs args, tLists *L)
     // Error   
     printError(args.array[0], "Use changevar [-a|-e|-p] var val");
 }
-
 
 int searchVar(char *var, char *env[])  
 {
