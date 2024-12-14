@@ -151,6 +151,8 @@ void cmdSetuid(tArgs args, tLists *L)
             {
                 setuidInt(n);
             }
+            else
+                printError(args.array[0], "Not a valid uid");
         }
         else
             doGetuid();        
@@ -183,6 +185,7 @@ void setuidLogin(tArgs args)
 void setuidInt(int n)
 {
     // Try to change UID
+    printf("%d", n);
     if (seteuid((uid_t)n) == -1) 
         pPrintError("Can not change uid");
 }
