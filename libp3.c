@@ -252,7 +252,7 @@ void printVar(tArgs args, char* var)
 
 /******************************************************************************/
 // changevar [-a|-e|-p] var val
-int doChangeVar(char *var, char *value, char *env[]);
+int doChangeVar(char *var, char *value, char *env[], tListM *L);
 
 int searchVar(char *var, char *env[]);
 
@@ -269,13 +269,15 @@ void cmdChangevar(tArgs args, tLists *L)
             if(args.array[1][1] == 'a') // main arg3
             {
                 char **envp = args.main.envp;
-                if(doChangeVar(args.array[2], args.array[3], envp) == -1)
+                if(doChangeVar(args.array[2], args.array[3], envp, 
+                   &L->memory) == -1)
                     pPrintError(args.array[0]);
                 return; // all right
             }
             else if(args.array[1][1] == 'e') // environ
             {
-                if(doChangeVar(args.array[2], args.array[3], environ) == -1)
+                if(doChangeVar(args.array[2], args.array[3], environ, 
+                   &L->memory) == -1)
                     pPrintError(args.array[0]);
                 return; // all right
             }
@@ -315,7 +317,7 @@ int searchVar(char *var, char *env[])
     return -1;
 }
 
-int doChangeVar(char *var, char *value, char *env[]) 
+int doChangeVar(char *var, char *value, char *env[], tListM *L) 
 {
     int pos; char *aux;
    
@@ -325,14 +327,23 @@ int doChangeVar(char *var, char *value, char *env[])
     if((aux = (char *)malloc(strlen(var)+strlen(value)+2)) == NULL)
 	    return -1;
 
+    // NOTE: Do not free envVar because environment directly uses this pointer   
+    // add to memoryList to free at end
+    tItemM item; time_t now; time(&now);
+    item.address = aux;
+    item.date = now;
+    item.type = M_MALLOC;
+    item.size = sizeof(aux);
+
+    insertItemM(item, MNULL, L);
+
+    // Change env
     strcpy(aux, var);
     strcat(aux, "=");
     strcat(aux, value);
 
     env[pos] = aux;
     return pos;
-
-    // NOTE: Do not free envVar because environment directly uses this pointer
 }
 
 int doPutEnv(char *var, char *value)
@@ -357,7 +368,7 @@ int doPutEnv(char *var, char *value)
 
 /******************************************************************************/
 // subsvar [-a|-e] v1 v2 val
-int doSubsVar(char *v1, char *v2, char *value, char *env[]);
+int doSubsVar(char *v1, char *v2, char *value, char *env[], tListM *L);
 
 void cmdSubsvar(tArgs args, tLists *L)
 {
@@ -371,13 +382,15 @@ void cmdSubsvar(tArgs args, tLists *L)
             if(args.array[1][1] == 'a') // main arg3
             {
                 char **envp = args.main.envp;
-                if(doSubsVar(array[2], array[3], array[4], envp) == -1)
+                if(doSubsVar(array[2], array[3], array[4], envp, 
+                   &L->memory) == -1)
                     pPrintError(args.array[0]);
                 return; // all right
             }
             else if(args.array[1][1] == 'e') // environ
             {
-                if(doSubsVar(array[2], array[3], array[4], environ) == -1)
+                if(doSubsVar(array[2], array[3], array[4], environ, 
+                   &L->memory) == -1)
                     pPrintError(args.array[0]);
                 return; // all right
             }
@@ -388,7 +401,7 @@ void cmdSubsvar(tArgs args, tLists *L)
     printError(args.array[0], "Subsvar [-a|-e] v1 v2 val");
 }
 
-int doSubsVar(char *v1, char *v2, char *value, char *env[])
+int doSubsVar(char *v1, char *v2, char *value, char *env[], tListM *L)
 {
     int pos; char *aux;
    
@@ -398,14 +411,23 @@ int doSubsVar(char *v1, char *v2, char *value, char *env[])
     if((aux = (char *)malloc(strlen(v2) + strlen(value) + 2)) == NULL)
 	    return -1;
 
+    // NOTE: Do not free envVar because environment directly uses this pointer   
+    // add to memoryList to free at end
+    tItemM item; time_t now; time(&now);
+    item.address = aux;
+    item.date = now;
+    item.type = M_MALLOC;
+    item.size = sizeof(aux);
+
+    insertItemM(item, MNULL, L);
+
+    // Change env
     strcpy(aux, v2);
     strcat(aux, "=");
     strcat(aux, value);
 
     env[pos] = aux;
     return pos;
-
-    // NOTE: Do not free envVar because environment directly uses this pointer   
 }
 
 /******************************************************************************/
