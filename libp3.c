@@ -785,7 +785,6 @@ int findEnvEnd(char ***envipNew, char *args[], int s)
     int i = 0;
     while (args[i] != NULL)
     { 
-        puts(args[i+s]);
         if (strchr(args[i+s], '='))
         {
             if (addEnvVar(envipNew, args[i+s], i))
