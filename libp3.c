@@ -779,38 +779,39 @@ int addEnvVar(char ***envp, char *new, int i)
     return 0;
 }
 
-// i = start
-int findEnvEnd(char ***envipNew, char *args[], int i) 
+// s = start
+int findEnvEnd(char ***envipNew, char *args[], int s) 
 {    
+    int i = 0;
     while (args[i] != NULL)
     { 
-        if (strchr(args[i], '='))
+        puts(args[i+s]);
+        if (strchr(args[i+s], '='))
         {
-            if (addEnvVar(envipNew, args[i], i))
+            if (addEnvVar(envipNew, args[i+s], i))
             {
                 pPrintError("New env error");
                 return -1;
             }
-            i++;
         }
         else
         {
-            char * value = getenv(args[i]);
+            char * value = getenv(args[i+s]);
             if (value)
             {
-                if (copyEnvVar(envipNew, args[i], value, i))
+                if (copyEnvVar(envipNew, args[i+s], value, i))
                 {
                     pPrintError("New env error");
                     return -1;
                 }
-                i++;   
             } 
             else {
                 break;
             }
         }
+        i++;   
     }
-    return i;
+    return i+s;
 }
 
 
@@ -822,7 +823,6 @@ void getProgspec(tArgs *args, tProgspec *pg, int start)
 
     if (endVars == -1) { freeEnv(env); }
     
-
     if (endVars == start) // No new env
     {
         pg->env = NULL;
