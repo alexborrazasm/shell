@@ -509,7 +509,7 @@ void printPathList(tListP L);
 
 void searchClean(tListP *L);
 
-void searchPath(tArgs args, tListP *L);
+void searchPath(tListP *L);
 
 void searchAdd(tArgs args, tListP *L);
 
@@ -526,7 +526,7 @@ void cmdSearch(tArgs args, tLists *L)
         if(strcmp(args.array[1], "-clear") == 0)
             searchClean(&L->path);
         else if(strcmp(args.array[1], "-path") == 0)
-            searchPath(args, &L->path);
+            searchPath(&L->path);
         else
             printError(args.array[0], "Invalid argument");
         break;
@@ -560,12 +560,12 @@ void searchClean(tListP *L)
     freePathList(L);
 }
 
-void searchPath(tArgs args, tListP *L)
+void searchPath(tListP *L)
 {
     const char *pathEnv = getenv("PATH");
     if (!pathEnv) 
     {
-        printError(args.array[0], "Can not find PATH");
+        printError("getenv", "Can not find PATH");
         return;
     }
 

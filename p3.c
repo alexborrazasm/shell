@@ -5,6 +5,8 @@
 
 void shell(tArgsMain main);
 
+void importPath(tListP *L, tArgsMain main);
+
 int main(int argc, char *argv[], char *envp[])
 {
     tArgsMain main;
@@ -32,6 +34,9 @@ void shell(tArgsMain main)
 
     initFList(&L.files);
 
+    importPath(&L.path, main);
+   
+    // Shell loop
     while (!finished)
     {
         printPrompt();
@@ -40,4 +45,19 @@ void shell(tArgsMain main)
     }
 
     freeLists(&L);
+}
+
+void importPath(tListP *L, tArgsMain main)
+{
+    if (main.argv[1] != NULL )
+    {
+        if ((main.argv[1][0] == '-') && (main.argv[1][1] == 'p'))
+        {
+            searchPath(L); // Add PATH to shell
+            printf(YELLOW"PATH"RST" added\n");
+            return;
+        }  
+    }   
+    printf(YELLOW"PATH"RST" not imported\n"
+           "Run with "YELLOW"-p"RST" to import\n");
 }

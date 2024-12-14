@@ -58,4 +58,6 @@ int doExecuteFg(char **args, char **newEnv, int *pprio, tListP L);
 
 void freeEnv(char **envp);
 
+void searchPath(tListP *L);
+
 #endif // LIBP3_H
