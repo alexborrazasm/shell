@@ -265,7 +265,7 @@ int doChangeVar(char *var, char *value, char *env[], tListM *L);
 
 int searchVar(char *var, char *env[]);
 
-int doPutEnv(char *var, char *value);
+int doPutEnv(char *var, char *value, tListM *L);
 
 void cmdChangevar(tArgs args, tLists *L)
 {
@@ -292,7 +292,7 @@ void cmdChangevar(tArgs args, tLists *L)
             }
             else if(args.array[1][1] == 'p') // putenv
             {
-                if(doPutEnv(args.array[2], args.array[3]) == -1)
+                if(doPutEnv(args.array[2], args.array[3], &L->memory) == -1)
                     pPrintError(args.array[0]);
                 return; // all right
             }
@@ -354,13 +354,23 @@ int doChangeVar(char *var, char *value, char *env[], tListM *L)
     return pos;
 }
 
-int doPutEnv(char *var, char *value)
+int doPutEnv(char *var, char *value, tListM *L)
 {
     size_t length = strlen(var) + strlen(value) + 2; // +2 for '=' '\0'
     char *envVar = malloc(length);
     
     if (!envVar)
         return -1;
+
+    // NOTE: Do not free envVar because environment directly uses this pointer   
+    // add to memoryList to free at end
+    tItemM item; time_t now; time(&now);
+    item.address = envVar;
+    item.date = now;
+    item.type = M_MALLOC;
+    item.size = sizeof(envVar);
+
+    insertItemM(item, MNULL, L);
     
     snprintf(envVar, length, "%s=%s", var, value); // Build var=value
 
@@ -371,7 +381,6 @@ int doPutEnv(char *var, char *value)
     }
 
     return 0; // AL RIGHT
-    // NOTE: Do not free envVar because putenv directly uses this pointer
 }
 
 /******************************************************************************/
