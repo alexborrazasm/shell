@@ -875,7 +875,7 @@ void cmdExecpri(tArgs args, tLists *L)
 {   
     if (args.len > 1)
     {
-        tProgspec pg; // free?
+        tProgspec pg;
         int prio;
 
         if (!stringToInt(args.array[1], &prio)) 
