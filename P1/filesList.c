@@ -115,7 +115,6 @@ void deleteAtPositionF(tPosF p, tListF *L)
             *L = p->next;         // point the list to second node
             (*L)->prev = p->prev; // p->prev point to lastF node
         }
-        createEmptyListF(L);
     }
     else if (p->next == FNULL) // p is the lastF node
     {

@@ -182,7 +182,7 @@ char* getFilePermissions(mode_t m)
     if (m&S_IROTH) permissions[7]='r';    // rest
     if (m&S_IWOTH) permissions[8]='w';
     if (m&S_IXOTH) permissions[9]='x';
-    if (m&S_ISUID) permissions[3]='s';    // setuid, setgid y stickybit
+    if (m&S_ISUID) permissions[3]='s';    // setuid, setgid and stickybit
     if (m&S_ISGID) permissions[6]='s';
     if (m&S_ISVTX) permissions[9]='t';
     
