@@ -753,15 +753,12 @@ void helpCommand(tArgs args)
 
     getCommands(commands);
 
-    for (int i = 0; i < n; i++)
+    for (int i = 0; i < n; ++i)
     {
-        for (int i = 0; i < n; ++i)
+        if (strcmp(commands[i].name, args.array[1]) == 0)
         {
-            if (strcmp(commands[i].name, args.array[1]) == 0)
-            {
-                printf("%s    %s\n", commands[i].help0, commands[i].help1);
-                return;
-            }
+            printf("%s    %s\n", commands[i].help0, commands[i].help1);
+            return;
         }
     }
 
